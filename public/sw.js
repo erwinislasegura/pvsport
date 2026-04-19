@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vextra-shell-v3';
+const CACHE_NAME = 'vextra-shell-v4';
 const APP_SHELL = [
   '/',
   '/iniciar-sesion',
