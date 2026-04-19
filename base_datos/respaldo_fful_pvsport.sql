@@ -3940,6 +3940,11 @@ ALTER TABLE `empresas`
 --
 -- Filtros para la tabla `flow_clientes`
 --
+DELETE fc
+FROM `flow_clientes` fc
+LEFT JOIN `empresas` e ON e.`id` = fc.`empresa_id`
+WHERE e.`id` IS NULL;
+
 ALTER TABLE `flow_clientes`
   ADD CONSTRAINT `fk_flow_cliente_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`);
 
@@ -3952,6 +3957,13 @@ ALTER TABLE `flow_configuraciones_empresa`
 --
 -- Filtros para la tabla `flow_logs`
 --
+DELETE fl
+FROM `flow_logs` fl
+LEFT JOIN `empresas` e ON e.`id` = fl.`empresa_id`
+LEFT JOIN `usuarios` u ON u.`id` = fl.`admin_usuario_id`
+WHERE (fl.`empresa_id` IS NOT NULL AND e.`id` IS NULL)
+   OR (fl.`admin_usuario_id` IS NOT NULL AND u.`id` IS NULL);
+
 ALTER TABLE `flow_logs`
   ADD CONSTRAINT `fk_flow_logs_admin` FOREIGN KEY (`admin_usuario_id`) REFERENCES `usuarios` (`id`),
   ADD CONSTRAINT `fk_flow_logs_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`);
