@@ -1631,67 +1631,48 @@ class PublicoControlador extends Controlador
 
     private function resolverEmpresaIdPorDominioCatalogo(): ?int
     {
-<<<<<<< HEAD
-        $hostBruto = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? '');
-        if (!is_string($hostBruto) && !is_numeric($hostBruto)) {
-            return null;
-        }
-
-        $host = trim((string) $hostBruto);
-        if ($host === '') {
-            return null;
-        }
-
-        if (str_contains($host, ':')) {
-            $host = explode(':', $host, 2)[0] ?? $host;
-        }
-        $host = mb_strtolower(trim($host));
-        if ($host === '') {
-            return null;
-        }
-
-        try {
-            $modeloEmpresa = new Empresa();
-            if (!method_exists($modeloEmpresa, 'buscarPorCatalogoDominio')) {
-                return null;
-            }
+        $modeloEmpresa = new Empresa();
+        foreach ($this->obtenerHostsSolicitudCatalogo() as $host) {
             $empresa = $modeloEmpresa->buscarPorCatalogoDominio($host);
-        } catch (\Throwable $e) {
-            return null;
+            if ($empresa) {
+                return (int) ($empresa['id'] ?? 0) ?: null;
+            }
         }
 
-=======
-        $host = trim((string) ($_SERVER['HTTP_HOST'] ?? ''));
-        if ($host === '') {
-            return null;
+        return null;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function obtenerHostsSolicitudCatalogo(): array
+    {
+        $hosts = [];
+        $candidatos = [
+            (string) ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? ''),
+            (string) ($_SERVER['HTTP_HOST'] ?? ''),
+            (string) ($_SERVER['SERVER_NAME'] ?? ''),
+        ];
+
+        foreach ($candidatos as $candidato) {
+            $candidato = trim($candidato);
+            if ($candidato === '') {
+                continue;
+            }
+
+            foreach (explode(',', $candidato) as $hostLista) {
+                $hostLista = trim($hostLista);
+                if ($hostLista !== '') {
+                    $hosts[] = $hostLista;
+                }
+            }
         }
 
-        $empresa = (new Empresa())->buscarPorCatalogoDominio($host);
->>>>>>> parent of 46cd96e (Merge pull request #13 from erwinislasegura/codex/update-url-structure-for-navigation-xt7a2a)
-        if (!$empresa) {
-            return null;
-        }
-
-<<<<<<< HEAD
         return array_values(array_unique($hosts));
     }
 
     private function construirRutasCatalogo(int $empresaId): array
     {
-        $base = '/catalogo/' . $empresaId;
-
-    private function obtenerRutaContactoCatalogo(int $empresaId): string
-    {
-        return (string) ($this->construirRutasCatalogo($empresaId)['contacto_post'] ?? '/catalogo/' . $empresaId . '/contacto');
-=======
-        return (int) ($empresa['id'] ?? 0) ?: null;
->>>>>>> parent of 46cd96e (Merge pull request #13 from erwinislasegura/codex/update-url-structure-for-navigation-xt7a2a)
-    }
-
-    private function construirRutasCatalogo(int $empresaId): array
-    {
-<<<<<<< HEAD
-=======
         $empresaDominio = $this->resolverEmpresaIdPorDominioCatalogo();
         $usarRutasRaiz = $empresaDominio !== null && $empresaDominio === $empresaId;
 
@@ -1704,12 +1685,11 @@ class PublicoControlador extends Controlador
             ];
         }
 
->>>>>>> parent of 9903b39 (Merge pull request #14 from erwinislasegura/codex/add-fixed-index-for-catalog-and-contact-pages)
         return [
-            'base' => $base,
-            'nosotros' => $base . '/nosotros',
-            'contacto' => $base . '/contacto',
-            'contacto_post' => $base . '/contacto',
+            'base' => url('/catalogo/' . $empresaId),
+            'nosotros' => url('/catalogo/' . $empresaId . '/nosotros'),
+            'contacto' => url('/catalogo/' . $empresaId . '/contacto'),
+            'contacto_post' => '/catalogo/' . $empresaId . '/contacto',
         ];
     }
 
