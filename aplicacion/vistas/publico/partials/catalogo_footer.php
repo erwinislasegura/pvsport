@@ -23,6 +23,7 @@ $renderIconoContactoFooter = static function (string $tipo): string {
         <a href="<?= e($catalogoContactoUrl) ?>">Contacto</a>
         <a href="<?= e($catalogoFooterProductosUrl) ?>" id="showFeaturedBtnTop">Productos destacados</a>
         <a href="<?= e($catalogoFooterProductosUrl) ?>" id="showOffersBtnTop">Ofertas</a>
+        <a href="<?= e(url('/iniciar-sesion')) ?>">Iniciar sesión</a>
       </nav>
     </div>
     <div class="footer-contact footer-col">
