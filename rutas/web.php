@@ -5,6 +5,7 @@ use Aplicacion\Controladores\Integraciones\FlowWebhookControlador;
 
 
 $enrutador->agregar('GET', '/', [PublicoControlador::class, 'inicio']);
+$enrutador->agregar('GET', '/nosotros', [PublicoControlador::class, 'nosotros']);
 $enrutador->agregar('GET', '/caracteristicas', [PublicoControlador::class, 'caracteristicas']);
 $enrutador->agregar('GET', '/planes', [PublicoControlador::class, 'planes']);
 $enrutador->agregar('GET', '/contacto', [PublicoControlador::class, 'contacto']);

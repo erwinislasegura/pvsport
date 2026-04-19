@@ -397,23 +397,53 @@ class Empresa extends Modelo
             return null;
         }
 
-        $dominio = trim(mb_strtolower($host));
-        if ($dominio === '') {
+        $normalizado = trim(mb_strtolower($host));
+        if ($normalizado === '') {
             return null;
         }
 
-        if (str_contains($dominio, ':')) {
-            $dominio = explode(':', $dominio, 2)[0];
+        if (preg_match('#^https?://#i', $normalizado) === 1) {
+            $parsedHost = (string) (parse_url($normalizado, PHP_URL_HOST) ?: '');
+            if ($parsedHost !== '') {
+                $normalizado = $parsedHost;
+            }
+        }
+
+        if (str_contains($normalizado, '/')) {
+            $normalizado = explode('/', $normalizado, 2)[0];
+        }
+        if (str_contains($normalizado, ':')) {
+            $normalizado = explode(':', $normalizado, 2)[0];
+        }
+        $normalizado = trim($normalizado, '. ');
+        if ($normalizado === '') {
+            return null;
+        }
+
+        $candidatos = [$normalizado];
+        if (str_starts_with($normalizado, 'www.')) {
+            $candidatos[] = substr($normalizado, 4);
+        } else {
+            $candidatos[] = 'www.' . $normalizado;
+        }
+        $candidatos = array_values(array_unique(array_filter($candidatos, static fn (string $d): bool => $d !== '')));
+
+        $condiciones = [];
+        $params = [];
+        foreach ($candidatos as $idx => $dominio) {
+            $param = 'dominio' . $idx;
+            $condiciones[] = 'LOWER(TRIM(catalogo_dominio)) = :' . $param;
+            $params[$param] = $dominio;
         }
 
         $stmt = $this->db->prepare(
             'SELECT * FROM empresas
-             WHERE LOWER(TRIM(catalogo_dominio)) = :dominio
+             WHERE (' . implode(' OR ', $condiciones) . ')
                AND estado = "activa"
                AND fecha_eliminacion IS NULL
              LIMIT 1'
         );
-        $stmt->execute(['dominio' => $dominio]);
+        $stmt->execute($params);
         return $stmt->fetch() ?: null;
     }
 

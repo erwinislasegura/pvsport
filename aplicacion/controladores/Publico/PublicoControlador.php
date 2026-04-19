@@ -29,7 +29,24 @@ class PublicoControlador extends Controlador
 
     public function inicio(): void
     {
+        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
+        if ($empresaId !== null) {
+            $this->catalogoEnLinea($empresaId);
+            return;
+        }
+
         $this->catalogoEnLinea(self::EMPRESA_CATALOGO_RAIZ);
+    }
+
+    public function nosotros(): void
+    {
+        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
+        if ($empresaId !== null) {
+            $this->catalogoNosotros($empresaId);
+            return;
+        }
+
+        $this->redirigir('/');
     }
 
     public function caracteristicas(): void
@@ -46,6 +63,12 @@ class PublicoControlador extends Controlador
 
     public function contacto(): void
     {
+        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
+        if ($empresaId !== null) {
+            $this->catalogoContacto($empresaId);
+            return;
+        }
+
         $this->vistaPublica('publico/contacto', [], 'contacto');
     }
 
@@ -170,6 +193,12 @@ class PublicoControlador extends Controlador
 
     public function enviarContacto(): void
     {
+        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
+        if ($empresaId !== null) {
+            $this->enviarContactoCatalogo($empresaId);
+            return;
+        }
+
         validar_csrf();
 
         if (!validar_recaptcha_post('contacto_landing')) {
@@ -426,6 +455,7 @@ class PublicoControlador extends Controlador
         $logoCatalogo = $contexto['logoCatalogo'];
         $sliderCatalogo = $contexto['sliderCatalogo'];
         $catalogoTopbar = $contexto['catalogoTopbar'];
+        $catalogoRutas = $this->construirRutasCatalogo($empresaId);
 
         $buscar = trim((string) ($_GET['q'] ?? ''));
         $categoriaId = (int) ($_GET['categoria'] ?? 0);
@@ -433,7 +463,7 @@ class PublicoControlador extends Controlador
         $categorias = (new GestionComercial())->listarTablaEmpresa('categorias_productos', $empresaId, '', 300);
 
         $ocultarNavbarPublico = true;
-        $this->vistaPublica('publico/catalogo', compact('empresa', 'productos', 'categorias', 'buscar', 'categoriaId', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'ocultarNavbarPublico'), 'catalogo_publico');
+        $this->vistaPublica('publico/catalogo', compact('empresa', 'productos', 'categorias', 'buscar', 'categoriaId', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'catalogoRutas', 'ocultarNavbarPublico'), 'catalogo_publico');
     }
 
     public function catalogoNosotros(int $empresaId): void
@@ -449,9 +479,10 @@ class PublicoControlador extends Controlador
         $logoCatalogo = $contexto['logoCatalogo'];
         $sliderCatalogo = $contexto['sliderCatalogo'];
         $catalogoTopbar = $contexto['catalogoTopbar'];
+        $catalogoRutas = $this->construirRutasCatalogo($empresaId);
         $ocultarNavbarPublico = true;
 
-        $this->vistaPublica('publico/catalogo_nosotros', compact('empresa', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'ocultarNavbarPublico'), 'catalogo_publico');
+        $this->vistaPublica('publico/catalogo_nosotros', compact('empresa', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'catalogoRutas', 'ocultarNavbarPublico'), 'catalogo_publico');
     }
 
     public function catalogoContacto(int $empresaId): void
@@ -467,9 +498,10 @@ class PublicoControlador extends Controlador
         $logoCatalogo = $contexto['logoCatalogo'];
         $sliderCatalogo = $contexto['sliderCatalogo'];
         $catalogoTopbar = $contexto['catalogoTopbar'];
+        $catalogoRutas = $this->construirRutasCatalogo($empresaId);
         $ocultarNavbarPublico = true;
 
-        $this->vistaPublica('publico/catalogo_contacto', compact('empresa', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'ocultarNavbarPublico'), 'catalogo_publico');
+        $this->vistaPublica('publico/catalogo_contacto', compact('empresa', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'catalogoRutas', 'ocultarNavbarPublico'), 'catalogo_publico');
     }
 
     public function enviarContactoCatalogo(int $empresaId): void
@@ -510,7 +542,7 @@ class PublicoControlador extends Controlador
 
         if ($errores !== []) {
             flash('danger', 'Completa correctamente: ' . implode(', ', $errores) . '.');
-            $this->redirigir('/catalogo/' . $empresaId . '/contacto');
+            $this->redirigir($this->obtenerRutaContactoCatalogo($empresaId));
         }
 
         $correoDestino = trim((string) ($catalogoTopbar['contacto_form_correo_destino'] ?? ''));
@@ -560,7 +592,7 @@ class PublicoControlador extends Controlador
         );
 
         flash('success', 'Gracias por tu mensaje. Te responderemos pronto.');
-        $this->redirigir('/catalogo/' . $empresaId . '/contacto');
+        $this->redirigir($this->obtenerRutaContactoCatalogo($empresaId));
     }
 
     public function logoCatalogoEmpresa(int $empresaId): void
@@ -1599,17 +1631,71 @@ class PublicoControlador extends Controlador
 
     private function resolverEmpresaIdPorDominioCatalogo(): ?int
     {
-        $host = trim((string) ($_SERVER['HTTP_HOST'] ?? ''));
-        if ($host === '') {
-            return null;
+        $modeloEmpresa = new Empresa();
+        foreach ($this->obtenerHostsSolicitudCatalogo() as $host) {
+            $empresa = $modeloEmpresa->buscarPorCatalogoDominio($host);
+            if ($empresa) {
+                return (int) ($empresa['id'] ?? 0) ?: null;
+            }
         }
 
-        $empresa = (new Empresa())->buscarPorCatalogoDominio($host);
-        if (!$empresa) {
-            return null;
+        return null;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function obtenerHostsSolicitudCatalogo(): array
+    {
+        $hosts = [];
+        $candidatos = [
+            (string) ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? ''),
+            (string) ($_SERVER['HTTP_HOST'] ?? ''),
+            (string) ($_SERVER['SERVER_NAME'] ?? ''),
+        ];
+
+        foreach ($candidatos as $candidato) {
+            $candidato = trim($candidato);
+            if ($candidato === '') {
+                continue;
+            }
+
+            foreach (explode(',', $candidato) as $hostLista) {
+                $hostLista = trim($hostLista);
+                if ($hostLista !== '') {
+                    $hosts[] = $hostLista;
+                }
+            }
         }
 
-        return (int) ($empresa['id'] ?? 0) ?: null;
+        return array_values(array_unique($hosts));
+    }
+
+    private function construirRutasCatalogo(int $empresaId): array
+    {
+        $empresaDominio = $this->resolverEmpresaIdPorDominioCatalogo();
+        $usarRutasRaiz = $empresaDominio !== null && $empresaDominio === $empresaId;
+
+        if ($usarRutasRaiz) {
+            return [
+                'base' => url('/'),
+                'nosotros' => url('/nosotros'),
+                'contacto' => url('/contacto'),
+                'contacto_post' => '/contacto',
+            ];
+        }
+
+        return [
+            'base' => url('/catalogo/' . $empresaId),
+            'nosotros' => url('/catalogo/' . $empresaId . '/nosotros'),
+            'contacto' => url('/catalogo/' . $empresaId . '/contacto'),
+            'contacto_post' => '/catalogo/' . $empresaId . '/contacto',
+        ];
+    }
+
+    private function obtenerRutaContactoCatalogo(int $empresaId): string
+    {
+        return (string) ($this->construirRutasCatalogo($empresaId)['contacto_post'] ?? '/catalogo/' . $empresaId . '/contacto');
     }
 
     private function obtenerUrlBaseSitio(): string
