@@ -197,8 +197,9 @@ $renderIconoRed = static function (string $id): string {
   .card-actions .btn-warning{font-size:13px;font-weight:700;padding:8px 12px;background:linear-gradient(135deg,#f59e0b,#d97706);border:none;color:#fff}
   .icon-btn{width:48px;border-radius:14px;background:#f8fafc;border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center}
   .icon-btn svg{width:18px;height:18px;stroke:var(--primary);fill:none;stroke-width:2}
-  .cart-toggle{position:fixed;right:20px;bottom:20px;z-index:70;background:var(--primary);color:#fff;border-radius:14px;padding:10px 14px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;border:none}
-  .cart-count{background:var(--accent);min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;font-size:12px}
+  .cart-toggle{position:fixed;right:20px;bottom:20px;z-index:70;background:rgba(255,255,255,.94);color:#334155;border-radius:14px;padding:10px 14px;box-shadow:0 8px 24px rgba(15,23,42,.12);display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;border:1px solid #dbe4ef;backdrop-filter:blur(2px);transition:all .2s ease}
+  .cart-toggle:hover{background:#fff;color:var(--primary);box-shadow:0 10px 26px rgba(15,23,42,.16)}
+  .cart-count{background:#e2e8f0;color:#334155;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;font-size:12px}
   .cart-panel{position:fixed;top:0;right:-420px;width:400px;max-width:100%;height:100vh;background:#fff;border-left:1px solid var(--border);box-shadow:-10px 0 30px rgba(15,23,42,.12);z-index:90;transition:right .3s ease;display:flex;flex-direction:column}
   .cart-panel.open{right:0}.cart-header,.cart-footer{padding:20px}.cart-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
   .cart-items{flex:1;overflow:auto;padding:14px;display:grid;gap:10px}.cart-item{display:grid;grid-template-columns:60px 1fr auto;gap:8px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:8px}
