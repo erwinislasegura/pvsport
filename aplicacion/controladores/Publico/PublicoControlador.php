@@ -1652,27 +1652,6 @@ class PublicoControlador extends Controlador
 
     private function construirRutasCatalogo(int $empresaId): array
     {
-        $empresaDominio = $this->resolverEmpresaIdPorDominioCatalogo();
-        $usarRutasRaiz = $empresaDominio !== null && $empresaDominio === $empresaId;
-
-        if ($usarRutasRaiz) {
-            return [
-                'base' => url('/'),
-                'nosotros' => url('/nosotros'),
-                'contacto' => url('/contacto'),
-                'contacto_post' => '/contacto',
-            ];
-        }
-
-        if ($empresaId === self::EMPRESA_CATALOGO_RAIZ) {
-            return [
-                'base' => url('/catalogo'),
-                'nosotros' => url('/catalogo/nosotros'),
-                'contacto' => url('/catalogo/contacto'),
-                'contacto_post' => '/catalogo/contacto',
-            ];
-        }
-
         return [
             'base' => url('/catalogo/' . $empresaId),
             'nosotros' => url('/catalogo/' . $empresaId . '/nosotros'),
