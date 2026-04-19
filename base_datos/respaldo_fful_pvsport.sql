@@ -3940,6 +3940,11 @@ ALTER TABLE `empresas`
 --
 -- Filtros para la tabla `flow_clientes`
 --
+DELETE fc
+FROM `flow_clientes` fc
+LEFT JOIN `empresas` e ON e.`id` = fc.`empresa_id`
+WHERE e.`id` IS NULL;
+
 ALTER TABLE `flow_clientes`
   ADD CONSTRAINT `fk_flow_cliente_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`);
 
