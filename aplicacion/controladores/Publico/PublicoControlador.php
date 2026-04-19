@@ -1628,6 +1628,15 @@ class PublicoControlador extends Controlador
             ];
         }
 
+        if ($empresaId === self::EMPRESA_CATALOGO_RAIZ) {
+            return [
+                'base' => url('/catalogo'),
+                'nosotros' => url('/catalogo/nosotros'),
+                'contacto' => url('/catalogo/contacto'),
+                'contacto_post' => '/catalogo/contacto',
+            ];
+        }
+
         return [
             'base' => url('/catalogo/' . $empresaId),
             'nosotros' => url('/catalogo/' . $empresaId . '/nosotros'),
