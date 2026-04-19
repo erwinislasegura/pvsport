@@ -1574,6 +1574,7 @@ class PublicoControlador extends Controlador
 
     private function resolverEmpresaIdPorDominioCatalogo(): ?int
     {
+<<<<<<< HEAD
         $hostBruto = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? '');
         if (!is_string($hostBruto) && !is_numeric($hostBruto)) {
             return null;
@@ -1602,10 +1603,19 @@ class PublicoControlador extends Controlador
             return null;
         }
 
+=======
+        $host = trim((string) ($_SERVER['HTTP_HOST'] ?? ''));
+        if ($host === '') {
+            return null;
+        }
+
+        $empresa = (new Empresa())->buscarPorCatalogoDominio($host);
+>>>>>>> parent of 46cd96e (Merge pull request #13 from erwinislasegura/codex/update-url-structure-for-navigation-xt7a2a)
         if (!$empresa) {
             return null;
         }
 
+<<<<<<< HEAD
         return array_values(array_unique($hosts));
     }
 
@@ -1616,6 +1626,9 @@ class PublicoControlador extends Controlador
     private function obtenerRutaContactoCatalogo(int $empresaId): string
     {
         return (string) ($this->construirRutasCatalogo($empresaId)['contacto_post'] ?? '/catalogo/' . $empresaId . '/contacto');
+=======
+        return (int) ($empresa['id'] ?? 0) ?: null;
+>>>>>>> parent of 46cd96e (Merge pull request #13 from erwinislasegura/codex/update-url-structure-for-navigation-xt7a2a)
     }
 
     private function construirRutasCatalogo(int $empresaId): array
