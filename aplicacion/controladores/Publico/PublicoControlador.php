@@ -399,9 +399,7 @@ class PublicoControlador extends Controlador
     {
         $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
         if ($empresaId === null) {
-            http_response_code(404);
-            require __DIR__ . '/../../vistas/errores/404.php';
-            return;
+            $empresaId = self::EMPRESA_CATALOGO_RAIZ;
         }
 
         $this->catalogoEnLinea($empresaId);
@@ -411,9 +409,7 @@ class PublicoControlador extends Controlador
     {
         $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
         if ($empresaId === null) {
-            http_response_code(404);
-            require __DIR__ . '/../../vistas/errores/404.php';
-            return;
+            $empresaId = self::EMPRESA_CATALOGO_RAIZ;
         }
 
         $this->catalogoNosotros($empresaId);
@@ -423,9 +419,7 @@ class PublicoControlador extends Controlador
     {
         $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
         if ($empresaId === null) {
-            http_response_code(404);
-            require __DIR__ . '/../../vistas/errores/404.php';
-            return;
+            $empresaId = self::EMPRESA_CATALOGO_RAIZ;
         }
 
         $this->catalogoContacto($empresaId);
@@ -435,9 +429,7 @@ class PublicoControlador extends Controlador
     {
         $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
         if ($empresaId === null) {
-            http_response_code(404);
-            require __DIR__ . '/../../vistas/errores/404.php';
-            return;
+            $empresaId = self::EMPRESA_CATALOGO_RAIZ;
         }
 
         $this->enviarContactoCatalogo($empresaId);
@@ -1655,6 +1647,15 @@ class PublicoControlador extends Controlador
                 'nosotros' => url('/nosotros'),
                 'contacto' => url('/contacto'),
                 'contacto_post' => '/contacto',
+            ];
+        }
+
+        if ($empresaId === self::EMPRESA_CATALOGO_RAIZ) {
+            return [
+                'base' => url('/catalogo'),
+                'nosotros' => url('/catalogo/nosotros'),
+                'contacto' => url('/catalogo/contacto'),
+                'contacto_post' => '/catalogo/contacto',
             ];
         }
 
