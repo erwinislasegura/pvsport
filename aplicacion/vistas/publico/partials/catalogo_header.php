@@ -18,7 +18,7 @@ $catalogoHeaderCartButtonId = (string) ($catalogoHeaderCartButtonId ?? '');
 
 <header class="catalogo-header">
   <div class="catalogo-container catalogo-navbar">
-    <a class="catalogo-logo" href="<?= e($catalogoBaseUrl) ?>"><img src="<?= e((string) ($logoCatalogo ?: url('/img/logo/icono.png'))) ?>" alt="Logo empresa"></a>
+    <a class="catalogo-logo" href="<?= e($catalogoBaseUrl) ?>"><img src="<?= e((string) ($logoCatalogo ?: url('/img/logo/pvsport-logo-red.svg'))) ?>" alt="Logo empresa"></a>
     <button class="catalogo-mobile-toggle" type="button" aria-label="Abrir menú" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
