@@ -4049,6 +4049,15 @@ ALTER TABLE `logs_actividad`
 --
 -- Filtros para la tabla `logs_administracion`
 --
+DELETE la
+FROM `logs_administracion` la
+LEFT JOIN `empresas` e ON e.`id` = la.`empresa_id`
+LEFT JOIN `usuarios` ua ON ua.`id` = la.`admin_usuario_id`
+LEFT JOIN `usuarios` uo ON uo.`id` = la.`usuario_objetivo_id`
+WHERE (la.`empresa_id` IS NOT NULL AND e.`id` IS NULL)
+   OR (la.`admin_usuario_id` IS NOT NULL AND ua.`id` IS NULL)
+   OR (la.`usuario_objetivo_id` IS NOT NULL AND uo.`id` IS NULL);
+
 ALTER TABLE `logs_administracion`
   ADD CONSTRAINT `fk_logs_admin_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`),
   ADD CONSTRAINT `fk_logs_admin_usuario` FOREIGN KEY (`admin_usuario_id`) REFERENCES `usuarios` (`id`),
