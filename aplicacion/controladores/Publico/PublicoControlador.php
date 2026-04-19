@@ -1616,30 +1616,13 @@ class PublicoControlador extends Controlador
 
     private function construirRutasCatalogo(int $empresaId): array
     {
-        $resolverRuta = static function (string $ruta): string {
-            if (function_exists('url')) {
-                return url($ruta);
-            }
-
-            return $ruta;
-        };
-
         $base = '/catalogo/' . $empresaId;
 
-        if ($empresaId === self::EMPRESA_CATALOGO_RAIZ) {
-            return [
-                'base' => url('/catalogo'),
-                'nosotros' => url('/catalogo/nosotros'),
-                'contacto' => url('/catalogo/contacto'),
-                'contacto_post' => '/catalogo/contacto',
-            ];
-        }
-
         return [
-            'base' => url('/catalogo/' . $empresaId),
-            'nosotros' => url('/catalogo/' . $empresaId . '/nosotros'),
-            'contacto' => url('/catalogo/' . $empresaId . '/contacto'),
-            'contacto_post' => '/catalogo/' . $empresaId . '/contacto',
+            'base' => $base,
+            'nosotros' => $base . '/nosotros',
+            'contacto' => $base . '/contacto',
+            'contacto_post' => $base . '/contacto',
         ];
     }
 
