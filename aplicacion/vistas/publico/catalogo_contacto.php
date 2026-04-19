@@ -1,8 +1,9 @@
 <?php
-$catalogoBaseUrl = url('/catalogo/' . (int) ($empresa['id'] ?? 0));
-$catalogoContactoUrl = $catalogoBaseUrl . '/contacto';
-$catalogoNosotrosUrl = $catalogoBaseUrl . '/nosotros';
-$accionFormulario = $catalogoBaseUrl . '/contacto';
+$catalogoRutas = is_array($catalogoRutas ?? null) ? $catalogoRutas : [];
+$catalogoBaseUrl = (string) ($catalogoRutas['base'] ?? url('/catalogo/' . (int) ($empresa['id'] ?? 0)));
+$catalogoContactoUrl = (string) ($catalogoRutas['contacto'] ?? ($catalogoBaseUrl . '/contacto'));
+$catalogoNosotrosUrl = (string) ($catalogoRutas['nosotros'] ?? ($catalogoBaseUrl . '/nosotros'));
+$accionFormulario = (string) ($catalogoRutas['contacto'] ?? ($catalogoBaseUrl . '/contacto'));
 
 $colorPrimario = trim((string) ($catalogoTopbar['color_primario'] ?? ''));
 if (preg_match('/^#([A-Fa-f0-9]{6})$/', $colorPrimario) !== 1) {
