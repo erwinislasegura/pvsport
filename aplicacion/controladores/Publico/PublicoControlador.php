@@ -1574,41 +1574,36 @@ class PublicoControlador extends Controlador
 
     private function resolverEmpresaIdPorDominioCatalogo(): ?int
     {
-        $modeloEmpresa = new Empresa();
-        foreach ($this->obtenerHostsSolicitudCatalogo() as $host) {
-            $empresa = $modeloEmpresa->buscarPorCatalogoDominio($host);
-            if ($empresa) {
-                return (int) ($empresa['id'] ?? 0) ?: null;
-            }
+        $hostBruto = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? '');
+        if (!is_string($hostBruto) && !is_numeric($hostBruto)) {
+            return null;
         }
 
-        return null;
-    }
+        $host = trim((string) $hostBruto);
+        if ($host === '') {
+            return null;
+        }
 
-    /**
-     * @return array<int, string>
-     */
-    private function obtenerHostsSolicitudCatalogo(): array
-    {
-        $hosts = [];
-        $candidatos = [
-            (string) ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? ''),
-            (string) ($_SERVER['HTTP_HOST'] ?? ''),
-            (string) ($_SERVER['SERVER_NAME'] ?? ''),
-        ];
+        if (str_contains($host, ':')) {
+            $host = explode(':', $host, 2)[0] ?? $host;
+        }
+        $host = mb_strtolower(trim($host));
+        if ($host === '') {
+            return null;
+        }
 
-        foreach ($candidatos as $candidato) {
-            $candidato = trim($candidato);
-            if ($candidato === '') {
-                continue;
+        try {
+            $modeloEmpresa = new Empresa();
+            if (!method_exists($modeloEmpresa, 'buscarPorCatalogoDominio')) {
+                return null;
             }
+            $empresa = $modeloEmpresa->buscarPorCatalogoDominio($host);
+        } catch (\Throwable $e) {
+            return null;
+        }
 
-            foreach (explode(',', $candidato) as $hostLista) {
-                $hostLista = trim($hostLista);
-                if ($hostLista !== '') {
-                    $hosts[] = $hostLista;
-                }
-            }
+        if (!$empresa) {
+            return null;
         }
 
         return array_values(array_unique($hosts));
@@ -1618,14 +1613,6 @@ class PublicoControlador extends Controlador
     {
         $base = '/catalogo/' . $empresaId;
 
-        return [
-            'base' => $base,
-            'nosotros' => $base . '/nosotros',
-            'contacto' => $base . '/contacto',
-            'contacto_post' => $base . '/contacto',
-        ];
-    }
-
     private function obtenerRutaContactoCatalogo(int $empresaId): string
     {
         return (string) ($this->construirRutasCatalogo($empresaId)['contacto_post'] ?? '/catalogo/' . $empresaId . '/contacto');
@@ -1634,9 +1621,9 @@ class PublicoControlador extends Controlador
     private function construirRutasCatalogo(int $empresaId): array
     {
         return [
-            'base' => $resolverRuta($base),
-            'nosotros' => $resolverRuta($base . '/nosotros'),
-            'contacto' => $resolverRuta($base . '/contacto'),
+            'base' => $base,
+            'nosotros' => $base . '/nosotros',
+            'contacto' => $base . '/contacto',
             'contacto_post' => $base . '/contacto',
         ];
     }
