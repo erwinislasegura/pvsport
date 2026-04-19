@@ -1631,12 +1631,34 @@ class PublicoControlador extends Controlador
 
     private function resolverEmpresaIdPorDominioCatalogo(): ?int
     {
-        $host = trim((string) ($_SERVER['HTTP_HOST'] ?? ''));
+        $hostBruto = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? '');
+        if (!is_string($hostBruto) && !is_numeric($hostBruto)) {
+            return null;
+        }
+
+        $host = trim((string) $hostBruto);
         if ($host === '') {
             return null;
         }
 
-        $empresa = (new Empresa())->buscarPorCatalogoDominio($host);
+        if (str_contains($host, ':')) {
+            $host = explode(':', $host, 2)[0] ?? $host;
+        }
+        $host = mb_strtolower(trim($host));
+        if ($host === '') {
+            return null;
+        }
+
+        try {
+            $modeloEmpresa = new Empresa();
+            if (!method_exists($modeloEmpresa, 'buscarPorCatalogoDominio')) {
+                return null;
+            }
+            $empresa = $modeloEmpresa->buscarPorCatalogoDominio($host);
+        } catch (\Throwable $e) {
+            return null;
+        }
+
         if (!$empresa) {
             return null;
         }
@@ -1646,23 +1668,13 @@ class PublicoControlador extends Controlador
 
     private function construirRutasCatalogo(int $empresaId): array
     {
-        $empresaDominio = $this->resolverEmpresaIdPorDominioCatalogo();
-        $usarRutasRaiz = $empresaDominio !== null && $empresaDominio === $empresaId;
-
-        if ($usarRutasRaiz) {
-            return [
-                'base' => url('/'),
-                'nosotros' => url('/nosotros'),
-                'contacto' => url('/contacto'),
-                'contacto_post' => '/contacto',
-            ];
-        }
+        $base = '/catalogo/' . $empresaId;
 
         return [
-            'base' => url('/catalogo/' . $empresaId),
-            'nosotros' => url('/catalogo/' . $empresaId . '/nosotros'),
-            'contacto' => url('/catalogo/' . $empresaId . '/contacto'),
-            'contacto_post' => '/catalogo/' . $empresaId . '/contacto',
+            'base' => $base,
+            'nosotros' => $base . '/nosotros',
+            'contacto' => $base . '/contacto',
+            'contacto_post' => $base . '/contacto',
         ];
     }
 
