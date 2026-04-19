@@ -17,6 +17,8 @@ use Aplicacion\Servicios\FlowApiService;
 
 class PublicoControlador extends Controlador
 {
+    private const EMPRESA_CATALOGO_RAIZ = 77;
+
     private const LANDING_SITEMAP = [
         ['path' => '/', 'changefreq' => 'weekly', 'priority' => '1.0', 'view' => 'inicio.php'],
         ['path' => '/caracteristicas', 'changefreq' => 'weekly', 'priority' => '0.9', 'view' => 'caracteristicas.php'],
@@ -27,15 +29,7 @@ class PublicoControlador extends Controlador
 
     public function inicio(): void
     {
-        $empresaIdDominio = $this->resolverEmpresaIdPorDominioCatalogo();
-        if ($empresaIdDominio !== null) {
-            $this->catalogoEnLinea($empresaIdDominio);
-            return;
-        }
-
-        $planes = (new Plan())->listar(true);
-        $planes = $this->agregarFuncionalidadesPlanes($planes);
-        $this->vistaPublica('publico/inicio', ['planes' => $planes], 'inicio');
+        $this->catalogoEnLinea(self::EMPRESA_CATALOGO_RAIZ);
     }
 
     public function caracteristicas(): void
