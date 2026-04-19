@@ -1,8 +1,9 @@
 <?php
 $fmon = static fn(float $m): string => '$' . number_format($m, 0, ',', '.');
-$catalogoBaseUrl = url('/catalogo/' . (int) ($empresa['id'] ?? 0));
-$catalogoNosotrosUrl = $catalogoBaseUrl . '/nosotros';
-$catalogoContactoUrl = $catalogoBaseUrl . '/contacto';
+$catalogoRutas = is_array($catalogoRutas ?? null) ? $catalogoRutas : [];
+$catalogoBaseUrl = (string) ($catalogoRutas['base'] ?? url('/catalogo/' . (int) ($empresa['id'] ?? 0)));
+$catalogoNosotrosUrl = (string) ($catalogoRutas['nosotros'] ?? ($catalogoBaseUrl . '/nosotros'));
+$catalogoContactoUrl = (string) ($catalogoRutas['contacto'] ?? ($catalogoBaseUrl . '/contacto'));
 $resolverImagenProducto = static function (?string $ruta): string {
     $ruta = trim((string) $ruta);
     if ($ruta === '') {
