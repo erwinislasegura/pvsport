@@ -1616,17 +1616,15 @@ class PublicoControlador extends Controlador
 
     private function construirRutasCatalogo(int $empresaId): array
     {
-        $empresaDominio = $this->resolverEmpresaIdPorDominioCatalogo();
-        $usarRutasRaiz = $empresaDominio !== null && $empresaDominio === $empresaId;
+        $resolverRuta = static function (string $ruta): string {
+            if (function_exists('url')) {
+                return url($ruta);
+            }
 
-        if ($usarRutasRaiz) {
-            return [
-                'base' => url('/'),
-                'nosotros' => url('/nosotros'),
-                'contacto' => url('/contacto'),
-                'contacto_post' => '/contacto',
-            ];
-        }
+            return $ruta;
+        };
+
+        $base = '/catalogo/' . $empresaId;
 
         if ($empresaId === self::EMPRESA_CATALOGO_RAIZ) {
             return [
@@ -1653,10 +1651,10 @@ class PublicoControlador extends Controlador
     private function construirRutasCatalogo(int $empresaId): array
     {
         return [
-            'base' => url('/catalogo/' . $empresaId),
-            'nosotros' => url('/catalogo/' . $empresaId . '/nosotros'),
-            'contacto' => url('/catalogo/' . $empresaId . '/contacto'),
-            'contacto_post' => '/catalogo/' . $empresaId . '/contacto',
+            'base' => $resolverRuta($base),
+            'nosotros' => $resolverRuta($base . '/nosotros'),
+            'contacto' => $resolverRuta($base . '/contacto'),
+            'contacto_post' => $base . '/contacto',
         ];
     }
 
