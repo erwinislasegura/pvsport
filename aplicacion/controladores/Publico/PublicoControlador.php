@@ -1631,17 +1631,71 @@ class PublicoControlador extends Controlador
 
     private function resolverEmpresaIdPorDominioCatalogo(): ?int
     {
-        $host = trim((string) ($_SERVER['HTTP_HOST'] ?? ''));
-        if ($host === '') {
-            return null;
+        $modeloEmpresa = new Empresa();
+        foreach ($this->obtenerHostsSolicitudCatalogo() as $host) {
+            $empresa = $modeloEmpresa->buscarPorCatalogoDominio($host);
+            if ($empresa) {
+                return (int) ($empresa['id'] ?? 0) ?: null;
+            }
         }
 
-        $empresa = (new Empresa())->buscarPorCatalogoDominio($host);
-        if (!$empresa) {
-            return null;
+        return null;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function obtenerHostsSolicitudCatalogo(): array
+    {
+        $hosts = [];
+        $candidatos = [
+            (string) ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? ''),
+            (string) ($_SERVER['HTTP_HOST'] ?? ''),
+            (string) ($_SERVER['SERVER_NAME'] ?? ''),
+        ];
+
+        foreach ($candidatos as $candidato) {
+            $candidato = trim($candidato);
+            if ($candidato === '') {
+                continue;
+            }
+
+            foreach (explode(',', $candidato) as $hostLista) {
+                $hostLista = trim($hostLista);
+                if ($hostLista !== '') {
+                    $hosts[] = $hostLista;
+                }
+            }
         }
 
-        return (int) ($empresa['id'] ?? 0) ?: null;
+        return array_values(array_unique($hosts));
+    }
+
+    private function construirRutasCatalogo(int $empresaId): array
+    {
+        $empresaDominio = $this->resolverEmpresaIdPorDominioCatalogo();
+        $usarRutasRaiz = $empresaDominio !== null && $empresaDominio === $empresaId;
+
+        if ($usarRutasRaiz) {
+            return [
+                'base' => url('/'),
+                'nosotros' => url('/nosotros'),
+                'contacto' => url('/contacto'),
+                'contacto_post' => '/contacto',
+            ];
+        }
+
+        return [
+            'base' => url('/catalogo/' . $empresaId),
+            'nosotros' => url('/catalogo/' . $empresaId . '/nosotros'),
+            'contacto' => url('/catalogo/' . $empresaId . '/contacto'),
+            'contacto_post' => '/catalogo/' . $empresaId . '/contacto',
+        ];
+    }
+
+    private function obtenerRutaContactoCatalogo(int $empresaId): string
+    {
+        return (string) ($this->construirRutasCatalogo($empresaId)['contacto_post'] ?? '/catalogo/' . $empresaId . '/contacto');
     }
 
     private function construirRutasCatalogo(int $empresaId): array
