@@ -14,17 +14,19 @@
     $metaTitle = (string) ($meta_title ?? 'PVSport | Sistema de cotizaciones para empresas');
     $metaDescription = (string) ($meta_description ?? 'PVSport es un sistema de cotizaciones para empresas que ayuda a vender más con procesos comerciales ordenados, seguimiento de oportunidades y planes escalables.');
     $metaKeywords = (string) ($meta_keywords ?? 'sistema de cotizaciones, software de cotizaciones, cotizaciones para empresas, control de cotizaciones, planes de software comercial');
-    $metaUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . ($_SERVER['REQUEST_URI'] ?? '/');
+    $metaUrl = (string) ($meta_canonical ?? ((isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . ($_SERVER['REQUEST_URI'] ?? '/')));
     $logoUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . url('/img/logo/pvsport-logo-red.svg');
     $baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
     $faviconUrl = $baseUrl . url('/img/logo/icono.png');
+    $metaRobots = (string) ($meta_robots ?? 'index,follow');
+    $seoSchema = is_array($seo_schema ?? null) ? $seo_schema : [];
   ?>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title><?= e($metaTitle) ?></title>
   <meta name="description" content="<?= e($metaDescription) ?>">
   <meta name="keywords" content="<?= e($metaKeywords) ?>">
-  <meta name="robots" content="index,follow">
+  <meta name="robots" content="<?= e($metaRobots) ?>">
   <meta name="theme-color" content="#4632a8">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -71,6 +73,22 @@
       "logo": "<?= e($logoUrl) ?>"
     }
   </script>
+  <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"WebSite",
+      "name":"PVSport",
+      "url":"<?= e($baseUrl) ?>",
+      "potentialAction":{
+        "@type":"SearchAction",
+        "target":"<?= e($baseUrl . url('/catalogo?q={search_term_string}')) ?>",
+        "query-input":"required name=search_term_string"
+      }
+    }
+  </script>
+  <?php foreach ($seoSchema as $schemaBloque): ?>
+    <script type="application/ld+json"><?= json_encode($schemaBloque, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?></script>
+  <?php endforeach; ?>
 </head>
 <body class="bg-light public-page">
 <?php if (empty($ocultarNavbarPublico)): ?>

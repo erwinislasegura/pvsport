@@ -304,6 +304,11 @@ $renderIconoRed = static function (string $id): string {
     require __DIR__ . '/partials/catalogo_header.php';
   ?>
 
+  <section class="catalogo-container pt-3 pb-2">
+    <h1 class="h3 fw-bold mb-2">Tienda de tenis de mesa y ping pong en Chile</h1>
+    <p class="text-secondary mb-0">Encuentra paletas, gomas, mesas, pelotas y accesorios con despacho a todo Chile para hogar, colegio, clubes y entrenamiento profesional.</p>
+  </section>
+
   <section class="hero">
     <div class="catalogo-container hero-grid">
       <div class="slider" id="slider">
@@ -502,6 +507,22 @@ $renderIconoRed = static function (string $id): string {
       </section>
     </div>
   </main>
+
+  <section class="catalogo-container pb-4">
+    <h2 class="h5">Categorías SEO destacadas</h2>
+    <div class="d-flex flex-wrap gap-2">
+      <?php foreach ([
+          '/tenis-de-mesa-chile' => 'Tenis de mesa Chile',
+          '/ping-pong-chile' => 'Ping pong Chile',
+          '/paletas-tenis-de-mesa' => 'Paletas tenis de mesa',
+          '/gomas-ping-pong' => 'Gomas ping pong',
+          '/mesa-ping-pong' => 'Mesa ping pong',
+          '/accesorios-tenis-de-mesa' => 'Accesorios tenis de mesa',
+      ] as $rutaSeo => $labelSeo): ?>
+        <a class="btn btn-sm btn-outline-secondary" href="<?= e(url($rutaSeo)) ?>"><?= e($labelSeo) ?></a>
+      <?php endforeach; ?>
+    </div>
+  </section>
 
   <div class="overlay" id="overlay"></div>
   <button class="cart-toggle" id="cartToggle">🛒 Carrito <span class="cart-count" id="cartCount">0</span></button>
