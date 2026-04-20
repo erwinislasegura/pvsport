@@ -304,11 +304,6 @@ $renderIconoRed = static function (string $id): string {
     require __DIR__ . '/partials/catalogo_header.php';
   ?>
 
-  <section class="catalogo-container pt-3 pb-2">
-    <h1 class="h3 fw-bold mb-2">Tienda de tenis de mesa y ping pong en Chile</h1>
-    <p class="text-secondary mb-0">Encuentra paletas, gomas, mesas, pelotas y accesorios con despacho a todo Chile para hogar, colegio, clubes y entrenamiento profesional.</p>
-  </section>
-
   <section class="hero">
     <div class="catalogo-container hero-grid">
       <div class="slider" id="slider">
