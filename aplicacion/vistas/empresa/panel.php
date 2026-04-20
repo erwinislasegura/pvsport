@@ -82,6 +82,10 @@ $formatearFecha = static function (?string $valor): string {
         </div>
         <div class="col-md-3">
           <label class="form-label" for="calcGananciaEsperadaMonto">Ganancia esperada ($)</label>
+          <input type="text" inputmode="numeric" class="form-control" id="calcGananciaEsperadaMonto" placeholder="$ 4.500" autocomplete="off">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="calcGananciaEsperadaMonto">Ganancia esperada ($)</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcGananciaEsperadaMonto" placeholder="Ej: 4500">
         </div>
         <div class="col-md-4">
@@ -284,6 +288,21 @@ $formatearFecha = static function (?string $valor): string {
 
   const calculadoraPrincipal = document.querySelector('[data-calculadora-panel]');
 
+  if (calculadoraPrincipal && !calculadoraPrincipal.querySelector('#calcGananciaEsperadaMonto')) {
+    const filaCampos = calculadoraPrincipal.querySelector('.row.g-3');
+    const columnaFecha = calculadoraPrincipal.querySelector('#calcFechaLlegada')?.closest('[class*="col-"]');
+    const columnaGananciaMonto = document.createElement('div');
+    columnaGananciaMonto.className = 'col-md-3';
+    columnaGananciaMonto.innerHTML = '<label class="form-label" for="calcGananciaEsperadaMonto">Ganancia esperada ($)</label>'
+      + '<input type="text" inputmode="numeric" class="form-control" id="calcGananciaEsperadaMonto" placeholder="$ 4.500" autocomplete="off">';
+
+    if (filaCampos && columnaFecha) {
+      filaCampos.insertBefore(columnaGananciaMonto, columnaFecha);
+    } else if (filaCampos) {
+      filaCampos.appendChild(columnaGananciaMonto);
+    }
+  }
+
   const precioCompraInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcPrecioCompra') : null;
   const margenGananciaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcMargenGanancia') : null;
   const gananciaEsperadaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcGananciaEsperadaMonto') : null;
@@ -297,8 +316,8 @@ $formatearFecha = static function (?string $valor): string {
     const moneyFormatter = new Intl.NumberFormat('es-CL', {
       style: 'currency',
       currency: 'CLP',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     });
 
     const numeroSeguro = (valor) => {
@@ -309,10 +328,20 @@ $formatearFecha = static function (?string $valor): string {
       return numero;
     };
 
+    const formatearPesosChilenos = (valor) => moneyFormatter.format(numeroSeguro(valor));
+
+    const parsearPesosChilenos = (valor) => {
+      const soloDigitos = String(valor || '').replace(/[^\d]/g, '');
+      if (!soloDigitos) {
+        return 0;
+      }
+      return numeroSeguro(Number(soloDigitos));
+    };
+
     const recalcular = () => {
       const precioCompra = numeroSeguro(precioCompraInput.value);
-      const porcentajeGanancia = numeroSeguro(margenGananciaInput.value);
-      const gananciaMontoIngresada = numeroSeguro(gananciaEsperadaInput.value);
+      const porcentajeGanancia = margenGananciaInput ? numeroSeguro(margenGananciaInput.value) : 0;
+      const gananciaMontoIngresada = parsearPesosChilenos(gananciaEsperadaInput.value);
       const ganancia = gananciaMontoIngresada > 0 ? gananciaMontoIngresada : (precioCompra * porcentajeGanancia) / 100;
       const fechaLlegadaValor = fechaLlegadaInput.value;
       const venta = precioCompra + ganancia;
@@ -335,9 +364,20 @@ $formatearFecha = static function (?string $valor): string {
     };
 
     precioCompraInput.addEventListener('input', recalcular);
-    margenGananciaInput.addEventListener('input', recalcular);
-    gananciaEsperadaInput.addEventListener('input', recalcular);
+    if (margenGananciaInput) {
+      margenGananciaInput.addEventListener('input', recalcular);
+    }
+    gananciaEsperadaInput.addEventListener('input', () => {
+      const monto = parsearPesosChilenos(gananciaEsperadaInput.value);
+      gananciaEsperadaInput.value = monto > 0 ? formatearPesosChilenos(monto) : '';
+      recalcular();
+    });
     fechaLlegadaInput.addEventListener('input', recalcular);
+
+    const montoInicial = parsearPesosChilenos(gananciaEsperadaInput.value);
+    if (montoInicial > 0) {
+      gananciaEsperadaInput.value = formatearPesosChilenos(montoInicial);
+    }
 
     recalcular();
   }
