@@ -325,8 +325,8 @@ $renderIconoRed = static function (string $id): string {
         </article>
         <article class="slide" style="background-image:url('<?= e($sliderImagenSecundaria) ?>');">
           <div class="slide-content">
-            <h2><?= e((string) ($sliderCatalogo['titulo_secundario'] ?? 'Implementos de tenis de mesa para hogar, clubes y colegios')) ?></h2>
-            <p><?= e((string) ($sliderCatalogo['bajada_secundaria'] ?? 'Cotiza y compra paletas, gomas, maderas, mesas y accesorios con despacho en Chile.')) ?></p>
+            <h2><?= e((string) ($sliderCatalogo['titulo'] ?? 'Catálogo online moderno y profesional')) ?></h2>
+            <p><?= e((string) ($sliderCatalogo['bajada'] ?? 'Presenta tus productos con una experiencia de compra elegante, rápida y totalmente ordenada para tus clientes.')) ?></p>
             <div class="slide-actions">
               <?php if (!empty($sliderCatalogo['boton_url']) && !empty($sliderCatalogo['boton_texto'])): ?>
                 <a href="<?= e((string) $sliderCatalogo['boton_url']) ?>" class="btn-primary-custom" target="_blank" rel="noopener noreferrer"><?= e((string) $sliderCatalogo['boton_texto']) ?></a>
@@ -509,53 +509,19 @@ $renderIconoRed = static function (string $id): string {
   </main>
 
   <section class="catalogo-container pb-4">
-    <h2 class="h4 mb-3">Compra por categoría</h2>
-    <div class="row g-3 mb-4">
-      <?php foreach ([
-          ['url' => '/paletas-tenis-de-mesa-chile', 'tit' => 'Paletas', 'txt' => 'Opciones recreativas, de entrenamiento y de competencia.'],
-          ['url' => '/gomas-tenis-de-mesa-chile', 'tit' => 'Gomas', 'txt' => 'Elige control, velocidad o mayor efecto según tu juego.'],
-          ['url' => '/maderas-tenis-de-mesa-chile', 'tit' => 'Maderas', 'txt' => 'Base ideal para armados personalizados por nivel.'],
-          ['url' => '/pelotas-tenis-de-mesa-chile', 'tit' => 'Pelotas', 'txt' => 'Modelos para práctica diaria y partidos oficiales.'],
-          ['url' => '/mesas-de-tenis-de-mesa-chile', 'tit' => 'Mesas', 'txt' => 'Soluciones para hogar, colegio, club o academia.'],
-          ['url' => '/accesorios-tenis-de-mesa-chile', 'tit' => 'Accesorios', 'txt' => 'Fundas, limpiadores y equipamiento de apoyo.'],
-      ] as $categoriaSeo): ?>
-        <article class="col-12 col-md-6 col-lg-4">
-          <div class="card h-100 border-0 shadow-sm">
-            <div class="card-body">
-              <h3 class="h5"><?= e($categoriaSeo['tit']) ?></h3>
-              <p class="small text-muted"><?= e($categoriaSeo['txt']) ?></p>
-              <a href="<?= e(url($categoriaSeo['url'])) ?>">Ver <?= e(mb_strtolower($categoriaSeo['tit'])) ?></a>
-            </div>
-          </div>
-        </article>
-      <?php endforeach; ?>
-    </div>
-
-    <h2 class="h4 mb-2">Confianza para comprar online en Chile</h2>
-    <ul>
-      <li>Envíos a regiones y seguimiento de pedido.</li>
-      <li>Asesoría para jugadores principiantes, intermedios y avanzados.</li>
-      <li>Catálogo orientado a entrenamiento, competencia y uso recreativo.</li>
-      <li>Compra online simple con opciones de pago seguras.</li>
-    </ul>
-
-    <h2 class="h4 mb-2">FAQ rápida</h2>
-    <p>¿No sabes qué paleta elegir o qué implementos necesitas para empezar? Revisa la <a href="<?= e(url('/faq-tenis-de-mesa-chile')) ?>">landing FAQ de tenis de mesa en Chile</a>.</p>
-
     <h2 class="h5">Categorías SEO destacadas</h2>
     <div class="d-flex flex-wrap gap-2">
       <?php foreach ([
           '/tenis-de-mesa-chile' => 'Tenis de mesa Chile',
           '/ping-pong-chile' => 'Ping pong Chile',
-          '/paletas-tenis-de-mesa-chile' => 'Paletas tenis de mesa',
-          '/gomas-tenis-de-mesa-chile' => 'Gomas ping pong',
-          '/mesas-de-tenis-de-mesa-chile' => 'Mesas tenis de mesa',
-          '/accesorios-tenis-de-mesa-chile' => 'Accesorios tenis de mesa',
+          '/paletas-tenis-de-mesa' => 'Paletas tenis de mesa',
+          '/gomas-ping-pong' => 'Gomas ping pong',
+          '/mesa-ping-pong' => 'Mesa ping pong',
+          '/accesorios-tenis-de-mesa' => 'Accesorios tenis de mesa',
       ] as $rutaSeo => $labelSeo): ?>
         <a class="btn btn-sm btn-outline-secondary" href="<?= e(url($rutaSeo)) ?>"><?= e($labelSeo) ?></a>
       <?php endforeach; ?>
     </div>
-    <p class="mt-3 mb-0">Somos una tienda especializada en tenis de mesa y ping pong en Chile, con foco en ayudarte a comprar mejor según tu nivel y objetivo de juego.</p>
   </section>
 
   <div class="overlay" id="overlay"></div>

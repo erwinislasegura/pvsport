@@ -23,12 +23,12 @@ if ($contactoTitulo === '') {
     $contactoTitulo = 'Nos pondremos en contacto a la brevedad';
 }
 $contactoSubtitulo = trim((string) ($catalogoTopbar['contacto_form_subtitulo'] ?? ''));
-if ($contactoSubtitulo === '' || stripos($contactoSubtitulo, 'subt') !== false) {
-    $contactoSubtitulo = 'Asesoría comercial especializada';
+if ($contactoSubtitulo === '') {
+    $contactoSubtitulo = 'Enviar un mensaje';
 }
 $contactoBajada = trim((string) ($catalogoTopbar['contacto_form_bajada'] ?? ''));
-if ($contactoBajada === '' || stripos($contactoBajada, 'subt') !== false) {
-    $contactoBajada = 'Te ayudamos a elegir paletas, gomas, mesas y accesorios de tenis de mesa según tu nivel, presupuesto y objetivo de juego en Chile.';
+if ($contactoBajada === '') {
+    $contactoBajada = 'Déjanos tu consulta y te responderemos dentro de nuestro horario de atención.';
 }
 $textoBoton = trim((string) ($catalogoTopbar['contacto_form_texto_boton'] ?? ''));
 if ($textoBoton === '') {
@@ -220,7 +220,7 @@ $renderIconoRed = static function (string $id): string {
     require __DIR__ . '/partials/catalogo_header.php';
   ?>
 
-  <section class="catalogo-container"><div class="contact-hero" style="background-image:url('<?= e($sliderImagen) ?>')"><h1>Contacto y asesoría en tenis de mesa en Chile</h1></div></section>
+  <section class="catalogo-container"><div class="contact-hero" style="background-image:url('<?= e($sliderImagen) ?>')"><h1>Contacto</h1></div></section>
 
   <section class="contact-layout">
     <div class="catalogo-container contact-card">
@@ -228,20 +228,11 @@ $renderIconoRed = static function (string $id): string {
         <div class="contact-subtitle"><?= e($contactoSubtitulo) ?></div>
         <h2 class="contact-title"><?= e($contactoTitulo) ?></h2>
         <p class="contact-desc"><?= nl2br(e($contactoBajada)) ?></p>
-        <ul class="small text-muted mb-0">
-          <li>Ayuda para elegir paletas y gomas por nivel.</li>
-          <li>Cotización de implementos para colegios y clubes.</li>
-          <li>Compra de equipamiento con envío a regiones.</li>
-          <li>Soporte para armar pedidos mayoristas o institucionales.</li>
-        </ul>
         <?php if ($socialesTopbar !== []): ?><div class="contact-follow"><h4>Síguenos:</h4><div class="contact-icons"><?php foreach ($socialesTopbar as $red): ?><a href="<?= e((string) $red['url']) ?>" target="_blank" rel="noopener noreferrer" aria-label="<?= e((string) ($red['label'] ?? 'Red social')) ?>"><?= $renderIconoRed((string) ($red['id'] ?? '')) ?></a><?php endforeach; ?></div></div><?php endif; ?>
       </div>
       <div>
         <form method="POST" action="<?= e($accionFormulario) ?>">
           <?= csrf_campo() ?>
-          <div class="alert alert-light border small mb-3">
-            <strong>Motivos de contacto:</strong> asesoría por nivel, compras online, cotizaciones, implementación para colegios o clubes.
-          </div>
           <div class="form-grid">
             <?php foreach ($camposOrdenados as $campoClave): $cfg = $camposPermitidos[$campoClave] ?? null; if ($cfg === null) continue; $esTextarea = $cfg['type'] === 'textarea'; ?>
               <div class="form-group <?= $esTextarea ? 'full' : '' ?>">
