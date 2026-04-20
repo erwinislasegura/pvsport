@@ -2,8 +2,8 @@
 $catalogoRutas = is_array($catalogoRutas ?? null) ? $catalogoRutas : [];
 $catalogoBaseUrl = (string) ($catalogoRutas['base'] ?? url('/catalogo/' . (int) ($empresa['id'] ?? 0)));
 $catalogoContactoUrl = (string) ($catalogoRutas['contacto'] ?? ($catalogoBaseUrl . '/contacto'));
-$catalogoFaqUrl = (string) ($catalogoRutas['faq'] ?? ($catalogoBaseUrl . '/preguntas-frecuentes'));
 $catalogoNosotrosUrl = (string) ($catalogoRutas['nosotros'] ?? ($catalogoBaseUrl . '/nosotros'));
+$catalogoFaqUrl = (string) ($catalogoRutas['faq'] ?? ($catalogoBaseUrl . '/preguntas-frecuentes'));
 $colorPrimario = trim((string) ($catalogoTopbar['color_primario'] ?? ''));
 if (preg_match('/^#([A-Fa-f0-9]{6})$/', $colorPrimario) !== 1) {
     $colorPrimario = '#FF3131';
@@ -16,33 +16,12 @@ $topbarTexto = trim((string) ($catalogoTopbar['texto'] ?? ''));
 if ($topbarTexto === '') {
     $topbarTexto = 'Envíos a todo el país • Garantía en todos los productos';
 }
-$nosotrosTitulo = trim((string) ($catalogoTopbar['nosotros_titulo'] ?? ''));
-if ($nosotrosTitulo === '') {
-    $nosotrosTitulo = 'Nosotros';
-}
-$nosotrosDescripcion = trim((string) ($catalogoTopbar['nosotros_descripcion'] ?? ''));
-if ($nosotrosDescripcion === '') {
-    $nosotrosDescripcion = trim((string) ($empresa['descripcion'] ?? ''));
-}
-if ($nosotrosDescripcion === '') {
-    $nosotrosDescripcion = 'Somos un equipo enfocado en entregar una experiencia de compra clara, rápida y confiable para cada cliente.';
-}
-$nosotrosImagen = (string) ($catalogoTopbar['nosotros_imagen'] ?? url('/img/placeholder-producto.svg'));
 $sliderImagen = trim((string) ($catalogoTopbar['nosotros_banner_imagen'] ?? ''));
 if ($sliderImagen === '') {
     $sliderImagen = trim((string) ($sliderCatalogo['imagen'] ?? ''));
     if ($sliderImagen === '') {
         $sliderImagen = url('/img/placeholder-producto.svg');
     }
-}
-$descripcionPrincipal = $nosotrosDescripcion;
-$descripcionSecundaria = trim((string) ($catalogoTopbar['nosotros_bloque_texto'] ?? ''));
-$tituloSecundario = trim((string) ($catalogoTopbar['nosotros_bloque_titulo'] ?? ''));
-if ($tituloSecundario === '') {
-    $tituloSecundario = 'Más sobre nosotros';
-}
-if ($descripcionSecundaria === '') {
-    $descripcionSecundaria = $nosotrosDescripcion;
 }
 $socialesTopbar = [
     ['id' => 'facebook', 'url' => trim((string) ($catalogoTopbar['sociales']['facebook'] ?? '')), 'label' => 'Facebook'],
@@ -62,6 +41,36 @@ $renderIconoRed = static function (string $id): string {
         default => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/></svg>',
     };
 };
+$faqs = [
+    ['pregunta' => '¿Qué es el tenis de mesa o ping pong?', 'respuesta' => 'El tenis de mesa, también conocido como ping pong, es un deporte de paleta que se juega en una mesa con red y pelotas de 40 mm, ideal tanto para recreación como nivel profesional.'],
+    ['pregunta' => '¿Qué implementación necesito para jugar tenis de mesa?', 'respuesta' => 'Necesitas paletas (raquetas), pelotas, mesa de ping pong y red. También puedes usar accesorios como fundas, gomas y limpiadores.'],
+    ['pregunta' => '¿Cuál es la diferencia entre ping pong y tenis de mesa?', 'respuesta' => 'El ping pong es más recreativo, mientras que el tenis de mesa es la versión profesional regulada por federaciones.'],
+    ['pregunta' => '¿Cómo elegir una paleta de tenis de mesa adecuada?', 'respuesta' => "Depende de tu nivel: Principiante: paletas prearmadas. Intermedio: paletas con mejor control. Avanzado: maderas + gomas personalizadas."],
+    ['pregunta' => '¿Qué son las gomas de tenis de mesa y para qué sirven?', 'respuesta' => 'Las gomas se adhieren a la paleta y determinan el efecto, velocidad y control de cada golpe.'],
+    ['pregunta' => '¿Qué tipo de pelotas de ping pong debo usar?', 'respuesta' => 'Las pelotas oficiales son de 40+ mm, generalmente de plástico ABS, utilizadas en competencia.'],
+    ['pregunta' => '¿Qué incluye una implementación completa de tenis de mesa?', 'respuesta' => 'Paletas, gomas, pelotas, mesa, red, accesorios y equipamiento deportivo complementario.'],
+    ['pregunta' => '¿Venden implementación de tenis de mesa para principiantes?', 'respuesta' => 'Sí, existen kits de inicio con paletas y pelotas ideales para comenzar.'],
+    ['pregunta' => '¿Qué marcas de tenis de mesa son recomendadas?', 'respuesta' => 'Marcas profesionales incluyen Andro, Gewo, Victas y otras especializadas en alto rendimiento.'],
+    ['pregunta' => '¿Realizan envíos de implementación de tenis de mesa en Chile?', 'respuesta' => 'Sí, puedes comprar online y recibir tus productos en distintas regiones del país.'],
+    ['pregunta' => '¿Cuánto demora el envío de productos de ping pong?', 'respuesta' => 'Generalmente entre 1 a 5 días hábiles dependiendo de la región y disponibilidad.'],
+    ['pregunta' => '¿Puedo comprar paletas y gomas por separado?', 'respuesta' => 'Sí, puedes armar tu paleta personalizada eligiendo madera y gomas según tu estilo de juego.'],
+    ['pregunta' => '¿Qué accesorios de tenis de mesa son importantes?', 'respuesta' => 'Fundas, limpiadores, pegamentos, cintas protectoras, toallas y bolsos deportivos.'],
+    ['pregunta' => '¿Cómo mejorar mi juego de tenis de mesa?', 'respuesta' => 'Practicar técnica, elegir la paleta correcta y usar gomas adecuadas según tu nivel.'],
+    ['pregunta' => '¿Qué diferencia hay entre una paleta profesional y una básica?', 'respuesta' => 'Las profesionales permiten mayor control, velocidad y efecto gracias a mejores materiales.'],
+    ['pregunta' => '¿Se pueden usar estas implementaciones para uso recreativo?', 'respuesta' => 'Sí, el tenis de mesa es ideal tanto para uso recreativo como competitivo.'],
+    ['pregunta' => '¿Qué tamaño tiene una mesa de tenis de mesa?', 'respuesta' => 'Mide aproximadamente 2,74 m de largo por 1,525 m de ancho.'],
+    ['pregunta' => '¿Ofrecen asesoría para elegir productos de ping pong?', 'respuesta' => 'Sí, puedes recibir recomendaciones según tu nivel y tipo de juego.'],
+    ['pregunta' => '¿Es mejor comprar una paleta armada o personalizada?', 'respuesta' => 'Armada: fácil y rápida. Personalizada: mejor rendimiento.'],
+    ['pregunta' => '¿Dónde comprar implementación de tenis de mesa en Chile?', 'respuesta' => 'En tiendas especializadas online como PVSPORT, donde encuentras paletas, gomas, pelotas y accesorios en un solo lugar.'],
+];
+$faqSchema = ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => []];
+foreach ($faqs as $faq) {
+    $faqSchema['mainEntity'][] = [
+        '@type' => 'Question',
+        'name' => $faq['pregunta'],
+        'acceptedAnswer' => ['@type' => 'Answer', 'text' => $faq['respuesta']],
+    ];
+}
 ?>
 <style>
   :root{--primary:<?= e($colorPrimario) ?>;--accent:<?= e($colorAcento) ?>;--bg:#eef2f7;--border:#dbe3ee;--muted:#64748b;--text:#0f172a;--shadow:0 10px 25px rgba(15,23,42,.08)}
@@ -90,23 +99,26 @@ $renderIconoRed = static function (string $id): string {
   .catalogo-header.is-mobile-open .catalogo-mobile-toggle span:nth-child(1){transform:translateY(6px) rotate(45deg)}
   .catalogo-header.is-mobile-open .catalogo-mobile-toggle span:nth-child(2){opacity:0}
   .catalogo-header.is-mobile-open .catalogo-mobile-toggle span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-  .hero-nosotros{margin-top:12px;border-radius:20px;min-height:190px;display:flex;align-items:flex-end;padding:24px;background-size:cover;background-position:center;position:relative;overflow:hidden;box-shadow:0 18px 34px rgba(15,23,42,.16)}
-  .hero-nosotros::before{content:"";position:absolute;inset:0;background:linear-gradient(95deg,color-mix(in srgb,var(--primary) 82%,#000 18%),rgba(15,23,42,.35))}
-  .hero-nosotros::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 28%,color-mix(in srgb,var(--accent) 35%,transparent),transparent 40%)}
-  .hero-nosotros h1{position:relative;color:#fff;font-size:34px;font-weight:700;letter-spacing:.2px;margin:0}
-  .nosotros-wrap{padding:28px 0 46px}
-  .nosotros-card{padding:22px;background:#fff;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:34px;align-items:center}
-  .nosotros-card img{width:100%;max-height:500px;object-fit:cover;border-radius:14px;background:#f8fafc;box-shadow:0 12px 22px rgba(15,23,42,.12)}
-  .nosotros-texto h2{font-size:24px;line-height:1.2;color:var(--primary);font-weight:800;margin:0 0 12px}
-  .nosotros-texto p{color:var(--muted);line-height:1.78;font-size:16px;margin:0;text-align:justify;text-wrap:pretty}
-  .nosotros-sociales{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
-  .nosotros-sociales a{width:38px;height:38px;border:1px solid var(--border);border-radius:999px;display:inline-flex;align-items:center;justify-content:center;color:var(--primary);background:linear-gradient(180deg,#fff,#f8fafc);text-decoration:none;transition:all .2s ease}
-  .nosotros-sociales a svg{width:17px;height:17px;fill:currentColor}
-  .nosotros-sociales a:hover{transform:translateY(-2px);background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 10px 16px rgba(70,50,168,.22)}
-  .nosotros-extra{margin-top:16px;padding:24px;background:#fff;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);position:relative;overflow:hidden}
-  .nosotros-extra::before{content:"";position:absolute;top:0;left:0;height:3px;width:100%;background:linear-gradient(90deg,var(--primary),var(--accent))}
-  .nosotros-extra h3{font-size:22px;color:var(--primary);margin:0 0 10px;font-weight:800}
-  .nosotros-extra p{color:var(--muted);line-height:1.78;font-size:16px;margin:0;max-width:1100px;text-align:justify;text-wrap:pretty}
+
+  .hero-faq{margin-top:12px;border-radius:20px;min-height:190px;display:flex;align-items:flex-end;padding:24px;background-size:cover;background-position:center;position:relative;overflow:hidden;box-shadow:0 18px 34px rgba(15,23,42,.16)}
+  .hero-faq::before{content:"";position:absolute;inset:0;background:linear-gradient(95deg,color-mix(in srgb,var(--primary) 82%,#000 18%),rgba(15,23,42,.35))}
+  .hero-faq::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 28%,color-mix(in srgb,var(--accent) 35%,transparent),transparent 40%)}
+  .hero-faq h1{position:relative;color:#fff;font-size:34px;font-weight:700;margin:0}
+  .faq-wrap{padding:28px 0 46px}
+  .faq-card{padding:22px;background:#fff;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}
+  .faq-intro h2{font-size:24px;line-height:1.2;color:var(--primary);font-weight:800;margin:0 0 10px}
+  .faq-intro p{color:var(--muted);line-height:1.7;font-size:16px;margin:0 0 18px;text-align:justify;text-wrap:pretty}
+  .faq-item{border:1px solid var(--border);border-radius:14px;background:#fff;overflow:hidden}
+  .faq-item + .faq-item{margin-top:10px}
+  .faq-item details summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:700;color:var(--text);display:flex;justify-content:space-between;gap:10px}
+  .faq-item details summary::-webkit-details-marker{display:none}
+  .faq-item details summary::after{content:'+';color:var(--accent);font-size:18px;line-height:1}
+  .faq-item details[open] summary::after{content:'−'}
+  .faq-item__answer{padding:0 16px 14px;color:var(--muted);line-height:1.7;font-size:15px;text-align:justify;text-wrap:pretty}
+  .faq-keywords{margin-top:16px;padding:14px 16px;border-radius:14px;background:color-mix(in srgb,var(--accent) 8%,#fff);border:1px solid color-mix(in srgb,var(--accent) 20%,#fff)}
+  .faq-keywords strong{color:var(--text)}
+  .faq-keywords ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
+
   .footer{position:relative;color:#fff;padding:30px 0 20px;margin-top:20px;background:linear-gradient(120deg,var(--primary),var(--accent))}
   .footer-content{display:grid;grid-template-columns:1.1fr .9fr 1fr .9fr;gap:22px}
   .footer-col h4{font-size:18px;font-weight:600;margin:0 0 10px}
@@ -128,15 +140,14 @@ $renderIconoRed = static function (string $id): string {
   .footer-bottom__content a{color:#3f2a84;font-weight:700;text-decoration:none}
   .footer-bottom__content a:hover{text-decoration:underline}
   body.public-page > footer.border-top.bg-white.mt-5{display:none}
+
   @media (max-width:1100px){
-    .catalogo-navbar,.nosotros-card,.footer-content{grid-template-columns:1fr}
+    .catalogo-navbar,.footer-content{grid-template-columns:1fr}
     .catalogo-navbar{gap:12px}
     .search-box{width:100%}
-    .nosotros-card{gap:20px}
-    .hero-nosotros{min-height:170px}
-    .hero-nosotros h1{font-size:28px;font-weight:600}
-    .nosotros-texto h2{font-size:22px}
-    .nosotros-extra h3{font-size:20px}
+    .hero-faq{min-height:170px}
+    .hero-faq h1{font-size:28px;font-weight:600}
+    .faq-intro h2{font-size:22px}
   }
   @media (max-width:720px){
     .catalogo-topbar__content{flex-direction:column;align-items:flex-start}
@@ -155,11 +166,11 @@ $renderIconoRed = static function (string $id): string {
     .menu-link{flex:1;text-align:center;padding:8px 8px;border:1px solid color-mix(in srgb,var(--primary) 25%,#fff);border-radius:10px;background:#fff;color:var(--primary);font-size:13px;font-weight:500}
     .catalogo-navbar .btn-primary-custom{width:100%;justify-content:center;font-size:14px;font-weight:600}
     .catalogo-header.is-mobile-open .catalogo-navbar > .btn-primary-custom{width:100%}
-    .hero-nosotros{min-height:150px;padding:18px}
-    .hero-nosotros h1{font-size:22px;font-weight:600}
-    .nosotros-wrap{padding:18px 0 30px}
-    .nosotros-card,.nosotros-extra{padding:16px}
-    .nosotros-texto p,.nosotros-extra p{font-size:15px;line-height:1.65;text-align:left}
+    .hero-faq{min-height:150px;padding:18px}
+    .hero-faq h1{font-size:22px;font-weight:600}
+    .faq-wrap{padding:18px 0 30px}
+    .faq-card{padding:16px}
+    .faq-intro p,.faq-item__answer{text-align:left}
     .footer-content{grid-template-columns:1fr}
     .footer-bottom__content{flex-direction:column;align-items:flex-start}
   }
@@ -175,29 +186,34 @@ $renderIconoRed = static function (string $id): string {
     require __DIR__ . '/partials/catalogo_header.php';
   ?>
   <section class="catalogo-container">
-    <div class="hero-nosotros" style="background-image:url('<?= e($sliderImagen) ?>')">
-      <h1><?= e($nosotrosTitulo) ?></h1>
+    <div class="hero-faq" style="background-image:url('<?= e($sliderImagen) ?>')">
+      <h1>Preguntas frecuentes</h1>
     </div>
   </section>
-  <section class="nosotros-wrap">
+  <section class="faq-wrap">
     <div class="catalogo-container">
-      <article class="nosotros-card">
-        <img src="<?= e($nosotrosImagen) ?>" alt="Foto de nosotros">
-        <div class="nosotros-texto">
-          <h2><?= e($nosotrosTitulo) ?></h2>
-          <p><?= nl2br(e($descripcionPrincipal)) ?></p>
-          <?php if ($socialesTopbar !== []): ?>
-            <div class="nosotros-sociales">
-              <?php foreach ($socialesTopbar as $red): ?>
-                <a href="<?= e((string) $red['url']) ?>" target="_blank" rel="noopener noreferrer" aria-label="<?= e((string) ($red['label'] ?? 'Red social')) ?>"><?= $renderIconoRed((string) ($red['id'] ?? '')) ?></a>
-              <?php endforeach; ?>
-            </div>
-          <?php endif; ?>
+      <article class="faq-card">
+        <div class="faq-intro">
+          <h2>Tenis de mesa en Chile: dudas frecuentes</h2>
+          <p>Resuelve rápidamente preguntas sobre implementación tenis de mesa, compra de paletas de ping pong y recomendaciones por nivel de juego.</p>
         </div>
-      </article>
-      <article class="nosotros-extra">
-        <h3><?= e($tituloSecundario) ?></h3>
-        <p><?= nl2br(e($descripcionSecundaria)) ?></p>
+        <?php foreach ($faqs as $faq): ?>
+          <div class="faq-item">
+            <details>
+              <summary><?= e($faq['pregunta']) ?></summary>
+              <div class="faq-item__answer"><?= e($faq['respuesta']) ?></div>
+            </details>
+          </div>
+        <?php endforeach; ?>
+
+        <div class="faq-keywords">
+          <strong>Guía rápida SEO</strong>
+          <ul>
+            <li>Tenis de mesa en Chile</li>
+            <li>Implementación tenis de mesa</li>
+            <li>Comprar paletas ping pong</li>
+          </ul>
+        </div>
       </article>
     </div>
   </section>
@@ -207,3 +223,4 @@ $renderIconoRed = static function (string $id): string {
     require __DIR__ . '/partials/catalogo_footer.php';
   ?>
 </div>
+<script type="application/ld+json"><?= json_encode($faqSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?></script>

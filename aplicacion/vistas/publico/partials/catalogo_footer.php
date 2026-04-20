@@ -1,6 +1,7 @@
 <?php
 $catalogoFooterInicioUrl = (string) ($catalogoFooterInicioUrl ?? '#catalogoProductos');
 $catalogoFooterProductosUrl = (string) ($catalogoFooterProductosUrl ?? '#catalogoProductos');
+$catalogoFaqUrl = (string) ($catalogoFaqUrl ?? ($catalogoBaseUrl . '/preguntas-frecuentes'));
 $renderIconoContactoFooter = static function (string $tipo): string {
     return match ($tipo) {
         'telefono' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a13 13 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2.2 2A16 16 0 0 1 3 6.2 2 2 0 0 1 5 4z"/></svg>',
@@ -21,6 +22,7 @@ $renderIconoContactoFooter = static function (string $tipo): string {
         <a href="<?= e($catalogoFooterInicioUrl) ?>">Inicio</a>
         <a href="<?= e($catalogoNosotrosUrl) ?>">Nosotros</a>
         <a href="<?= e($catalogoContactoUrl) ?>">Contacto</a>
+        <a href="<?= e($catalogoFaqUrl) ?>">Preguntas frecuentes</a>
         <a href="<?= e($catalogoFooterProductosUrl) ?>" id="showFeaturedBtnTop">Productos destacados</a>
         <a href="<?= e($catalogoFooterProductosUrl) ?>" id="showOffersBtnTop">Ofertas</a>
         <a href="<?= e(url('/iniciar-sesion')) ?>">Iniciar sesión</a>
