@@ -5,11 +5,11 @@ $catalogoContactoUrl = (string) ($catalogoRutas['contacto'] ?? ($catalogoBaseUrl
 $catalogoNosotrosUrl = (string) ($catalogoRutas['nosotros'] ?? ($catalogoBaseUrl . '/nosotros'));
 $colorPrimario = trim((string) ($catalogoTopbar['color_primario'] ?? ''));
 if (preg_match('/^#([A-Fa-f0-9]{6})$/', $colorPrimario) !== 1) {
-    $colorPrimario = '#4632A8';
+    $colorPrimario = '#FF3131';
 }
 $colorAcento = trim((string) ($catalogoTopbar['color_acento'] ?? ''));
 if (preg_match('/^#([A-Fa-f0-9]{6})$/', $colorAcento) !== 1) {
-    $colorAcento = '#5415B0';
+    $colorAcento = '#7B2CBF';
 }
 $topbarTexto = trim((string) ($catalogoTopbar['texto'] ?? ''));
 if ($topbarTexto === '') {

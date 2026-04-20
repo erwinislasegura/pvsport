@@ -66,7 +66,7 @@
 <script>
 (() => {
   try {
-    localStorage.removeItem('vextra_catalogo_carrito_<?= (int) ($empresa['id'] ?? 0) ?>');
+    localStorage.removeItem('pvsport_catalogo_carrito_<?= (int) ($empresa['id'] ?? 0) ?>');
   } catch (e) {}
 })();
 </script>

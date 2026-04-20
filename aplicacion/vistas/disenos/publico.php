@@ -1,34 +1,21 @@
 <!doctype html>
 <html lang="es">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0GM9XBKGP"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    window.gtag = gtag;
+    gtag('js', new Date());
 
-    const cargarAnalytics = () => {
-      if (window.__analyticsLoaded) return;
-      window.__analyticsLoaded = true;
-      const script = document.createElement('script');
-      script.src = 'https://www.googletagmanager.com/gtag/js?id=G-X41LED0NXW';
-      script.async = true;
-      document.head.appendChild(script);
-      gtag('js', new Date());
-      gtag('config', 'G-X41LED0NXW');
-    };
-
-    if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(cargarAnalytics, { timeout: 2000 });
-    } else {
-      window.addEventListener('load', cargarAnalytics, { once: true });
-    }
+    gtag('config', 'G-Z0GM9XBKGP');
   </script>
   <?php
-    $metaTitle = (string) ($meta_title ?? 'Vextra | Sistema de cotizaciones para empresas');
-    $metaDescription = (string) ($meta_description ?? 'Vextra es un sistema de cotizaciones para empresas que ayuda a vender más con procesos comerciales ordenados, seguimiento de oportunidades y planes escalables.');
+    $metaTitle = (string) ($meta_title ?? 'PVSport | Sistema de cotizaciones para empresas');
+    $metaDescription = (string) ($meta_description ?? 'PVSport es un sistema de cotizaciones para empresas que ayuda a vender más con procesos comerciales ordenados, seguimiento de oportunidades y planes escalables.');
     $metaKeywords = (string) ($meta_keywords ?? 'sistema de cotizaciones, software de cotizaciones, cotizaciones para empresas, control de cotizaciones, planes de software comercial');
     $metaUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . ($_SERVER['REQUEST_URI'] ?? '/');
-    $logoUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . url('/img/logo/logo_vextra.png');
+    $logoUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . url('/img/logo/pvsport-logo-red.svg');
     $baseUrl = (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost');
     $faviconUrl = $baseUrl . url('/img/logo/icono.png');
   ?>
@@ -45,11 +32,11 @@
   <meta property="og:title" content="<?= e($metaTitle) ?>">
   <meta property="og:description" content="<?= e($metaDescription) ?>">
   <meta property="og:url" content="<?= e($metaUrl) ?>">
-  <meta property="og:site_name" content="Vextra">
+  <meta property="og:site_name" content="PVSport">
   <meta property="og:locale" content="es_CL">
   <meta property="og:image" content="<?= e($logoUrl) ?>">
   <meta property="og:image:secure_url" content="<?= e($logoUrl) ?>">
-  <meta property="og:image:alt" content="Logo Vextra">
+  <meta property="og:image:alt" content="Logo PVSport">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="<?= e($metaTitle) ?>">
   <meta name="twitter:description" content="<?= e($metaDescription) ?>">
@@ -62,11 +49,11 @@
   <link rel="apple-touch-icon" sizes="180x180" href="<?= e($faviconUrl) ?>">
   <link rel="manifest" href="<?= e($baseUrl . url('/site.webmanifest')) ?>">
   <script>
-    window.__vextraDeferredInstallPrompt = null;
+    window.__pvsportDeferredInstallPrompt = null;
     window.addEventListener('beforeinstallprompt', function (event) {
       event.preventDefault();
-      window.__vextraDeferredInstallPrompt = event;
-      window.dispatchEvent(new CustomEvent('vextra:install-ready'));
+      window.__pvsportDeferredInstallPrompt = event;
+      window.dispatchEvent(new CustomEvent('pvsport:install-ready'));
     });
   </script>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -79,7 +66,7 @@
     {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": "Vextra",
+      "name": "PVSport",
       "url": "<?= e($baseUrl) ?>",
       "logo": "<?= e($logoUrl) ?>"
     }

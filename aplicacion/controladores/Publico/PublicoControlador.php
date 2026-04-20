@@ -232,7 +232,7 @@ class PublicoControlador extends Controlador
             . '<p><strong>Mensaje:</strong><br>' . nl2br(htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8')) . '</p>';
 
         (new ServicioCorreo())->enviar(
-            'contacto@vextra.cl',
+            'contacto@pvsport.cl',
             'Nuevo lead desde landing',
             'landing_contacto',
             [
@@ -547,10 +547,10 @@ class PublicoControlador extends Controlador
 
         $correoDestino = trim((string) ($catalogoTopbar['contacto_form_correo_destino'] ?? ''));
         if ($correoDestino === '' || filter_var($correoDestino, FILTER_VALIDATE_EMAIL) === false) {
-            $correoDestino = trim((string) ($empresa['correo'] ?? 'contacto@vextra.cl'));
+            $correoDestino = trim((string) ($empresa['correo'] ?? 'contacto@pvsport.cl'));
         }
         if (filter_var($correoDestino, FILTER_VALIDATE_EMAIL) === false) {
-            $correoDestino = 'contacto@vextra.cl';
+            $correoDestino = 'contacto@pvsport.cl';
         }
 
         $etiquetas = [
@@ -856,7 +856,7 @@ class PublicoControlador extends Controlador
         try {
             $respuesta = (new FlowApiService())->postParaEmpresa($empresaId, 'payment/create', [
                 'commerceOrder' => $commerceOrder,
-                'subject' => 'Compra catálogo ' . (string) ($empresa['nombre_comercial'] ?? 'Vextra'),
+                'subject' => 'Compra catálogo ' . (string) ($empresa['nombre_comercial'] ?? 'PVSport'),
                 'currency' => 'CLP',
                 'amount' => (int) round($total),
                 'email' => $correo,
@@ -1170,7 +1170,7 @@ class PublicoControlador extends Controlador
 
         (new ServicioCorreo())->enviarNotificacionCliente(
             $correo,
-            'Resumen de compra catálogo - ' . (string) ($empresa['nombre_comercial'] ?? 'Vextra'),
+            'Resumen de compra catálogo - ' . (string) ($empresa['nombre_comercial'] ?? 'PVSport'),
             'catalogo_checkout_resumen',
             ['html' => $html]
         );
@@ -1711,55 +1711,55 @@ class PublicoControlador extends Controlador
     {
         $seo = [
             'inicio' => [
-                'meta_title' => 'Sistema de cotizaciones, punto de venta e inventario en Chile | Vextra',
-                'meta_description' => 'Vextra es un software de cotización online para empresas en Chile: sistema de cotizaciones, sistema punto de venta y sistema de inventario para vender más con control real.',
+                'meta_title' => 'Sistema de cotizaciones, punto de venta e inventario en Chile | PVSport',
+                'meta_description' => 'PVSport es un software de cotización online para empresas en Chile: sistema de cotizaciones, sistema punto de venta y sistema de inventario para vender más con control real.',
                 'meta_keywords' => 'sistema de cotizaciones, software de cotización online, sistema punto de venta, sistema de inventario, software para empresas chile, sistema de ventas con inventario',
             ],
             'caracteristicas' => [
-                'meta_title' => 'Características del sistema de cotizaciones | Vextra',
-                'meta_description' => 'Descubre las funcionalidades de Vextra: cotizaciones, clientes, productos, seguimiento comercial, POS e inventario.',
-                'meta_keywords' => 'características vextra, funcionalidades software cotizaciones, gestión comercial',
+                'meta_title' => 'Características del sistema de cotizaciones | PVSport',
+                'meta_description' => 'Descubre las funcionalidades de PVSport: cotizaciones, clientes, productos, seguimiento comercial, POS e inventario.',
+                'meta_keywords' => 'características pvsport, funcionalidades software cotizaciones, gestión comercial',
             ],
             'planes' => [
-                'meta_title' => 'Planes y precios del sistema | Vextra',
-                'meta_description' => 'Compara planes y precios de Vextra, con modalidad mensual o anual, para implementar tu sistema de cotizaciones empresarial.',
-                'meta_keywords' => 'planes vextra, precios software cotizaciones, plan mensual, plan anual',
+                'meta_title' => 'Planes y precios del sistema | PVSport',
+                'meta_description' => 'Compara planes y precios de PVSport, con modalidad mensual o anual, para implementar tu sistema de cotizaciones empresarial.',
+                'meta_keywords' => 'planes pvsport, precios software cotizaciones, plan mensual, plan anual',
             ],
             'contacto' => [
-                'meta_title' => 'Contacto comercial | Vextra',
-                'meta_description' => 'Contacta al equipo de Vextra para resolver dudas de implementación, planes, soporte y necesidades de tu operación comercial.',
-                'meta_keywords' => 'contacto vextra, asesoría comercial, soporte clientes',
+                'meta_title' => 'Contacto comercial | PVSport',
+                'meta_description' => 'Contacta al equipo de PVSport para resolver dudas de implementación, planes, soporte y necesidades de tu operación comercial.',
+                'meta_keywords' => 'contacto pvsport, asesoría comercial, soporte clientes',
             ],
             'faq' => [
-                'meta_title' => 'Preguntas frecuentes (FAQ) | Vextra',
-                'meta_description' => 'Resuelve dudas frecuentes sobre el software de cotizaciones Vextra: funcionamiento, planes, implementación y uso diario.',
-                'meta_keywords' => 'faq vextra, preguntas frecuentes software cotizaciones',
+                'meta_title' => 'Preguntas frecuentes (FAQ) | PVSport',
+                'meta_description' => 'Resuelve dudas frecuentes sobre el software de cotizaciones PVSport: funcionamiento, planes, implementación y uso diario.',
+                'meta_keywords' => 'faq pvsport, preguntas frecuentes software cotizaciones',
             ],
             'contratar' => [
-                'meta_title' => 'Contratar plan | Vextra',
-                'meta_description' => 'Inicia la contratación de tu plan Vextra y comienza a gestionar cotizaciones y ventas con una plataforma profesional.',
-                'meta_keywords' => 'contratar vextra, activar plan, software cotizaciones',
+                'meta_title' => 'Contratar plan | PVSport',
+                'meta_description' => 'Inicia la contratación de tu plan PVSport y comienza a gestionar cotizaciones y ventas con una plataforma profesional.',
+                'meta_keywords' => 'contratar pvsport, activar plan, software cotizaciones',
             ],
             'cotizacion_publica' => [
-                'meta_title' => 'Cotización en línea | Vextra',
+                'meta_title' => 'Cotización en línea | PVSport',
                 'meta_description' => 'Revisa el detalle de tu cotización en línea, incluyendo productos, condiciones comerciales y estado de aprobación.',
                 'meta_keywords' => 'cotización online, seguimiento cotización, aprobación cliente',
             ],
             'orden_compra_publica' => [
-                'meta_title' => 'Orden de compra en línea | Vextra',
+                'meta_title' => 'Orden de compra en línea | PVSport',
                 'meta_description' => 'Revisa el detalle de una orden de compra en línea y descarga su versión PDF.',
                 'meta_keywords' => 'orden de compra online, proveedor, documento compra',
             ],
             'catalogo_publico' => [
-                'meta_title' => 'Catálogo en línea | Vextra',
+                'meta_title' => 'Catálogo en línea | PVSport',
                 'meta_description' => 'Explora productos y servicios, usa filtros por categoría y compra con checkout Flow.',
                 'meta_keywords' => 'catalogo en linea, tienda b2b, checkout flow, carrito de compra',
             ],
         ];
 
         return $seo[$pagina] ?? [
-            'meta_title' => 'Vextra | Sistema de cotizaciones para empresas',
-            'meta_description' => 'Vextra es un sistema de cotizaciones para empresas que ayuda a vender más con procesos comerciales ordenados.',
+            'meta_title' => 'PVSport | Sistema de cotizaciones para empresas',
+            'meta_description' => 'PVSport es un sistema de cotizaciones para empresas que ayuda a vender más con procesos comerciales ordenados.',
             'meta_keywords' => 'sistema de cotizaciones, software de cotizaciones, cotizaciones para empresas',
         ];
     }

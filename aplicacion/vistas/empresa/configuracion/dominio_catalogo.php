@@ -4,14 +4,14 @@
   <div class="fw-semibold mb-1">Configura tu dominio para mostrar el catálogo con tu marca</div>
   <ul class="mb-0 small ps-3">
     <li>Ingresa solo el host, sin <code>https://</code> ni rutas (ej: <code>catalogo.tuempresa.com</code>).</li>
-    <li>Debes apuntar DNS (A o CNAME) al servidor de Vextra.</li>
+    <li>Debes apuntar DNS (A o CNAME) al servidor de PVSport.</li>
     <li>El certificado SSL del dominio debe estar activo para usar HTTPS.</li>
   </ul>
 </div>
 
 <div class="alert alert-secondary mb-3">
   <div class="fw-semibold mb-1">DocumentRoot recomendado para cPanel / hosting</div>
-  <div class="small mb-1">El dominio del cliente debe apuntar al mismo directorio público de Vextra.</div>
+  <div class="small mb-1">El dominio del cliente debe apuntar al mismo directorio público de PVSport.</div>
   <code><?= e($documentRootActual !== '' ? $documentRootActual : '(no disponible en este entorno)') ?></code>
 </div>
 

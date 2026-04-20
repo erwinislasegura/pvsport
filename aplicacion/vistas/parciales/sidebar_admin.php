@@ -2,9 +2,9 @@
 use Aplicacion\Modelos\SoporteChat;
 $rutaActual = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $chatsSoporteNuevosAdmin = (new SoporteChat())->contarNoLeidosAdmin();
-$logoAdmin = '/img/logo/logo_vextra.png';
-if (is_file(__DIR__ . '/../../../img/logo/logo-vextra-blanco.png')) {
-    $logoAdmin = '/img/logo/logo-vextra-blanco.png';
+$logoAdmin = '/img/logo/pvsport-logo-red.svg';
+if (is_file(__DIR__ . '/../../../img/logo/logo-pvsport-blanco.png')) {
+    $logoAdmin = '/img/logo/logo-pvsport-blanco.png';
 }
 $items = [
     'General' => [
@@ -38,7 +38,7 @@ $items = [
 ?>
 <aside class="sidebar sidebar-app sidebar-admin p-3 border-end" id="sidebarPrincipal">
   <a href="<?= e(url('/admin/panel')) ?>" class="sidebar-admin__brand mb-3 text-decoration-none">
-    <img src="<?= e(url($logoAdmin)) ?>" alt="Vextra" class="sidebar-admin__logo" width="146" height="72">
+    <img src="<?= e(url($logoAdmin)) ?>" alt="PVSport" class="sidebar-admin__logo" width="146" height="72">
     <div class="sidebar-app__titulo">Centro de control SaaS</div>
   </a>
   <nav class="nav flex-column small gap-2">

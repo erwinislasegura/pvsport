@@ -1072,13 +1072,13 @@ class InventarioControlador extends Controlador
         $config = require __DIR__ . '/../../../configuracion/aplicacion.php';
         $base = rtrim((string) ($config['url'] ?? ''), '/');
         if ($base !== '' && preg_match('/localhost|127\\.0\\.0\\.1/i', $base)) {
-            $base = 'https://vextra.cl';
+            $base = 'https://pvsport.cl';
         }
         if ($base === '') {
             $esHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
             $host = (string) ($_SERVER['HTTP_HOST'] ?? 'localhost:8000');
             if ($host === '' || preg_match('/localhost|127\\.0\\.0\\.1/i', $host)) {
-                $host = 'vextra.cl';
+                $host = 'pvsport.cl';
                 $esHttps = true;
             }
             $base = ($esHttps ? 'https://' : 'http://') . $host;

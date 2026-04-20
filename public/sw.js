@@ -1,11 +1,11 @@
-const CACHE_NAME = 'vextra-shell-v3';
+const CACHE_NAME = 'pvsport-shell-v3';
 const APP_SHELL = [
   '/',
   '/iniciar-sesion',
   '/site.webmanifest',
   '/assets/css/app.css',
   '/assets/js/app.js',
-  '/img/logo/logo_vextra.png',
+  '/img/logo/pvsport-logo-red.svg',
   '/img/logo/icono.png',
 ];
 

@@ -51,6 +51,6 @@ $renderIconoContactoFooter = static function (string $tipo): string {
 <div class="footer-bottom">
   <div class="catalogo-container footer-bottom__content">
     <span>© <?= date('Y') ?> • Todos los derechos reservados</span>
-    <span>Catálogo construido con tecnología de <a href="https://vextra.cl" target="_blank" rel="noopener noreferrer">Vextra.cl</a></span>
+    <span>Catálogo construido con tecnología de <a href="https://pvsport.cl" target="_blank" rel="noopener noreferrer">PVSport.cl</a></span>
   </div>
 </div>

@@ -48,11 +48,11 @@ $cotizacionesCapturas = [
 
 $faqSeo = [
     [
-        'pregunta' => '¿Qué es Vextra y para qué tipo de empresas en Chile sirve?',
-        'respuesta' => 'Vextra es un software para empresas Chile que integra sistema de cotizaciones, sistema punto de venta e inventario en una sola plataforma. Es útil para pymes comerciales, distribuidoras, retail especializado, servicios técnicos y negocios que necesitan control de ventas con stock en tiempo real.',
+        'pregunta' => '¿Qué es PVSport y para qué tipo de empresas en Chile sirve?',
+        'respuesta' => 'PVSport es un software para empresas Chile que integra sistema de cotizaciones, sistema punto de venta e inventario en una sola plataforma. Es útil para pymes comerciales, distribuidoras, retail especializado, servicios técnicos y negocios que necesitan control de ventas con stock en tiempo real.',
     ],
     [
-        'pregunta' => '¿Vextra funciona como software de cotización online?',
+        'pregunta' => '¿PVSport funciona como software de cotización online?',
         'respuesta' => 'Sí. Puedes crear presupuestos online, enviarlos de forma profesional, hacer seguimiento por etapa y convertirlos en venta sin salir de la plataforma. Eso permite responder más rápido y subir la tasa de cierre.',
     ],
     [
@@ -64,7 +64,7 @@ $faqSeo = [
         'respuesta' => 'Sí. El sistema de inventario permite ver entradas, salidas, ajustes, recepción de compras y alertas de stock crítico. Esto mejora la reposición y protege márgenes.',
     ],
     [
-        'pregunta' => '¿Cómo ayuda Vextra a aumentar ventas?',
+        'pregunta' => '¿Cómo ayuda PVSport a aumentar ventas?',
         'respuesta' => 'Al centralizar cotizar, vender y controlar stock en una misma herramienta, el equipo comercial reduce tiempos de respuesta, evita errores de precio y mejora el seguimiento de oportunidades, lo que impacta directamente en conversiones.',
     ],
     [
@@ -76,7 +76,7 @@ $faqSeo = [
         'respuesta' => 'Sí. Incluye seguimiento de oportunidades, control por vendedor, historial por cliente y herramientas para ordenar el pipeline comercial y mejorar cierre de negocios.',
     ],
     [
-        'pregunta' => '¿Cómo puedo comenzar a usar Vextra en mi empresa?',
+        'pregunta' => '¿Cómo puedo comenzar a usar PVSport en mi empresa?',
         'respuesta' => 'Puedes comenzar con una prueba gratis de 30 días y luego contratar el plan que mejor se ajuste a tu operación, cantidad de usuarios y volumen de ventas.',
     ],
     [
@@ -84,7 +84,7 @@ $faqSeo = [
         'respuesta' => 'Normalmente el plan intermedio es el más conveniente para empresas en crecimiento, porque equilibra funcionalidades comerciales, control de stock y costo mensual.',
     ],
     [
-        'pregunta' => '¿Se puede implementar Vextra sin frenar la operación diaria?',
+        'pregunta' => '¿Se puede implementar PVSport sin frenar la operación diaria?',
         'respuesta' => 'Sí. La implementación está pensada por etapas, con acompañamiento comercial y técnico, para migrar procesos sin detener ventas ni atención de clientes.',
     ],
 ];
@@ -108,8 +108,8 @@ $faqSchema = [
 <script type="application/ld+json"><?= json_encode([
     '@context' => 'https://schema.org',
     '@type' => 'Product',
-    'name' => 'Vextra',
-    'brand' => ['@type' => 'Brand', 'name' => 'Vextra'],
+    'name' => 'PVSport',
+    'brand' => ['@type' => 'Brand', 'name' => 'PVSport'],
     'description' => 'Sistema de cotizaciones, punto de venta e inventario para empresas en Chile.',
     'category' => 'SoftwareApplication',
     'url' => url('/'),
@@ -127,7 +127,7 @@ $faqSchema = [
                     <span class="small fw-semibold text-primary">Empieza hoy y el primer cobro se realiza al terminar tu prueba.</span>
                 </div>
                 <h1 class="display-6 fw-bold mb-3">Cotiza, vende y controla con catálogo en línea y pago en línea en un solo flujo</h1>
-                <p class="lead text-secondary">Vextra integra cotizaciones, punto de venta e inventario, además de catálogo en línea y pago online, para que tu empresa acelere cierres y mantenga una operación ordenada.</p>
+                <p class="lead text-secondary">PVSport integra cotizaciones, punto de venta e inventario, además de catálogo en línea y pago online, para que tu empresa acelere cierres y mantenga una operación ordenada.</p>
                 <div class="d-flex flex-wrap gap-2">
                     <a href="<?= e(url('/registro')) ?>" class="btn btn-primary">Comenzar prueba gratis de 30 días</a>
                     <a href="#planes" class="btn btn-outline-primary">Contratar plan</a>
@@ -156,7 +156,7 @@ $faqSchema = [
         <div class="text-center mb-4">
             <span class="badge bg-primary-subtle text-primary-emphasis mb-2">Todo en un lugar para que tu empresa crezca</span>
             <h2 class="h3 mb-2">Gestiona cotizaciones, POS, inventario, catálogo en línea y pago en línea en una sola plataforma</h2>
-            <p class="text-secondary mb-0">Vextra integra las funciones más importantes para vender más: cotización online, punto de venta, control de inventario, catálogo en línea y cobro digital en un solo flujo comercial.</p>
+            <p class="text-secondary mb-0">PVSport integra las funciones más importantes para vender más: cotización online, punto de venta, control de inventario, catálogo en línea y cobro digital en un solo flujo comercial.</p>
         </div>
         <div class="row g-3">
             <article class="col-12 col-md-6 col-lg-4">
@@ -211,7 +211,7 @@ $faqSchema = [
         <div class="row g-4 align-items-center">
             <div class="col-12 col-lg-6">
                 <h2 class="h3 mb-3">Solución completa: sistema de cotización, POS y gestión de inventario</h2>
-                <p>Cuando una empresa usa herramientas separadas para cotizar, facturar y mover stock, aparecen errores de precio, ventas sin disponibilidad y retrasos de respuesta. Vextra resuelve ese problema con una plataforma unificada de gestión comercial. El vendedor cotiza con datos actuales, el área administrativa valida márgenes y el equipo operativo ejecuta con trazabilidad.</p>
+                <p>Cuando una empresa usa herramientas separadas para cotizar, facturar y mover stock, aparecen errores de precio, ventas sin disponibilidad y retrasos de respuesta. PVSport resuelve ese problema con una plataforma unificada de gestión comercial. El vendedor cotiza con datos actuales, el área administrativa valida márgenes y el equipo operativo ejecuta con trazabilidad.</p>
                 <p class="mb-0">Este enfoque permite pasar de una operación reactiva a una gestión profesional: cada presupuesto tiene contexto, cada venta impacta inventario y cada decisión se toma con información real del negocio.</p>
             </div>
             <div class="col-12 col-lg-6">
@@ -342,10 +342,10 @@ $faqSchema = [
     <div class="container">
         <div class="text-center mb-4">
             <h2 class="h3 mb-2">Flujo de implementación corporativo por etapas</h2>
-            <p class="text-secondary mb-1">Diseñamos un proceso claro para que tu equipo adopte Vextra sin frenar la operación diaria.</p>
+            <p class="text-secondary mb-1">Diseñamos un proceso claro para que tu equipo adopte PVSport sin frenar la operación diaria.</p>
             <p class="small text-secondary mb-0">Cada etapa agrega control comercial, orden operativo y visibilidad ejecutiva para tomar decisiones con datos reales.</p>
         </div>
-        <div class="landing-timeline landing-timeline--5" aria-label="Flujo de implementación de Vextra">
+        <div class="landing-timeline landing-timeline--5" aria-label="Flujo de implementación de PVSport">
             <article class="landing-timeline__item">
                 <span class="landing-timeline__icon" aria-hidden="true">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" focusable="false"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm0 3.3a1.4 1.4 0 1 0 0 2.8 1.4 1.4 0 0 0 0-2.8Zm-1.2 5v8h2.4v-8h-2.4Z"/></svg>
@@ -409,7 +409,7 @@ $faqSchema = [
             <div class="col-lg-6">
                 <h2 class="h3 mb-3">Resumen ejecutivo para evaluar la solución</h2>
                 <p class="mb-2">Si hoy tu empresa cotiza en una herramienta, vende en otra y controla stock en planillas, lo normal es perder tiempo, cometer errores y tener menos visibilidad comercial.</p>
-                <p class="mb-0">Con Vextra puedes integrar cotizaciones, punto de venta e inventario en un flujo único. Si quieres el detalle completo por módulo, lo encontrarás en las secciones especializadas del sitio.</p>
+                <p class="mb-0">Con PVSport puedes integrar cotizaciones, punto de venta e inventario en un flujo único. Si quieres el detalle completo por módulo, lo encontrarás en las secciones especializadas del sitio.</p>
             </div>
             <div class="col-lg-6">
                 <div class="accordion" id="acordeonResumenInicio">

@@ -38,7 +38,7 @@ $formatearFecha = static function (?string $valor): string {
     <div class="alert alert-info border-0 shadow-sm d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-3" role="alert">
       <div>
         <div class="fw-bold mb-1">🎁 Periodo de prueba activado</div>
-        <div class="mb-1">Te quedan <strong><?= $diasRestantesPlan ?> día(s)</strong> para disfrutar Vextra con acceso completo.</div>
+        <div class="mb-1">Te quedan <strong><?= $diasRestantesPlan ?> día(s)</strong> para disfrutar PVSport con acceso completo.</div>
         <div class="small text-secondary">Activa tu plan hoy y evita interrupciones para tu equipo comercial.</div>
       </div>
       <form method="POST" action="<?= e(url('/app/panel/iniciar-pago-trial')) ?>" class="d-grid">

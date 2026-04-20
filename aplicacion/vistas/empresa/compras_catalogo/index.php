@@ -293,7 +293,7 @@ $frasesEtiqueta = $frasesPersonalizadas !== [] ? $frasesPersonalizadas : ($frase
 
       <div class="shipping-label-footer">
         <span class="shipping-label-motto">“<?= e($fraseEtiqueta) ?>”</span>
-        <div class="shipping-label-signature">Creado con tecnología Vextra.cl</div>
+        <div class="shipping-label-signature">Creado con tecnología PVSport.cl</div>
       </div>
     </div>
   </template>

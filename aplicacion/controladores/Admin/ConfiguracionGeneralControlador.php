@@ -55,7 +55,7 @@ class ConfiguracionGeneralControlador extends Controlador
         }
 
         $data = [
-            'nombre_plataforma' => trim((string) ($_POST['nombre_plataforma'] ?? 'Vextra')),
+            'nombre_plataforma' => trim((string) ($_POST['nombre_plataforma'] ?? 'PVSport')),
             'correo_soporte' => $correoSoporte,
             'moneda_defecto' => $moneda,
             'zona_horaria' => trim((string) ($_POST['zona_horaria'] ?? 'America/Santiago')),
@@ -63,12 +63,12 @@ class ConfiguracionGeneralControlador extends Controlador
             'recaptcha_habilitado' => isset($_POST['recaptcha_habilitado']) ? '1' : '0',
             'recaptcha_site_key' => trim((string) ($_POST['recaptcha_site_key'] ?? '')),
             'recaptcha_secret_key' => trim((string) ($_POST['recaptcha_secret_key'] ?? '')),
-            'smtp_notif_host' => trim((string) ($_POST['smtp_notif_host'] ?? 'mail.vextra.cl')),
+            'smtp_notif_host' => trim((string) ($_POST['smtp_notif_host'] ?? 'mail.pvsport.cl')),
             'smtp_notif_port' => trim((string) ($_POST['smtp_notif_port'] ?? '465')),
-            'smtp_notif_usuario' => trim((string) ($_POST['smtp_notif_usuario'] ?? 'noresponder@vextra.cl')),
+            'smtp_notif_usuario' => trim((string) ($_POST['smtp_notif_usuario'] ?? 'noresponder@pvsport.cl')),
             'smtp_notif_encryption' => trim((string) ($_POST['smtp_notif_encryption'] ?? 'ssl')),
-            'smtp_notif_remitente_correo' => trim((string) ($_POST['smtp_notif_remitente_correo'] ?? 'noresponder@vextra.cl')),
-            'smtp_notif_remitente_nombre' => trim((string) ($_POST['smtp_notif_remitente_nombre'] ?? 'Vextra Notificaciones')),
+            'smtp_notif_remitente_correo' => trim((string) ($_POST['smtp_notif_remitente_correo'] ?? 'noresponder@pvsport.cl')),
+            'smtp_notif_remitente_nombre' => trim((string) ($_POST['smtp_notif_remitente_nombre'] ?? 'PVSport Notificaciones')),
             'imap_notif_port' => trim((string) ($_POST['imap_notif_port'] ?? '993')),
             'pop3_notif_port' => trim((string) ($_POST['pop3_notif_port'] ?? '995')),
         ];
@@ -90,7 +90,7 @@ class ConfiguracionGeneralControlador extends Controlador
     {
         $configDb = (new Configuracion())->obtenerMapa(self::CLAVES_CONFIG);
         return [
-            'nombre_plataforma' => (string) ($configDb['nombre_plataforma'] ?? 'Vextra'),
+            'nombre_plataforma' => (string) ($configDb['nombre_plataforma'] ?? 'PVSport'),
             'correo_soporte' => (string) ($configDb['correo_soporte'] ?? ''),
             'moneda_defecto' => (string) ($configDb['moneda_defecto'] ?? 'CLP'),
             'zona_horaria' => (string) ($configDb['zona_horaria'] ?? 'America/Santiago'),
@@ -98,13 +98,13 @@ class ConfiguracionGeneralControlador extends Controlador
             'recaptcha_habilitado' => (string) ($configDb['recaptcha_habilitado'] ?? '0'),
             'recaptcha_site_key' => (string) ($configDb['recaptcha_site_key'] ?? ''),
             'recaptcha_secret_key' => (string) ($configDb['recaptcha_secret_key'] ?? ''),
-            'smtp_notif_host' => (string) ($configDb['smtp_notif_host'] ?? 'mail.vextra.cl'),
+            'smtp_notif_host' => (string) ($configDb['smtp_notif_host'] ?? 'mail.pvsport.cl'),
             'smtp_notif_port' => (string) ($configDb['smtp_notif_port'] ?? '465'),
-            'smtp_notif_usuario' => (string) ($configDb['smtp_notif_usuario'] ?? 'noresponder@vextra.cl'),
+            'smtp_notif_usuario' => (string) ($configDb['smtp_notif_usuario'] ?? 'noresponder@pvsport.cl'),
             'smtp_notif_password' => (string) ($configDb['smtp_notif_password'] ?? 'Tb*Kz{ny{[_E!%,Q'),
             'smtp_notif_encryption' => (string) ($configDb['smtp_notif_encryption'] ?? 'ssl'),
-            'smtp_notif_remitente_correo' => (string) ($configDb['smtp_notif_remitente_correo'] ?? 'noresponder@vextra.cl'),
-            'smtp_notif_remitente_nombre' => (string) ($configDb['smtp_notif_remitente_nombre'] ?? 'Vextra Notificaciones'),
+            'smtp_notif_remitente_correo' => (string) ($configDb['smtp_notif_remitente_correo'] ?? 'noresponder@pvsport.cl'),
+            'smtp_notif_remitente_nombre' => (string) ($configDb['smtp_notif_remitente_nombre'] ?? 'PVSport Notificaciones'),
             'imap_notif_port' => (string) ($configDb['imap_notif_port'] ?? '993'),
             'pop3_notif_port' => (string) ($configDb['pop3_notif_port'] ?? '995'),
         ];

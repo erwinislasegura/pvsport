@@ -47,13 +47,13 @@ $registrarErrorLocal = static function (string $mensaje): void {
 
     $ok = @file_put_contents($rutaLog, $linea, FILE_APPEND);
     if ($ok === false) {
-        @file_put_contents(sys_get_temp_dir() . '/vextra_app.log', $linea, FILE_APPEND);
+        @file_put_contents(sys_get_temp_dir() . '/pvsport_app.log', $linea, FILE_APPEND);
     }
 };
 
 set_exception_handler(static function (Throwable $e) use ($debug, $registrarErrorLocal): void {
     $ref = uniqid('ERR-', true);
-    $mensaje = '[' . $ref . '] [Vextra][Uncaught] ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine();
+    $mensaje = '[' . $ref . '] [PVSport][Uncaught] ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine();
     error_log($mensaje);
     $registrarErrorLocal($mensaje);
     http_response_code(500);
@@ -82,7 +82,7 @@ register_shutdown_function(static function () use ($debug, $registrarErrorLocal)
     }
 
     $ref = uniqid('ERR-', true);
-    $mensaje = '[' . $ref . '] [Vextra][Fatal] ' . $error['message'] . ' @ ' . $error['file'] . ':' . $error['line'];
+    $mensaje = '[' . $ref . '] [PVSport][Fatal] ' . $error['message'] . ' @ ' . $error['file'] . ':' . $error['line'];
     error_log($mensaje);
     $registrarErrorLocal($mensaje);
     http_response_code(500);

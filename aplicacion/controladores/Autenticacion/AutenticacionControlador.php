@@ -15,9 +15,9 @@ class AutenticacionControlador extends Controlador
     public function mostrarLogin(): void
     {
         $this->vista('autenticacion/login', [
-            'meta_title' => 'Iniciar sesión | Vextra',
-            'meta_description' => 'Accede a Vextra para gestionar cotizaciones, clientes, inventario y seguimiento comercial en tu empresa.',
-            'meta_keywords' => 'iniciar sesión vextra, acceso plataforma comercial, software cotizaciones login',
+            'meta_title' => 'Iniciar sesión | PVSport',
+            'meta_description' => 'Accede a PVSport para gestionar cotizaciones, clientes, inventario y seguimiento comercial en tu empresa.',
+            'meta_keywords' => 'iniciar sesión pvsport, acceso plataforma comercial, software cotizaciones login',
         ], 'publico');
     }
 
@@ -87,9 +87,9 @@ class AutenticacionControlador extends Controlador
             'tipoCobroPreseleccionado' => $tipoCobroPreseleccionado,
             'datosFormulario' => $datosFormulario,
             'requiereRecaptcha' => true,
-            'meta_title' => 'Registro de empresa | Vextra',
-            'meta_description' => 'Crea tu cuenta empresarial en Vextra y elige un plan mensual o anual para ordenar tus cotizaciones y ventas.',
-            'meta_keywords' => 'registro vextra, crear cuenta empresarial, planes de cotizaciones',
+            'meta_title' => 'Registro de empresa | PVSport',
+            'meta_description' => 'Crea tu cuenta empresarial en PVSport y elige un plan mensual o anual para ordenar tus cotizaciones y ventas.',
+            'meta_keywords' => 'registro pvsport, crear cuenta empresarial, planes de cotizaciones',
         ], 'publico');
     }
 
@@ -217,7 +217,7 @@ class AutenticacionControlador extends Controlador
             $this->redirigir('/registro');
         }
 
-        flash('success', '¡Bienvenido a Vextra! Tu empresa se creó correctamente y ya tienes 30 días de prueba gratis. Te avisaremos antes de que finalice tu prueba.');
+        flash('success', '¡Bienvenido a PVSport! Tu empresa se creó correctamente y ya tienes 30 días de prueba gratis. Te avisaremos antes de que finalice tu prueba.');
         $this->redirigir('/iniciar-sesion');
     }
 

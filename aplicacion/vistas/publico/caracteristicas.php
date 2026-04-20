@@ -167,7 +167,7 @@ $capturaConFallbackInline = static function (array $archivos) use ($capturaConFa
                     labels: ['Velocidad de cotización', 'Control comercial', 'Seguimiento', 'Productividad', 'Calidad de propuesta'],
                     datasets: [
                         { label: 'Sin sistema', data: [38, 35, 31, 40, 42], backgroundColor: 'rgba(143,160,181,.2)', borderColor: '#8fa0b5', pointBackgroundColor: '#8fa0b5' },
-                        { label: 'Con Vextra', data: [86, 89, 88, 91, 87], backgroundColor: 'rgba(70,50,168,.18)', borderColor: '#4632a8', pointBackgroundColor: '#4632a8' }
+                        { label: 'Con PVSport', data: [86, 89, 88, 91, 87], backgroundColor: 'rgba(70,50,168,.18)', borderColor: '#4632a8', pointBackgroundColor: '#4632a8' }
                     ]
                 },
                 options: {
@@ -299,7 +299,7 @@ $capturaConFallbackInline = static function (array $archivos) use ($capturaConFa
             <h2 class="h4 mb-2">Cómo se usa en la práctica</h2>
             <p class="text-secondary mb-0">Una vista rápida del flujo real para pasar de cotizar con desorden a vender con continuidad comercial.</p>
         </div>
-        <div class="landing-timeline landing-timeline--5" aria-label="Línea de tiempo de uso práctico de Vextra">
+        <div class="landing-timeline landing-timeline--5" aria-label="Línea de tiempo de uso práctico de PVSport">
             <article class="landing-timeline__item">
                 <span class="landing-timeline__icon" aria-hidden="true">👥</span>
                 <div class="landing-timeline__card">

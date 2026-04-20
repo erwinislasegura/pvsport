@@ -383,7 +383,7 @@ class CotizacionesControlador extends Controlador
             : trim((string) ($empresa['correo'] ?? ''));
         $remitenteNombre = trim((string) ($empresa['imap_remitente_nombre'] ?? '')) !== ''
             ? trim((string) ($empresa['imap_remitente_nombre'] ?? ''))
-            : trim((string) ($empresa['nombre_comercial'] ?? $empresa['razon_social'] ?? 'Vextra'));
+            : trim((string) ($empresa['nombre_comercial'] ?? $empresa['razon_social'] ?? 'PVSport'));
         $urlPublica = $this->construirUrlPublica($tokenPublico);
         $urlPdf = $this->construirUrlInterna('/app/cotizaciones/pdf/' . $id);
         $pdfContenido = $this->generarPdfCotizacion($cotizacion, $empresa ?: []);
@@ -420,7 +420,7 @@ class CotizacionesControlador extends Controlador
 
         $asuntoCorreo = $asuntoPlantilla !== ''
             ? $this->renderizarPlantillaCorreo($asuntoPlantilla, $variablesPlantilla)
-            : ('Cotización ' . ($cotizacion['numero'] ?? ('#' . $id)) . ' - ' . ($empresa['nombre_comercial'] ?? 'Vextra'));
+            : ('Cotización ' . ($cotizacion['numero'] ?? ('#' . $id)) . ' - ' . ($empresa['nombre_comercial'] ?? 'PVSport'));
 
         $mensajeHtml = $htmlPlantilla !== ''
             ? $this->renderizarPlantillaCorreo($htmlPlantilla, $variablesPlantilla)
@@ -760,7 +760,7 @@ HTML;
         $config = require __DIR__ . '/../../../configuracion/aplicacion.php';
         $base = rtrim((string) ($config['url'] ?? ''), '/');
         if ($base === '' || preg_match('/localhost|127\\.0\\.0\\.1/i', $base)) {
-            $base = 'https://vextra.cl';
+            $base = 'https://pvsport.cl';
         }
         if ($base === '') {
             $esHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
@@ -780,7 +780,7 @@ HTML;
         $config = require __DIR__ . '/../../../configuracion/aplicacion.php';
         $base = rtrim((string) ($config['url'] ?? ''), '/');
         if ($base === '' || preg_match('/localhost|127\\.0\\.0\\.1/i', $base)) {
-            $base = 'https://vextra.cl';
+            $base = 'https://pvsport.cl';
         }
         $base = preg_replace('#/(public|app)$#i', '', $base) ?? $base;
         return rtrim($base, '/') . '/' . ltrim($ruta, '/');

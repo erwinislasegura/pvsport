@@ -32,7 +32,7 @@ class BaseDatos
         } catch (PDOException $e) {
             $debug = filter_var((string) ($_ENV['APP_DEBUG'] ?? 'false'), FILTER_VALIDATE_BOOLEAN);
             $ref = uniqid('DB-', true);
-            $mensaje = '[' . $ref . '] [Vextra][DB] ' . $e->getMessage();
+            $mensaje = '[' . $ref . '] [PVSport][DB] ' . $e->getMessage();
             error_log($mensaje);
 
             $linea = '[' . date('Y-m-d H:i:s') . '] ' . $mensaje . PHP_EOL;

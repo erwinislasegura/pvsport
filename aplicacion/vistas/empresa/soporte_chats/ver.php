@@ -11,7 +11,7 @@
       <?php foreach ($mensajes as $mensaje): ?>
         <?php $esAdmin = ($mensaje['remitente_tipo'] ?? '') === 'admin'; ?>
         <div class="p-2 rounded border <?= $esAdmin ? 'bg-light border-success-subtle' : 'border-primary-subtle' ?>">
-          <div class="small fw-semibold <?= $esAdmin ? 'text-success' : 'text-primary' ?>"><?= $esAdmin ? 'Soporte Vextra' : 'Mi empresa' ?></div>
+          <div class="small fw-semibold <?= $esAdmin ? 'text-success' : 'text-primary' ?>"><?= $esAdmin ? 'Soporte PVSport' : 'Mi empresa' ?></div>
           <div><?= nl2br(e($mensaje['mensaje'] ?? '')) ?></div>
           <div class="small text-muted mt-1"><?= e((string) ($mensaje['fecha_creacion'] ?? '')) ?></div>
         </div>
