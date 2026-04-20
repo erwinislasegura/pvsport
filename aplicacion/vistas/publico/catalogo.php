@@ -503,22 +503,6 @@ $renderIconoRed = static function (string $id): string {
     </div>
   </main>
 
-  <section class="catalogo-container pb-4">
-    <h2 class="h5">Categorías SEO destacadas</h2>
-    <div class="d-flex flex-wrap gap-2">
-      <?php foreach ([
-          '/tenis-de-mesa-chile' => 'Tenis de mesa Chile',
-          '/ping-pong-chile' => 'Ping pong Chile',
-          '/paletas-tenis-de-mesa' => 'Paletas tenis de mesa',
-          '/gomas-ping-pong' => 'Gomas ping pong',
-          '/mesa-ping-pong' => 'Mesa ping pong',
-          '/accesorios-tenis-de-mesa' => 'Accesorios tenis de mesa',
-      ] as $rutaSeo => $labelSeo): ?>
-        <a class="btn btn-sm btn-outline-secondary" href="<?= e(url($rutaSeo)) ?>"><?= e($labelSeo) ?></a>
-      <?php endforeach; ?>
-    </div>
-  </section>
-
   <div class="overlay" id="overlay"></div>
   <button class="cart-toggle" id="cartToggle">🛒 Carrito <span class="cart-count" id="cartCount">0</span></button>
 
