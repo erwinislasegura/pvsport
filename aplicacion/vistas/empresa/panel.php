@@ -68,7 +68,7 @@ $formatearFecha = static function (?string $valor): string {
     </div>
   </div>
 
-  <div class="card card-dashboard mb-3">
+  <div class="card card-dashboard mb-3" data-calculadora-panel>
     <div class="card-header">Calculadora rápida de precio y llegada</div>
     <div class="card-body">
       <div class="row g-3">
@@ -336,6 +336,15 @@ $formatearFecha = static function (?string $valor): string {
           item.classList.toggle('d-none', modulo !== 'all' && itemModulo !== modulo);
         });
       });
+    });
+  }
+
+  const calculadorasPanel = document.querySelectorAll('[data-calculadora-panel]');
+  if (calculadorasPanel.length > 1) {
+    calculadorasPanel.forEach((bloque, index) => {
+      if (index > 0) {
+        bloque.remove();
+      }
     });
   }
 
