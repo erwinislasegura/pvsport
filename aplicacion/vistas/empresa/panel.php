@@ -72,19 +72,15 @@ $formatearFecha = static function (?string $valor): string {
     <div class="card-header">Calculadora rápida de precio y llegada</div>
     <div class="card-body">
       <div class="row g-3">
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label class="form-label" for="calcPrecioCompra">Precio de compra</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
         </div>
         <div class="col-md-4">
-          <label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($) [NUEVO]</label>
-          <input type="number" min="0" step="0.01" class="form-control border-primary" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
+          <label class="form-label" for="calcGananciaEsperadaMonto">Ganancia esperada ($)</label>
+          <input type="number" min="0" step="0.01" class="form-control" id="calcGananciaEsperadaMonto" placeholder="Ej: 4500">
         </div>
-        <div class="col-md-3">
-          <label class="form-label" for="calcMontoGananciaEsperada">Ingresa ganancia esperada ($)</label>
-          <input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
-        </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label class="form-label" for="calcFechaLlegada">Fecha de llegada</label>
           <input type="date" class="form-control" id="calcFechaLlegada">
         </div>
@@ -282,73 +278,10 @@ $formatearFecha = static function (?string $valor): string {
     });
   }
 
-  const buscarTarjetaCalculadora = () => {
-    const porData = document.querySelector('[data-calculadora-panel]');
-    if (porData) {
-      return porData;
-    }
-    const tarjetas = document.querySelectorAll('.card.card-dashboard');
-    for (const tarjeta of tarjetas) {
-      const header = tarjeta.querySelector('.card-header');
-      if (header && header.textContent.trim().toLowerCase() === 'calculadora rápida de precio y llegada') {
-        return tarjeta;
-      }
-    }
-    return null;
-  };
-
-  const calculadoraPrincipal = buscarTarjetaCalculadora();
-  if (calculadoraPrincipal) {
-    calculadoraPrincipal.querySelectorAll('label.form-label').forEach((label) => {
-      if (label.textContent.trim().toLowerCase() === 'ganancia deseada (%)') {
-        const forId = label.getAttribute('for');
-        const input = forId ? calculadoraPrincipal.querySelector('#' + forId) : null;
-        label.textContent = 'Monto ganancia esperada ($) [NUEVO]';
-        label.setAttribute('for', 'calcMontoGananciaEsperada');
-        if (input) {
-          input.id = 'calcMontoGananciaEsperada';
-          input.placeholder = 'Ej: 4500';
-          input.classList.add('border-primary');
-        }
-      }
-    });
-  }
-
-  if (calculadoraPrincipal && !calculadoraPrincipal.querySelector('#calcMontoGananciaEsperada')) {
-    const filaCampos = calculadoraPrincipal.querySelector('.row.g-3');
-    const campoMargen = calculadoraPrincipal.querySelector('#calcMargenGanancia');
-    const columnaMargen = campoMargen ? campoMargen.closest('[class*="col-"]') : null;
-    if (campoMargen && columnaMargen) {
-      const labelMargen = calculadoraPrincipal.querySelector('label[for="calcMargenGanancia"]');
-      campoMargen.id = 'calcMontoGananciaEsperada';
-      campoMargen.placeholder = 'Ej: 4500';
-      if (labelMargen) {
-        labelMargen.setAttribute('for', 'calcMontoGananciaEsperada');
-        labelMargen.textContent = 'Monto ganancia esperada ($) [NUEVO]';
-      }
-    } else if (filaCampos) {
-      const columnaGanancia = document.createElement('div');
-      columnaGanancia.className = 'col-md-4';
-      columnaGanancia.innerHTML = '<label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($) [NUEVO]</label>'
-        + '<input type="number" min="0" step="0.01" class="form-control border-primary" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">';
-      filaCampos.appendChild(columnaGanancia);
-    }
-  }
-  if (calculadoraPrincipal) {
-    const formula = calculadoraPrincipal.querySelector('p.small.text-muted');
-    if (formula && formula.textContent.includes('Precio de venta = precio de compra + (% ganancia).')) {
-      formula.textContent = 'Fórmulas: días de viaje = fecha llegada - hoy. Días de reserva = días de viaje + 4. Valor de venta = valor compra + ganancia esperada.';
-    }
-    const tituloGanancia = calculadoraPrincipal.querySelector('#calcGananciaMonto')?.closest('.panel-inline-stat')?.querySelector('.small.text-muted');
-    if (tituloGanancia && tituloGanancia.textContent.trim().toLowerCase() === 'ganancia esperada') {
-      tituloGanancia.textContent = 'Ganancia calculada';
-    }
-  }
+  const calculadoraPrincipal = document.querySelector('[data-calculadora-panel]');
 
   const precioCompraInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcPrecioCompra') : null;
-  const gananciaEsperadaInput = calculadoraPrincipal
-    ? (calculadoraPrincipal.querySelector('#calcMontoGananciaEsperada') || calculadoraPrincipal.querySelector('#calcMargenGanancia'))
-    : null;
+  const gananciaEsperadaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcGananciaEsperadaMonto') : null;
   const fechaLlegadaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcFechaLlegada') : null;
   const diasDemoraEl = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcDiasDemora') : null;
   const diasPrecaucionEl = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcDiasPrecaucion') : null;
