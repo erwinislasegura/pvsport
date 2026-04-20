@@ -77,12 +77,12 @@ $formatearFecha = static function (?string $valor): string {
           <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
         </div>
         <div class="col-md-3">
-          <label class="form-label" for="calcMargenGanancia">Ganancia deseada (%)</label>
+          <label class="form-label" for="calcMargenGanancia">Margen de ganancia (%)</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcMargenGanancia" placeholder="Ej: 30">
         </div>
         <div class="col-md-3">
-          <label class="form-label" for="calcGananciaEsperada">Ganancia esperada ($)</label>
-          <input type="number" min="0" step="0.01" class="form-control" id="calcGananciaEsperada" placeholder="Ej: 4500">
+          <label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($)</label>
+          <input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
         </div>
         <div class="col-md-3">
           <label class="form-label" for="calcFechaLlegada">Fecha de llegada</label>
@@ -93,7 +93,7 @@ $formatearFecha = static function (?string $valor): string {
         <div class="col-sm-6 col-xl-3"><div class="panel-inline-stat"><div class="small text-muted">Días que demora</div><div class="h5 mb-0" id="calcDiasDemora">—</div></div></div>
         <div class="col-sm-6 col-xl-3"><div class="panel-inline-stat"><div class="small text-muted">Días + 4 (precaución)</div><div class="h5 mb-0 text-success" id="calcDiasPrecaucion">—</div></div></div>
         <div class="col-sm-6 col-xl-3"><div class="panel-inline-stat"><div class="small text-muted">Precio de venta sugerido</div><div class="h5 mb-0 text-success" id="calcPrecioVenta">$0.00</div></div></div>
-        <div class="col-sm-6 col-xl-3"><div class="panel-inline-stat"><div class="small text-muted">Ganancia esperada</div><div class="h5 mb-0" id="calcGananciaMonto">$0.00</div></div></div>
+        <div class="col-sm-6 col-xl-3"><div class="panel-inline-stat"><div class="small text-muted">Ganancia calculada</div><div class="h5 mb-0" id="calcGananciaMonto">$0.00</div></div></div>
       </div>
       <p class="small text-muted mt-3 mb-0">Fórmulas: días de viaje = fecha llegada - hoy. Días de reserva = días de viaje + 4. Precio de venta = precio de compra + ganancia esperada (o % ganancia).</p>
     </div>
@@ -185,12 +185,12 @@ $formatearFecha = static function (?string $valor): string {
           <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
         </div>
         <div class="col-md-3">
-          <label class="form-label" for="calcMargenGanancia">Ganancia deseada (%)</label>
+          <label class="form-label" for="calcMargenGanancia">Margen de ganancia (%)</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcMargenGanancia" placeholder="Ej: 30">
         </div>
         <div class="col-md-3">
-          <label class="form-label" for="calcGananciaEsperada">Ganancia esperada ($)</label>
-          <input type="number" min="0" step="0.01" class="form-control" id="calcGananciaEsperada" placeholder="Ej: 4500">
+          <label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($)</label>
+          <input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
         </div>
         <div class="col-md-3">
           <label class="form-label" for="calcFechaLlegada">Fecha de llegada</label>
@@ -219,7 +219,7 @@ $formatearFecha = static function (?string $valor): string {
         </div>
         <div class="col-sm-6 col-xl-3">
           <div class="panel-inline-stat">
-            <div class="small text-muted">Ganancia esperada</div>
+            <div class="small text-muted">Ganancia calculada</div>
             <div class="h5 mb-0" id="calcGananciaMonto">$0.00</div>
           </div>
         </div>
@@ -337,7 +337,9 @@ $formatearFecha = static function (?string $valor): string {
   const calculadoraPrincipal = document.querySelector('[data-calculadora-panel]');
   const precioCompraInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcPrecioCompra') : null;
   const margenGananciaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcMargenGanancia') : null;
-  const gananciaEsperadaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcGananciaEsperada') : null;
+  const gananciaEsperadaInput = calculadoraPrincipal
+    ? (calculadoraPrincipal.querySelector('#calcMontoGananciaEsperada') || calculadoraPrincipal.querySelector('#calcGananciaEsperada'))
+    : null;
   const fechaLlegadaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcFechaLlegada') : null;
   const diasDemoraEl = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcDiasDemora') : null;
   const diasPrecaucionEl = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcDiasPrecaucion') : null;
