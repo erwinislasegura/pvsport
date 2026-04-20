@@ -72,7 +72,7 @@ $formatearFecha = static function (?string $valor): string {
     <div class="card-header">Calculadora rápida de precio y llegada</div>
     <div class="card-body">
       <div class="row g-3">
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label class="form-label" for="calcPrecioCompra">Precio de compra</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
         </div>
@@ -80,7 +80,11 @@ $formatearFecha = static function (?string $valor): string {
           <label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($)</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
+          <label class="form-label" for="calcMontoGananciaEsperada">Ingresa ganancia esperada ($)</label>
+          <input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
+        </div>
+        <div class="col-md-3">
           <label class="form-label" for="calcFechaLlegada">Fecha de llegada</label>
           <input type="date" class="form-control" id="calcFechaLlegada">
         </div>
