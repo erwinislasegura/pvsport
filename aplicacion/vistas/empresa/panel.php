@@ -335,6 +335,20 @@ $formatearFecha = static function (?string $valor): string {
   }
 
   const calculadoraPrincipal = document.querySelector('[data-calculadora-panel]');
+  if (calculadoraPrincipal && !calculadoraPrincipal.querySelector('#calcMontoGananciaEsperada')) {
+    const filaCampos = calculadoraPrincipal.querySelector('.row.g-3');
+    const campoMargen = calculadoraPrincipal.querySelector('#calcMargenGanancia');
+    const columnaMargen = campoMargen ? campoMargen.closest('[class*="col-"]') : null;
+    if (filaCampos && columnaMargen) {
+      const claseColumna = columnaMargen.className.includes('col-md-') ? columnaMargen.className : 'col-md-3';
+      const columnaGanancia = document.createElement('div');
+      columnaGanancia.className = claseColumna;
+      columnaGanancia.innerHTML = '<label class="form-label" for="calcMontoGananciaEsperada">Ingresa ganancia esperada ($)</label>'
+        + '<input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">';
+      columnaMargen.insertAdjacentElement('afterend', columnaGanancia);
+    }
+  }
+
   const precioCompraInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcPrecioCompra') : null;
   const margenGananciaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcMargenGanancia') : null;
   const gananciaEsperadaInput = calculadoraPrincipal
