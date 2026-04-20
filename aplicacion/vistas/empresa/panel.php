@@ -274,6 +274,12 @@ $formatearFecha = static function (?string $valor): string {
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
 (() => {
+  const bloquesCalculadora = Array.from(document.querySelectorAll('[data-calculadora-panel]'));
+  const bloqueCalculadoraPrincipal = bloquesCalculadora[0] || null;
+  if (bloquesCalculadora.length > 1) {
+    bloquesCalculadora.slice(1).forEach((bloqueDuplicado) => bloqueDuplicado.remove());
+  }
+
   const labels = <?= json_encode($meses) ?>;
   const seriesConteo = <?= json_encode($conteosMes) ?>;
   const seriesMontos = <?= json_encode($montosMes) ?>;
@@ -339,24 +345,23 @@ $formatearFecha = static function (?string $valor): string {
     });
   }
 
-  const calculadorasPanel = document.querySelectorAll('[data-calculadora-panel]');
-  if (calculadorasPanel.length > 1) {
-    calculadorasPanel.forEach((bloque, index) => {
-      if (index > 0) {
-        bloque.remove();
-      }
-    });
-  }
+  const buscarEnCalculadora = (selector) => {
+    if (bloqueCalculadoraPrincipal) {
+      return bloqueCalculadoraPrincipal.querySelector(selector);
+    }
 
-  const precioCompraInput = document.getElementById('calcPrecioCompra');
-  const margenGananciaInput = document.getElementById('calcMargenGanancia');
-  const gananciaEsperadaInput = document.getElementById('calcGananciaEsperadaInput');
-  const fechaLlegadaInput = document.getElementById('calcFechaLlegada');
-  const diasDemoraEl = document.getElementById('calcDiasDemora');
-  const diasPrecaucionEl = document.getElementById('calcDiasPrecaucion');
-  const precioVentaEl = document.getElementById('calcPrecioVenta');
-  const gananciaMontoEl = document.getElementById('calcGananciaMonto');
-  const botonCalcular = document.getElementById('calcBotonCalcular');
+    return document.querySelector(selector);
+  };
+
+  const precioCompraInput = buscarEnCalculadora('#calcPrecioCompra');
+  const margenGananciaInput = buscarEnCalculadora('#calcMargenGanancia');
+  const gananciaEsperadaInput = buscarEnCalculadora('#calcGananciaEsperadaInput');
+  const fechaLlegadaInput = buscarEnCalculadora('#calcFechaLlegada');
+  const diasDemoraEl = buscarEnCalculadora('#calcDiasDemora');
+  const diasPrecaucionEl = buscarEnCalculadora('#calcDiasPrecaucion');
+  const precioVentaEl = buscarEnCalculadora('#calcPrecioVenta');
+  const gananciaMontoEl = buscarEnCalculadora('#calcGananciaMonto');
+  const botonCalcular = buscarEnCalculadora('#calcBotonCalcular');
 
   const moneyFormatter = new Intl.NumberFormat('es-CL', {
     style: 'currency',
