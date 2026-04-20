@@ -206,14 +206,6 @@ foreach ($faqs as $faq) {
           </div>
         <?php endforeach; ?>
 
-        <div class="faq-keywords">
-          <strong>Guía rápida SEO</strong>
-          <ul>
-            <li>Tenis de mesa en Chile</li>
-            <li>Implementación tenis de mesa</li>
-            <li>Comprar paletas ping pong</li>
-          </ul>
-        </div>
       </article>
     </div>
   </section>
