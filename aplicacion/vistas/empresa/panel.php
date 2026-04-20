@@ -77,11 +77,11 @@ $formatearFecha = static function (?string $valor): string {
           <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
         </div>
         <div class="col-md-3">
-          <label class="form-label" for="calcMargenGanancia">Margen de ganancia (%)</label>
+          <label class="form-label" for="calcMargenGanancia">Ganancia deseada (%)</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcMargenGanancia" placeholder="Ej: 30">
         </div>
         <div class="col-md-3">
-          <label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($)</label>
+          <label class="form-label" for="calcMontoGananciaEsperada">Ingresa ganancia esperada ($)</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
         </div>
         <div class="col-md-3">
@@ -95,7 +95,7 @@ $formatearFecha = static function (?string $valor): string {
         <div class="col-sm-6 col-xl-3"><div class="panel-inline-stat"><div class="small text-muted">Precio de venta sugerido</div><div class="h5 mb-0 text-success" id="calcPrecioVenta">$0.00</div></div></div>
         <div class="col-sm-6 col-xl-3"><div class="panel-inline-stat"><div class="small text-muted">Ganancia calculada</div><div class="h5 mb-0" id="calcGananciaMonto">$0.00</div></div></div>
       </div>
-      <p class="small text-muted mt-3 mb-0">Fórmulas: días de viaje = fecha llegada - hoy. Días de reserva = días de viaje + 4. Precio de venta = precio de compra + ganancia esperada (o % ganancia).</p>
+      <p class="small text-muted mt-3 mb-0">Fórmulas: días de viaje = fecha llegada - hoy. Días de reserva = días de viaje + 4. Valor de venta = valor compra + ganancia esperada.</p>
     </div>
   </div>
 
@@ -189,7 +189,7 @@ $formatearFecha = static function (?string $valor): string {
           <input type="number" min="0" step="0.01" class="form-control" id="calcMargenGanancia" placeholder="Ej: 30">
         </div>
         <div class="col-md-3">
-          <label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($)</label>
+          <label class="form-label" for="calcMontoGananciaEsperada">Ingresa ganancia esperada ($)</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
         </div>
         <div class="col-md-3">
@@ -224,7 +224,7 @@ $formatearFecha = static function (?string $valor): string {
           </div>
         </div>
       </div>
-      <p class="small text-muted mt-3 mb-0">Fórmulas: días de viaje = fecha llegada - hoy. Días de reserva = días de viaje + 4. Precio de venta = precio de compra + ganancia esperada (o % ganancia).</p>
+      <p class="small text-muted mt-3 mb-0">Fórmulas: días de viaje = fecha llegada - hoy. Días de reserva = días de viaje + 4. Valor de venta = valor compra + ganancia esperada.</p>
     </div>
   </div>
 
