@@ -22,6 +22,7 @@ $enrutador->agregar('POST', '/app/panel/iniciar-pago-trial', [GestionComercialCo
 $enrutador->agregar('POST', '/app/panel/iniciar-pago-cambio-plan', [GestionComercialControlador::class, 'iniciarPagoCambioPlan'], $mwEmpresa);
 $enrutador->agregar('GET', '/app/catalogo-en-linea', [GestionComercialControlador::class, 'catalogoEnLinea'], $mwEmpresa);
 $enrutador->agregar('GET', '/app/compras-catalogo', [GestionComercialControlador::class, 'comprasCatalogo'], $mwEmpresa);
+$enrutador->agregar('POST', '/app/compras-catalogo/estado-envio/{id}', [GestionComercialControlador::class, 'actualizarEstadoEnvioCompraCatalogo'], $mwEmpresa);
 $enrutador->agregar('POST', '/app/catalogo-en-linea/configuracion', [GestionComercialControlador::class, 'guardarConfiguracionCatalogoEnLinea'], $mwEmpresa);
 $enrutador->agregar('GET', '/app/pagos/checkout-flow', [GestionComercialControlador::class, 'checkoutFlow'], $mwEmpresa);
 $enrutador->agregar('POST', '/app/pagos/checkout-flow/configuracion', [GestionComercialControlador::class, 'guardarConfiguracionCheckoutFlow'], $mwEmpresa);
