@@ -139,7 +139,7 @@ $frasesEtiqueta = $frasesPersonalizadas !== [] ? $frasesPersonalizadas : ($frase
           </td>
           <td>
             <form method="POST" action="<?= e(url('/app/compras-catalogo/estado-envio/' . $compraId)) ?>" class="d-flex align-items-center gap-2">
-              <?= csrf_campo() ?>
+              <?= function_exists('csrf_campo') ? csrf_campo() : '' ?>
               <select name="estado_envio" class="form-select form-select-sm" onchange="this.form.submit()">
                 <?php $estadoEnvioActual = (string) ($compra['estado_envio'] ?? 'pendiente'); ?>
                 <?php foreach ($estadosEnvio as $valor => $etiqueta): ?>
