@@ -76,24 +76,104 @@ foreach ($faqs as $faq) {
   :root{--primary:<?= e($colorPrimario) ?>;--accent:<?= e($colorAcento) ?>;--bg:#eef2f7;--border:#dbe3ee;--muted:#64748b;--text:#0f172a;--shadow:0 10px 25px rgba(15,23,42,.08)}
   .catalogo-page{background:var(--bg);min-height:100vh}
   .catalogo-container{width:min(1280px,92%);margin:0 auto}
+  .catalogo-topbar{background:var(--primary);color:#fff;padding:8px 0;font-size:13px}
+  .catalogo-topbar__content{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .catalogo-topbar__sociales{display:flex;align-items:center;gap:10px}
+  .catalogo-topbar__sociales a{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:999px;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none}
+  .catalogo-topbar__sociales a svg{width:14px;height:14px;fill:#fff;display:block}
+  .catalogo-header{position:sticky;top:0;z-index:45;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  .catalogo-navbar{display:grid;grid-template-columns:340px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 0}
+  .catalogo-logo{display:flex;align-items:center;gap:.55rem;color:var(--text);font-size:16px;font-weight:800;text-decoration:none;line-height:1.05}
+  .catalogo-logo img{width:120px;height:60px;object-fit:contain;background:transparent}
+  .search-box{display:flex;align-items:center;background:#fff;border:1px solid var(--border);border-radius:999px;overflow:hidden;min-width:0}
+  .search-box input{width:100%;padding:10px 14px;border:none;outline:none;background:transparent;font-size:14px}
+  .search-box button{background:var(--accent);color:#fff;padding:10px 18px;font-weight:700;border:none}
+  .nav-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .menu-link{padding:9px 6px;font-weight:600;color:var(--primary);text-decoration:none;border:none;background:transparent;white-space:nowrap}
+  .menu-link:hover{color:var(--accent)}
+  .btn-outline,.btn-primary-custom,.btn-soft,.btn-danger-soft{padding:9px 13px;border-radius:10px;font-weight:700;border:1px solid var(--border);background:#fff;color:var(--text)}
+  .btn-primary-custom{background:var(--accent);border-color:var(--accent);color:#fff}
+  .catalogo-navbar .btn-primary-custom,.catalogo-navbar .btn-primary-custom span,.catalogo-navbar .btn-primary-custom svg{color:#fff !important;fill:#fff !important;stroke:#fff !important;text-decoration:none !important}
+  .catalogo-mobile-toggle{display:none;align-items:center;justify-content:center;flex-direction:column;gap:4px;width:42px;height:42px;border-radius:12px;border:1px solid var(--primary);background:var(--primary);color:#fff}
+  .catalogo-mobile-toggle span{display:block;width:18px;height:2px;background:currentColor;border-radius:999px;transition:all .2s ease}
+  .catalogo-header.is-mobile-open .catalogo-mobile-toggle span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+  .catalogo-header.is-mobile-open .catalogo-mobile-toggle span:nth-child(2){opacity:0}
+  .catalogo-header.is-mobile-open .catalogo-mobile-toggle span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
   .hero-faq{margin-top:12px;border-radius:20px;min-height:190px;display:flex;align-items:flex-end;padding:24px;background-size:cover;background-position:center;position:relative;overflow:hidden;box-shadow:0 18px 34px rgba(15,23,42,.16)}
   .hero-faq::before{content:"";position:absolute;inset:0;background:linear-gradient(95deg,color-mix(in srgb,var(--primary) 82%,#000 18%),rgba(15,23,42,.35))}
+  .hero-faq::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 28%,color-mix(in srgb,var(--accent) 35%,transparent),transparent 40%)}
   .hero-faq h1{position:relative;color:#fff;font-size:34px;font-weight:700;margin:0}
   .faq-wrap{padding:28px 0 46px}
   .faq-card{padding:22px;background:#fff;border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}
   .faq-intro h2{font-size:24px;line-height:1.2;color:var(--primary);font-weight:800;margin:0 0 10px}
-  .faq-intro p{color:var(--muted);line-height:1.7;font-size:16px;margin:0 0 18px}
+  .faq-intro p{color:var(--muted);line-height:1.7;font-size:16px;margin:0 0 18px;text-align:justify;text-wrap:pretty}
   .faq-item{border:1px solid var(--border);border-radius:14px;background:#fff;overflow:hidden}
   .faq-item + .faq-item{margin-top:10px}
   .faq-item details summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:700;color:var(--text);display:flex;justify-content:space-between;gap:10px}
   .faq-item details summary::-webkit-details-marker{display:none}
   .faq-item details summary::after{content:'+';color:var(--accent);font-size:18px;line-height:1}
   .faq-item details[open] summary::after{content:'−'}
-  .faq-item__answer{padding:0 16px 14px;color:var(--muted);line-height:1.7;font-size:15px}
+  .faq-item__answer{padding:0 16px 14px;color:var(--muted);line-height:1.7;font-size:15px;text-align:justify;text-wrap:pretty}
   .faq-keywords{margin-top:16px;padding:14px 16px;border-radius:14px;background:color-mix(in srgb,var(--accent) 8%,#fff);border:1px solid color-mix(in srgb,var(--accent) 20%,#fff)}
   .faq-keywords strong{color:var(--text)}
   .faq-keywords ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
-  @media (max-width:720px){.hero-faq{min-height:150px;padding:18px}.hero-faq h1{font-size:22px}.faq-wrap{padding:18px 0 30px}.faq-card{padding:16px}}
+
+  .footer{position:relative;color:#fff;padding:30px 0 20px;margin-top:20px;background:linear-gradient(120deg,var(--primary),var(--accent))}
+  .footer-content{display:grid;grid-template-columns:1.1fr .9fr 1fr .9fr;gap:22px}
+  .footer-col h4{font-size:18px;font-weight:600;margin:0 0 10px}
+  .footer-brand img{width:128px;height:60px;object-fit:contain;background:#fff;border-radius:10px;padding:4px 8px;border:1px solid rgba(255,255,255,.35);margin-bottom:8px}
+  .footer-brand p,.footer-contact p,.footer-menu a,.footer-follow p{font-size:13px;color:rgba(255,255,255,.92);margin:0}
+  .footer-contact{display:grid;gap:8px}
+  .footer-contact p{display:flex;align-items:center;gap:8px}
+  .footer-contact p .dot{width:24px;height:24px;border-radius:999px;border:1px solid rgba(255,255,255,.45);display:inline-flex;align-items:center;justify-content:center}
+  .footer-contact p .dot svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .footer-menu{display:grid;gap:8px}
+  .footer-menu a,.footer-menu a:link,.footer-menu a:visited{color:#fff !important;text-decoration:none}
+  .footer-menu a:hover{text-decoration:underline}
+  .footer-follow{display:grid;gap:10px}
+  .footer-sociales{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .footer-sociales a{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:999px;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.08);color:#fff;text-decoration:none}
+  .footer-sociales a svg{width:14px;height:14px;fill:#fff}
+  .footer-bottom{background:#fff;border-top:1px solid #e5e7eb;padding:10px 0}
+  .footer-bottom__content{display:flex;justify-content:space-between;align-items:center;color:#4b5563;font-size:13px;font-weight:500;gap:12px}
+  .footer-bottom__content a{color:#3f2a84;font-weight:700;text-decoration:none}
+  .footer-bottom__content a:hover{text-decoration:underline}
+  body.public-page > footer.border-top.bg-white.mt-5{display:none}
+
+  @media (max-width:1100px){
+    .catalogo-navbar,.footer-content{grid-template-columns:1fr}
+    .catalogo-navbar{gap:12px}
+    .search-box{width:100%}
+    .hero-faq{min-height:170px}
+    .hero-faq h1{font-size:28px;font-weight:600}
+    .faq-intro h2{font-size:22px}
+  }
+  @media (max-width:720px){
+    .catalogo-topbar__content{flex-direction:column;align-items:flex-start}
+    .catalogo-navbar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px}
+    .catalogo-logo{justify-content:flex-start}
+    .catalogo-logo img{width:110px;height:56px}
+    .catalogo-mobile-toggle{display:inline-flex}
+    .search-box,.nav-actions,.catalogo-navbar > .btn-primary-custom{display:none}
+    .catalogo-header.is-mobile-open .search-box{display:flex;grid-column:1/-1}
+    .catalogo-header.is-mobile-open .nav-actions{display:flex;grid-column:1/-1}
+    .catalogo-header.is-mobile-open .catalogo-navbar > .btn-primary-custom{display:flex;grid-column:1/-1}
+    .search-box{border-radius:14px}
+    .search-box input,.search-box button{font-size:13px}
+    .search-box button{padding:10px 14px}
+    .nav-actions{justify-content:space-between;gap:6px}
+    .menu-link{flex:1;text-align:center;padding:8px 8px;border:1px solid color-mix(in srgb,var(--primary) 25%,#fff);border-radius:10px;background:#fff;color:var(--primary);font-size:13px;font-weight:500}
+    .catalogo-navbar .btn-primary-custom{width:100%;justify-content:center;font-size:14px;font-weight:600}
+    .catalogo-header.is-mobile-open .catalogo-navbar > .btn-primary-custom{width:100%}
+    .hero-faq{min-height:150px;padding:18px}
+    .hero-faq h1{font-size:22px;font-weight:600}
+    .faq-wrap{padding:18px 0 30px}
+    .faq-card{padding:16px}
+    .faq-intro p,.faq-item__answer{text-align:left}
+    .footer-content{grid-template-columns:1fr}
+    .footer-bottom__content{flex-direction:column;align-items:flex-start}
+  }
 </style>
 <div class="catalogo-page">
   <?php
