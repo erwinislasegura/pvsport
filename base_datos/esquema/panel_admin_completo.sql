@@ -50,3 +50,4 @@ SOURCE base_datos/esquema/datos_admin.sql;
 SOURCE base_datos/actualizaciones/actualizacion_catalogo_compras_checkout_flow.sql;
 
 SOURCE base_datos/actualizaciones/actualizacion_catalogo_compras_envio_blue_express.sql;
+SOURCE base_datos/actualizaciones/actualizacion_catalogo_compras_estados_envio_logistica.sql;
