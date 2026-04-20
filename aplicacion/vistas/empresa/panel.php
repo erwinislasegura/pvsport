@@ -76,9 +76,9 @@ $formatearFecha = static function (?string $valor): string {
           <label class="form-label" for="calcPrecioCompra">Precio de compra</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
         </div>
-        <div class="col-md-3">
-          <label class="form-label" for="calcMargenGanancia">Ganancia deseada (%)</label>
-          <input type="number" min="0" step="0.01" class="form-control" id="calcMargenGanancia" placeholder="Ej: 30">
+        <div class="col-md-4">
+          <label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($)</label>
+          <input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
         </div>
         <div class="col-md-3">
           <label class="form-label" for="calcMontoGananciaEsperada">Ingresa ganancia esperada ($)</label>
@@ -180,19 +180,15 @@ $formatearFecha = static function (?string $valor): string {
     <div class="card-header">Calculadora rápida de precio y llegada</div>
     <div class="card-body">
       <div class="row g-3">
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label class="form-label" for="calcPrecioCompra">Precio de compra</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
         </div>
-        <div class="col-md-3">
-          <label class="form-label" for="calcMargenGanancia">Margen de ganancia (%)</label>
-          <input type="number" min="0" step="0.01" class="form-control" id="calcMargenGanancia" placeholder="Ej: 30">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label" for="calcMontoGananciaEsperada">Ingresa ganancia esperada ($)</label>
+        <div class="col-md-4">
+          <label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($)</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label class="form-label" for="calcFechaLlegada">Fecha de llegada</label>
           <input type="date" class="form-control" id="calcFechaLlegada">
         </div>
@@ -354,13 +350,20 @@ $formatearFecha = static function (?string $valor): string {
     const filaCampos = calculadoraPrincipal.querySelector('.row.g-3');
     const campoMargen = calculadoraPrincipal.querySelector('#calcMargenGanancia');
     const columnaMargen = campoMargen ? campoMargen.closest('[class*="col-"]') : null;
-    if (filaCampos && columnaMargen) {
-      const claseColumna = columnaMargen.className.includes('col-md-') ? columnaMargen.className : 'col-md-3';
+    if (campoMargen && columnaMargen) {
+      const labelMargen = calculadoraPrincipal.querySelector('label[for="calcMargenGanancia"]');
+      campoMargen.id = 'calcMontoGananciaEsperada';
+      campoMargen.placeholder = 'Ej: 4500';
+      if (labelMargen) {
+        labelMargen.setAttribute('for', 'calcMontoGananciaEsperada');
+        labelMargen.textContent = 'Monto ganancia esperada ($)';
+      }
+    } else if (filaCampos) {
       const columnaGanancia = document.createElement('div');
-      columnaGanancia.className = claseColumna;
-      columnaGanancia.innerHTML = '<label class="form-label" for="calcMontoGananciaEsperada">Ingresa ganancia esperada ($)</label>'
+      columnaGanancia.className = 'col-md-4';
+      columnaGanancia.innerHTML = '<label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($)</label>'
         + '<input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">';
-      columnaMargen.insertAdjacentElement('afterend', columnaGanancia);
+      filaCampos.appendChild(columnaGanancia);
     }
   }
   if (calculadoraPrincipal) {
@@ -375,9 +378,8 @@ $formatearFecha = static function (?string $valor): string {
   }
 
   const precioCompraInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcPrecioCompra') : null;
-  const margenGananciaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcMargenGanancia') : null;
   const gananciaEsperadaInput = calculadoraPrincipal
-    ? (calculadoraPrincipal.querySelector('#calcMontoGananciaEsperada') || calculadoraPrincipal.querySelector('#calcGananciaEsperada'))
+    ? (calculadoraPrincipal.querySelector('#calcMontoGananciaEsperada') || calculadoraPrincipal.querySelector('#calcMargenGanancia'))
     : null;
   const fechaLlegadaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcFechaLlegada') : null;
   const diasDemoraEl = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcDiasDemora') : null;
@@ -385,7 +387,7 @@ $formatearFecha = static function (?string $valor): string {
   const precioVentaEl = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcPrecioVenta') : null;
   const gananciaMontoEl = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcGananciaMonto') : null;
 
-  if (precioCompraInput && margenGananciaInput && gananciaEsperadaInput && fechaLlegadaInput) {
+  if (precioCompraInput && gananciaEsperadaInput && fechaLlegadaInput) {
     const moneyFormatter = new Intl.NumberFormat('es-CL', {
       style: 'currency',
       currency: 'CLP',
@@ -401,20 +403,10 @@ $formatearFecha = static function (?string $valor): string {
       return numero;
     };
 
-    let modoCalculo = 'margen';
-
     const recalcular = () => {
       const precioCompra = numeroSeguro(precioCompraInput.value);
-      let margenGanancia = numeroSeguro(margenGananciaInput.value);
-      let ganancia = numeroSeguro(gananciaEsperadaInput.value);
+      const ganancia = numeroSeguro(gananciaEsperadaInput.value);
       const fechaLlegadaValor = fechaLlegadaInput.value;
-      if (modoCalculo === 'ganancia') {
-        margenGanancia = precioCompra > 0 ? (ganancia / precioCompra) * 100 : 0;
-        margenGananciaInput.value = margenGanancia > 0 ? margenGanancia.toFixed(2) : '';
-      } else {
-        ganancia = precioCompra * (margenGanancia / 100);
-        gananciaEsperadaInput.value = ganancia > 0 ? ganancia.toFixed(2) : '';
-      }
       const venta = precioCompra + ganancia;
 
       let diasDemoraTexto = '—';
@@ -436,14 +428,7 @@ $formatearFecha = static function (?string $valor): string {
 
     precioCompraInput.addEventListener('input', recalcular);
     fechaLlegadaInput.addEventListener('input', recalcular);
-    margenGananciaInput.addEventListener('input', () => {
-      modoCalculo = 'margen';
-      recalcular();
-    });
-    gananciaEsperadaInput.addEventListener('input', () => {
-      modoCalculo = 'ganancia';
-      recalcular();
-    });
+    gananciaEsperadaInput.addEventListener('input', recalcular);
 
     recalcular();
   }
