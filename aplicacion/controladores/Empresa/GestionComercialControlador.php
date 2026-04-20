@@ -438,6 +438,31 @@ class GestionComercialControlador extends Controlador
         $this->vista('empresa/compras_catalogo/index', compact('compras', 'estado', 'empresa', 'sliderCatalogo'), 'empresa');
     }
 
+    public function actualizarEstadoEnvioCompraCatalogo(int $id): void
+    {
+        validar_csrf();
+
+        $empresaId = (int) (empresa_actual_id() ?? 0);
+        $estadosPermitidos = ['pendiente', 'aprobado', 'en_transito', 'despachado', 'en_reparto', 'entregado'];
+        $estadoEnvio = trim(mb_strtolower((string) ($_POST['estado_envio'] ?? '')));
+
+        if (!in_array($estadoEnvio, $estadosPermitidos, true)) {
+            flash('danger', 'Estado de envío inválido.');
+            $this->redirigir('/app/compras-catalogo');
+        }
+
+        $modelo = new CatalogoCompra();
+        $compra = $modelo->obtenerPorIdEmpresa($empresaId, $id);
+        if (!$compra) {
+            flash('danger', 'La compra seleccionada no existe.');
+            $this->redirigir('/app/compras-catalogo');
+        }
+
+        $modelo->actualizarEstadoEnvio($empresaId, $id, $estadoEnvio);
+        flash('success', 'Estado de envío actualizado correctamente.');
+        $this->redirigir('/app/compras-catalogo');
+    }
+
     public function catalogoEnLinea(): void
     {
         $empresaId = empresa_actual_id();

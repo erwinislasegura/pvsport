@@ -71,6 +71,26 @@ class CatalogoCompra extends Modelo
         return $stmt->fetchAll();
     }
 
+    public function obtenerPorIdEmpresa(int $empresaId, int $compraId): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM catalogo_compras WHERE id = :id AND empresa_id = :empresa_id LIMIT 1');
+        $stmt->execute([
+            'id' => $compraId,
+            'empresa_id' => $empresaId,
+        ]);
+        return $stmt->fetch() ?: null;
+    }
+
+    public function actualizarEstadoEnvio(int $empresaId, int $compraId, string $estadoEnvio): void
+    {
+        $stmt = $this->db->prepare('UPDATE catalogo_compras SET estado_envio = :estado_envio, fecha_actualizacion = NOW() WHERE id = :id AND empresa_id = :empresa_id');
+        $stmt->execute([
+            'estado_envio' => $estadoEnvio,
+            'id' => $compraId,
+            'empresa_id' => $empresaId,
+        ]);
+    }
+
     public function descontarStockPorCompraToken(string $token): void
     {
         $compra = $this->buscarPorToken($token);

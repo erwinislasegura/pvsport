@@ -2,6 +2,14 @@
 $fmon = static fn(float $m): string => '$' . number_format($m, 0, ',', '.');
 $estadoActual = (string) ($estado ?? '');
 $estados = ['' => 'Todas', 'pendiente' => 'Pendientes', 'aprobado' => 'Aprobadas', 'rechazado' => 'Rechazadas', 'anulado' => 'Anuladas'];
+$estadosEnvio = [
+    'pendiente' => 'Pendiente',
+    'aprobado' => 'Aprobado',
+    'en_transito' => 'En tránsito',
+    'despachado' => 'Despachado',
+    'en_reparto' => 'En reparto',
+    'entregado' => 'Entregado',
+];
 $formatearEnvio = static function (string $metodo): string {
     return match ($metodo) {
         'blue_express' => 'Blue Express',
@@ -103,13 +111,14 @@ $frasesEtiqueta = $frasesPersonalizadas !== [] ? $frasesPersonalizadas : ($frase
         <th>Comprador</th>
         <th>Total</th>
         <th>Estado pago</th>
+        <th>Estado envío</th>
         <th>Fecha</th>
         <th class="text-end">Detalle</th>
       </tr>
       </thead>
       <tbody>
       <?php if ($compras === []): ?>
-        <tr><td colspan="6" class="text-center text-muted py-4">Sin compras en este estado.</td></tr>
+        <tr><td colspan="7" class="text-center text-muted py-4">Sin compras en este estado.</td></tr>
       <?php endif; ?>
       <?php foreach ($compras as $compra): ?>
         <?php
@@ -127,6 +136,17 @@ $frasesEtiqueta = $frasesPersonalizadas !== [] ? $frasesPersonalizadas : ($frase
           <td><?= e($fmon((float) ($compra['total'] ?? 0))) ?></td>
           <td>
             <span class="badge text-bg-<?= e($estadoPagoInfo['clase']) ?>"><?= e($estadoPagoInfo['texto']) ?></span>
+          </td>
+          <td>
+            <form method="POST" action="<?= e(url('/app/compras-catalogo/estado-envio/' . $compraId)) ?>" class="d-flex align-items-center gap-2">
+              <?= csrf_field() ?>
+              <select name="estado_envio" class="form-select form-select-sm" onchange="this.form.submit()">
+                <?php $estadoEnvioActual = (string) ($compra['estado_envio'] ?? 'pendiente'); ?>
+                <?php foreach ($estadosEnvio as $valor => $etiqueta): ?>
+                  <option value="<?= e($valor) ?>" <?= $estadoEnvioActual === $valor ? 'selected' : '' ?>><?= e($etiqueta) ?></option>
+                <?php endforeach; ?>
+              </select>
+            </form>
           </td>
           <td><small><?= e((string) ($compra['fecha_creacion'] ?? '')) ?></small></td>
           <td class="text-end">
