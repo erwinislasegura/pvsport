@@ -81,10 +81,14 @@ $formatearFecha = static function (?string $valor): string {
           <input type="number" min="0" step="0.01" class="form-control" id="calcMargenGanancia" placeholder="Ej: 30">
         </div>
         <div class="col-md-3">
+          <label class="form-label" for="calcGananciaEsperadaInput">Ganancia esperada ($)</label>
+          <input type="number" min="0" step="0.01" class="form-control" id="calcGananciaEsperadaInput" placeholder="Ej: 4500">
+        </div>
+        <div class="col-md-3">
           <label class="form-label" for="calcFechaLlegada">Fecha de llegada</label>
           <input type="date" class="form-control" id="calcFechaLlegada">
         </div>
-        <div class="col-md-3 d-flex align-items-end">
+        <div class="col-12 col-md-3 d-flex align-items-end">
           <button type="button" class="btn btn-outline-primary w-100" id="calcBotonCalcular">Calcular</button>
         </div>
       </div>
@@ -99,13 +103,13 @@ $formatearFecha = static function (?string $valor): string {
         <div class="col-sm-6 col-xl-3">
           <div class="panel-inline-stat">
             <div class="small text-muted">Días de reserva (+4)</div>
-            <div class="h5 mb-0" id="calcDiasPrecaucion">—</div>
+            <div class="h5 mb-0 text-success" id="calcDiasPrecaucion">—</div>
           </div>
         </div>
         <div class="col-sm-6 col-xl-3">
           <div class="panel-inline-stat">
             <div class="small text-muted">Precio de venta</div>
-            <div class="h5 mb-0" id="calcPrecioVenta">$0.00</div>
+            <div class="h5 mb-0 text-success" id="calcPrecioVenta">$0.00</div>
           </div>
         </div>
         <div class="col-sm-6 col-xl-3">
@@ -337,6 +341,7 @@ $formatearFecha = static function (?string $valor): string {
 
   const precioCompraInput = document.getElementById('calcPrecioCompra');
   const margenGananciaInput = document.getElementById('calcMargenGanancia');
+  const gananciaEsperadaInput = document.getElementById('calcGananciaEsperadaInput');
   const fechaLlegadaInput = document.getElementById('calcFechaLlegada');
   const diasDemoraEl = document.getElementById('calcDiasDemora');
   const diasPrecaucionEl = document.getElementById('calcDiasPrecaucion');
@@ -352,15 +357,17 @@ $formatearFecha = static function (?string $valor): string {
   });
 
   const calcularPanel = () => {
-    if (!precioCompraInput || !margenGananciaInput || !fechaLlegadaInput) {
+    if (!precioCompraInput || !margenGananciaInput || !fechaLlegadaInput || !gananciaEsperadaInput) {
       return;
     }
 
     const precioCompra = Number(precioCompraInput.value || 0);
     const margenGanancia = Number(margenGananciaInput.value || 0);
+    const gananciaEsperadaValor = Number(gananciaEsperadaInput.value || 0);
     const fechaLlegadaValor = fechaLlegadaInput.value;
-
-    const gananciaMonto = precioCompra * (margenGanancia / 100);
+    const gananciaMonto = gananciaEsperadaValor > 0
+      ? gananciaEsperadaValor
+      : precioCompra * (margenGanancia / 100);
     const precioVenta = precioCompra + gananciaMonto;
 
     let diasDemoraTexto = '—';
@@ -382,7 +389,7 @@ $formatearFecha = static function (?string $valor): string {
     if (gananciaMontoEl) gananciaMontoEl.textContent = moneyFormatter.format(gananciaMonto);
   };
 
-  [precioCompraInput, margenGananciaInput, fechaLlegadaInput]
+  [precioCompraInput, margenGananciaInput, gananciaEsperadaInput, fechaLlegadaInput]
     .filter(Boolean)
     .forEach((input) => input.addEventListener('input', calcularPanel));
 
