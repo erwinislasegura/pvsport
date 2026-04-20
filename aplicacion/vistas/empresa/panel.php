@@ -334,7 +334,22 @@ $formatearFecha = static function (?string $valor): string {
     });
   }
 
-  const calculadoraPrincipal = document.querySelector('[data-calculadora-panel]');
+  const buscarTarjetaCalculadora = () => {
+    const porData = document.querySelector('[data-calculadora-panel]');
+    if (porData) {
+      return porData;
+    }
+    const tarjetas = document.querySelectorAll('.card.card-dashboard');
+    for (const tarjeta of tarjetas) {
+      const header = tarjeta.querySelector('.card-header');
+      if (header && header.textContent.trim().toLowerCase() === 'calculadora rápida de precio y llegada') {
+        return tarjeta;
+      }
+    }
+    return null;
+  };
+
+  const calculadoraPrincipal = buscarTarjetaCalculadora();
   if (calculadoraPrincipal && !calculadoraPrincipal.querySelector('#calcMontoGananciaEsperada')) {
     const filaCampos = calculadoraPrincipal.querySelector('.row.g-3');
     const campoMargen = calculadoraPrincipal.querySelector('#calcMargenGanancia');
@@ -346,6 +361,16 @@ $formatearFecha = static function (?string $valor): string {
       columnaGanancia.innerHTML = '<label class="form-label" for="calcMontoGananciaEsperada">Ingresa ganancia esperada ($)</label>'
         + '<input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">';
       columnaMargen.insertAdjacentElement('afterend', columnaGanancia);
+    }
+  }
+  if (calculadoraPrincipal) {
+    const formula = calculadoraPrincipal.querySelector('p.small.text-muted');
+    if (formula && formula.textContent.includes('Precio de venta = precio de compra + (% ganancia).')) {
+      formula.textContent = 'Fórmulas: días de viaje = fecha llegada - hoy. Días de reserva = días de viaje + 4. Valor de venta = valor compra + ganancia esperada.';
+    }
+    const tituloGanancia = calculadoraPrincipal.querySelector('#calcGananciaMonto')?.closest('.panel-inline-stat')?.querySelector('.small.text-muted');
+    if (tituloGanancia && tituloGanancia.textContent.trim().toLowerCase() === 'ganancia esperada') {
+      tituloGanancia.textContent = 'Ganancia calculada';
     }
   }
 
