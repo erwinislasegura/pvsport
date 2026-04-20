@@ -24,6 +24,16 @@ $resolverImagenProducto = static function (?string $ruta): string {
     Compra productos de tenis de mesa y ping pong con enfoque en Chile: despacho a regiones, asesoría comercial y stock actualizado para entrenamiento, recreación y competencia.
   </p>
 
+  <section class="mb-4">
+    <h2 class="h4">Beneficios de comprar en una tienda especializada de Chile</h2>
+    <div class="row g-3">
+      <div class="col-12 col-md-3"><div class="border rounded p-3 h-100"><h3 class="h6">Envíos en Chile</h3><p class="small mb-0">Despacho a Santiago y regiones con seguimiento.</p></div></div>
+      <div class="col-12 col-md-3"><div class="border rounded p-3 h-100"><h3 class="h6">Asesoría por nivel</h3><p class="small mb-0">Te ayudamos a elegir según juego y presupuesto.</p></div></div>
+      <div class="col-12 col-md-3"><div class="border rounded p-3 h-100"><h3 class="h6">Compra online segura</h3><p class="small mb-0">Proceso simple para cotizar y comprar en línea.</p></div></div>
+      <div class="col-12 col-md-3"><div class="border rounded p-3 h-100"><h3 class="h6">Implementación completa</h3><p class="small mb-0">Soluciones para hogar, colegio, club y academia.</p></div></div>
+    </div>
+  </section>
+
   <div class="row g-3 mb-4">
     <?php foreach ($productos as $producto): ?>
       <?php
@@ -73,8 +83,18 @@ $resolverImagenProducto = static function (?string $ruta): string {
 
   <section class="mb-3">
     <h2 class="h5">Enlaces útiles</h2>
-    <p class="mb-0">
-      Revisa también nuestra <a href="<?= e($faqUrl) ?>">sección FAQ de tenis de mesa en Chile</a> y el <a href="<?= e($blogUrl) ?>">blog con guías para elegir paletas, gomas y mesas</a>.
-    </p>
+    <div class="d-flex flex-wrap gap-2 mb-2">
+      <?php foreach ([
+          '/paletas-tenis-de-mesa-chile' => 'Paletas',
+          '/gomas-tenis-de-mesa-chile' => 'Gomas',
+          '/maderas-tenis-de-mesa-chile' => 'Maderas',
+          '/pelotas-tenis-de-mesa-chile' => 'Pelotas',
+          '/mesas-de-tenis-de-mesa-chile' => 'Mesas',
+          '/accesorios-tenis-de-mesa-chile' => 'Accesorios',
+      ] as $ruta => $texto): ?>
+        <a class="btn btn-sm btn-outline-secondary" href="<?= e(url($ruta)) ?>"><?= e($texto) ?></a>
+      <?php endforeach; ?>
+    </div>
+    <p class="mb-0">Revisa también nuestra <a href="<?= e($faqUrl) ?>">sección FAQ de tenis de mesa en Chile</a> y el <a href="<?= e($blogUrl) ?>">blog con guías para elegir paletas, gomas y mesas</a>.</p>
   </section>
 </section>

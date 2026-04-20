@@ -30,22 +30,29 @@ class PublicoControlador extends Controlador
     private const SEO_SLUGS_CATALOGO = [
         'tenis-de-mesa-chile',
         'ping-pong-chile',
-        'paletas-tenis-de-mesa',
-        'paletas-ping-pong',
-        'gomas-tenis-de-mesa',
-        'gomas-ping-pong',
-        'mesas-tenis-de-mesa',
-        'mesa-ping-pong',
-        'pelotas-tenis-de-mesa',
-        'accesorios-tenis-de-mesa',
-        'implementos-tenis-de-mesa',
-        'maderas-tenis-de-mesa',
+        'paletas-tenis-de-mesa-chile',
+        'gomas-tenis-de-mesa-chile',
+        'mesas-de-tenis-de-mesa-chile',
+        'pelotas-tenis-de-mesa-chile',
+        'accesorios-tenis-de-mesa-chile',
+        'implementos-tenis-de-mesa-chile',
+        'maderas-tenis-de-mesa-chile',
         'redes-tenis-de-mesa',
         'fundas-y-protectores',
         'robots-de-entrenamiento',
         'tenis-de-mesa-principiantes',
         'tenis-de-mesa-profesional',
         'implementacion-tenis-de-mesa',
+    ];
+
+    private const SEO_SLUG_ALIASES = [
+        'paletas-tenis-de-mesa' => 'paletas-tenis-de-mesa-chile',
+        'gomas-tenis-de-mesa' => 'gomas-tenis-de-mesa-chile',
+        'mesas-tenis-de-mesa' => 'mesas-de-tenis-de-mesa-chile',
+        'pelotas-tenis-de-mesa' => 'pelotas-tenis-de-mesa-chile',
+        'accesorios-tenis-de-mesa' => 'accesorios-tenis-de-mesa-chile',
+        'implementos-tenis-de-mesa' => 'implementos-tenis-de-mesa-chile',
+        'maderas-tenis-de-mesa' => 'maderas-tenis-de-mesa-chile',
     ];
 
     public function inicio(): void
@@ -487,7 +494,50 @@ class PublicoControlador extends Controlador
             return;
         }
 
-        $this->catalogoPreguntasFrecuentes($empresaId);
+        header('Location: ' . url('/faq-tenis-de-mesa-chile'), true, 301);
+        exit;
+    }
+
+    public function catalogoLandingSeoPorDominio(): void
+    {
+        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
+        $slug = trim((string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH), '/');
+        if (isset(self::SEO_SLUG_ALIASES[$slug])) {
+            header('Location: ' . url('/' . self::SEO_SLUG_ALIASES[$slug]), true, 301);
+            exit;
+        }
+
+        if ($empresaId === null || !in_array($slug, self::SEO_SLUGS_CATALOGO, true)) {
+            http_response_code(404);
+            require __DIR__ . '/../../vistas/errores/404.php';
+            return;
+        }
+
+        $this->catalogoLandingSeo($empresaId, $slug);
+    }
+
+    public function catalogoBlogPorDominio(): void
+    {
+        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
+        if ($empresaId === null) {
+            http_response_code(404);
+            require __DIR__ . '/../../vistas/errores/404.php';
+            return;
+        }
+
+        $this->catalogoBlog($empresaId);
+    }
+
+    public function catalogoFaqSeoPorDominio(): void
+    {
+        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
+        if ($empresaId === null) {
+            http_response_code(404);
+            require __DIR__ . '/../../vistas/errores/404.php';
+            return;
+        }
+
+        $this->catalogoFaqSeo($empresaId);
     }
 
     public function catalogoLandingSeoPorDominio(): void
@@ -598,7 +648,14 @@ class PublicoControlador extends Controlador
         $catalogoRutas = $this->construirRutasCatalogo($empresaId);
         $ocultarNavbarPublico = true;
 
-        $this->vistaPublica('publico/catalogo_contacto', compact('empresa', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'catalogoRutas', 'ocultarNavbarPublico'), 'catalogo_publico');
+        $this->vista(
+            'publico/catalogo_contacto',
+            array_merge(
+                compact('empresa', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'catalogoRutas', 'ocultarNavbarPublico'),
+                $this->obtenerSeoContactoCatalogo($empresa)
+            ),
+            'publico'
+        );
     }
 
     public function catalogoPreguntasFrecuentes(int $empresaId): void
@@ -1913,16 +1970,13 @@ class PublicoControlador extends Controlador
         $mapa = [
             'tenis-de-mesa-chile' => ['h1' => 'Tenis de mesa en Chile: equipamiento profesional y recreativo', 'buscar' => 'tenis de mesa', 'keyword' => 'tenis de mesa chile'],
             'ping-pong-chile' => ['h1' => 'Ping pong en Chile: tienda especializada para entrenar y competir', 'buscar' => 'ping pong', 'keyword' => 'ping pong chile'],
-            'paletas-tenis-de-mesa' => ['h1' => 'Paletas de tenis de mesa para todos los niveles', 'buscar' => 'paleta', 'keyword' => 'paletas tenis de mesa chile'],
-            'paletas-ping-pong' => ['h1' => 'Paletas de ping pong con control, spin y velocidad', 'buscar' => 'paleta', 'keyword' => 'paletas de ping pong chile'],
-            'gomas-tenis-de-mesa' => ['h1' => 'Gomas de tenis de mesa para armar tu juego', 'buscar' => 'goma', 'keyword' => 'gomas tenis de mesa chile'],
-            'gomas-ping-pong' => ['h1' => 'Gomas de ping pong para topspin, bloqueo y ataque', 'buscar' => 'goma', 'keyword' => 'gomas ping pong chile'],
-            'mesas-tenis-de-mesa' => ['h1' => 'Mesas de tenis de mesa para hogar, colegios y clubes', 'buscar' => 'mesa', 'keyword' => 'mesas de tenis de mesa chile'],
-            'mesa-ping-pong' => ['h1' => 'Mesa de ping pong en Chile: modelos plegables y profesionales', 'buscar' => 'mesa', 'keyword' => 'mesa ping pong chile'],
-            'pelotas-tenis-de-mesa' => ['h1' => 'Pelotas de tenis de mesa para entrenamiento y competencia', 'buscar' => 'pelota', 'keyword' => 'pelotas tenis de mesa chile'],
-            'accesorios-tenis-de-mesa' => ['h1' => 'Accesorios de tenis de mesa: fundas, limpiadores, grips y más', 'buscar' => 'accesorio', 'keyword' => 'accesorios tenis de mesa chile'],
-            'implementos-tenis-de-mesa' => ['h1' => 'Implementos de tenis de mesa para armar tu set completo', 'buscar' => 'implemento', 'keyword' => 'implementos tenis de mesa chile'],
-            'maderas-tenis-de-mesa' => ['h1' => 'Maderas de tenis de mesa según estilo de juego', 'buscar' => 'madera', 'keyword' => 'maderas tenis de mesa chile'],
+            'paletas-tenis-de-mesa-chile' => ['h1' => 'Paletas de tenis de mesa para todos los niveles', 'buscar' => 'paleta', 'keyword' => 'paletas tenis de mesa chile'],
+            'gomas-tenis-de-mesa-chile' => ['h1' => 'Gomas de tenis de mesa para armar tu juego', 'buscar' => 'goma', 'keyword' => 'gomas ping pong chile'],
+            'mesas-de-tenis-de-mesa-chile' => ['h1' => 'Mesas de tenis de mesa para hogar, colegios y clubes', 'buscar' => 'mesa', 'keyword' => 'mesas de tenis de mesa chile'],
+            'pelotas-tenis-de-mesa-chile' => ['h1' => 'Pelotas de tenis de mesa para entrenamiento y competencia', 'buscar' => 'pelota', 'keyword' => 'pelotas tenis de mesa chile'],
+            'accesorios-tenis-de-mesa-chile' => ['h1' => 'Accesorios de tenis de mesa: fundas, limpiadores, grips y más', 'buscar' => 'accesorio', 'keyword' => 'accesorios tenis de mesa chile'],
+            'implementos-tenis-de-mesa-chile' => ['h1' => 'Implementos de tenis de mesa para armar tu set completo', 'buscar' => 'implemento', 'keyword' => 'implementos tenis de mesa chile'],
+            'maderas-tenis-de-mesa-chile' => ['h1' => 'Maderas de tenis de mesa según estilo de juego', 'buscar' => 'madera', 'keyword' => 'maderas tenis de mesa chile'],
             'redes-tenis-de-mesa' => ['h1' => 'Redes de tenis de mesa y sistemas de sujeción', 'buscar' => 'red', 'keyword' => 'redes tenis de mesa chile'],
             'fundas-y-protectores' => ['h1' => 'Fundas y protectores para cuidar tu paleta', 'buscar' => 'funda', 'keyword' => 'fundas tenis de mesa chile'],
             'robots-de-entrenamiento' => ['h1' => 'Robots de entrenamiento para tenis de mesa', 'buscar' => 'robot', 'keyword' => 'robot tenis de mesa chile'],
@@ -1998,13 +2052,46 @@ class PublicoControlador extends Controlador
         ];
     }
 
+    private function obtenerSeoContactoCatalogo(array $empresa): array
+    {
+        $nombre = trim((string) ($empresa['nombre_comercial'] ?? 'PVSport'));
+        $url = $this->obtenerUrlBaseSitio() . url('/contacto');
+        $direccion = trim((string) ($empresa['direccion'] ?? 'Chile'));
+        $telefono = trim((string) ($empresa['telefono'] ?? ''));
+
+        return [
+            'meta_title' => 'Contacto y asesoría tenis de mesa en Chile | ' . $nombre,
+            'meta_description' => 'Contáctanos para asesoría en tenis de mesa, ayuda para elegir paletas y cotización de implementos con envío en Chile.',
+            'meta_keywords' => 'asesoría tenis de mesa chile, cotización implementos tenis de mesa, compra equipamiento ping pong chile',
+            'meta_canonical' => $url,
+            'seo_schema' => [[
+                '@context' => 'https://schema.org',
+                '@type' => 'LocalBusiness',
+                'name' => $nombre,
+                'url' => $url,
+                'address' => [
+                    '@type' => 'PostalAddress',
+                    'streetAddress' => $direccion,
+                    'addressCountry' => 'CL',
+                ],
+                'telephone' => $telefono,
+            ]],
+        ];
+    }
+
     private function obtenerPreguntasFrecuentesSeo(): array
     {
         return [
-            ['q' => '¿Dónde comprar tenis de mesa en Chile?', 'a' => 'Puedes comprar online y comparar paletas, gomas, mesas y accesorios con despacho a todo Chile.'],
-            ['q' => '¿Qué diferencia hay entre ping pong y tenis de mesa?', 'a' => 'Ping pong suele usarse para juego recreativo, mientras tenis de mesa incluye enfoque técnico y reglamentado de competencia.'],
-            ['q' => '¿Qué paleta recomiendan para comenzar?', 'a' => 'Para principiantes recomendamos paletas con control alto, goma balanceada y mango cómodo para sesiones largas.'],
-            ['q' => '¿Hacen envíos a regiones?', 'a' => 'Sí, la tienda opera con despacho nacional y seguimiento para clientes en Santiago y regiones.'],
+            ['grupo' => 'Compra', 'q' => '¿Dónde comprar tenis de mesa en Chile?', 'a' => 'Puedes comprar online en nuestra tienda especializada, comparar categorías y recibir asesoría antes de pagar.', 'url' => '/tenis-de-mesa-chile'],
+            ['grupo' => 'Compra', 'q' => '¿Dónde comprar paletas de ping pong en Chile?', 'a' => 'En la categoría de paletas encuentras opciones para iniciación, entrenamiento y competencia.', 'url' => '/paletas-tenis-de-mesa-chile'],
+            ['grupo' => 'Productos', 'q' => '¿Qué paleta de tenis de mesa conviene para empezar?', 'a' => 'Para comenzar conviene una paleta con alto control, goma equilibrada y buen agarre, ideal para mejorar técnica.', 'url' => '/tenis-de-mesa-principiantes'],
+            ['grupo' => 'Productos', 'q' => '¿Qué goma elegir para tenis de mesa?', 'a' => 'Depende de tu estilo: control para consistencia, velocidad para ataque y mayor spin para topspin.', 'url' => '/gomas-tenis-de-mesa-chile'],
+            ['grupo' => 'Niveles', 'q' => '¿Qué productos sirven para principiantes?', 'a' => 'Recomendamos paletas prearmadas, pelotas de entrenamiento y una mesa plegable para práctica frecuente.', 'url' => '/tenis-de-mesa-principiantes'],
+            ['grupo' => 'Niveles', 'q' => '¿Qué productos sirven para nivel intermedio o avanzado?', 'a' => 'Para subir rendimiento, combina maderas ofensivas, gomas específicas y accesorios de entrenamiento.', 'url' => '/tenis-de-mesa-profesional'],
+            ['grupo' => 'Reglas y medidas', 'q' => '¿Cuál es la diferencia entre ping pong y tenis de mesa?', 'a' => 'Ping pong se usa más en contexto recreativo; tenis de mesa es la disciplina formal con reglamento competitivo.', 'url' => '/ping-pong-chile'],
+            ['grupo' => 'Reglas y medidas', 'q' => '¿Cuánto mide una mesa de tenis de mesa?', 'a' => 'La medida oficial es 2,74 m de largo por 1,525 m de ancho y 76 cm de alto.', 'url' => '/mesas-de-tenis-de-mesa-chile'],
+            ['grupo' => 'Envíos', 'q' => '¿Hacen envíos a regiones en Chile?', 'a' => 'Sí, despachamos a Santiago y regiones con alternativas de envío según volumen del pedido.', 'url' => '/implementos-tenis-de-mesa-chile'],
+            ['grupo' => 'Implementación', 'q' => '¿Qué implementos necesito para jugar tenis de mesa?', 'a' => 'El set base incluye paleta, gomas, pelota, mesa y red. Luego puedes sumar fundas, limpiadores y robot de entrenamiento.', 'url' => '/implementos-tenis-de-mesa-chile'],
         ];
     }
 
