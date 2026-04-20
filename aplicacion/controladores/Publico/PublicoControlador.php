@@ -494,49 +494,6 @@ class PublicoControlador extends Controlador
             return;
         }
 
-        header('Location: ' . url('/faq-tenis-de-mesa-chile'), true, 301);
-        exit;
-    }
-
-    public function catalogoLandingSeoPorDominio(): void
-    {
-        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
-        $slug = trim((string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH), '/');
-        if (isset(self::SEO_SLUG_ALIASES[$slug])) {
-            header('Location: ' . url('/' . self::SEO_SLUG_ALIASES[$slug]), true, 301);
-            exit;
-        }
-
-        if ($empresaId === null || !in_array($slug, self::SEO_SLUGS_CATALOGO, true)) {
-            http_response_code(404);
-            require __DIR__ . '/../../vistas/errores/404.php';
-            return;
-        }
-
-        $this->catalogoLandingSeo($empresaId, $slug);
-    }
-
-    public function catalogoBlogPorDominio(): void
-    {
-        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
-        if ($empresaId === null) {
-            http_response_code(404);
-            require __DIR__ . '/../../vistas/errores/404.php';
-            return;
-        }
-
-        $this->catalogoBlog($empresaId);
-    }
-
-    public function catalogoFaqSeoPorDominio(): void
-    {
-        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
-        if ($empresaId === null) {
-            http_response_code(404);
-            require __DIR__ . '/../../vistas/errores/404.php';
-            return;
-        }
-
         $this->catalogoFaqSeo($empresaId);
     }
 
@@ -544,6 +501,10 @@ class PublicoControlador extends Controlador
     {
         $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
         $slug = trim((string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH), '/');
+        if (isset(self::SEO_SLUG_ALIASES[$slug])) {
+            $slug = (string) self::SEO_SLUG_ALIASES[$slug];
+        }
+
         if ($empresaId === null || !in_array($slug, self::SEO_SLUGS_CATALOGO, true)) {
             http_response_code(404);
             require __DIR__ . '/../../vistas/errores/404.php';
