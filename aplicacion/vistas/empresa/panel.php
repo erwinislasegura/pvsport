@@ -68,6 +68,61 @@ $formatearFecha = static function (?string $valor): string {
     </div>
   </div>
 
+  <div class="card card-dashboard mb-3" data-calculadora-panel>
+    <div class="card-header">Calculadora rápida de precio y llegada</div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label" for="calcPrecioCompra">Precio de compra</label>
+          <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="calcMargenGanancia">Ganancia deseada (%)</label>
+          <input type="number" min="0" step="0.01" class="form-control" id="calcMargenGanancia" placeholder="Ej: 30">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="calcGananciaEsperadaInput">Ganancia esperada ($)</label>
+          <input type="number" min="0" step="0.01" class="form-control" id="calcGananciaEsperadaInput" placeholder="Ej: 4500">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="calcFechaLlegada">Fecha de llegada</label>
+          <input type="date" class="form-control" id="calcFechaLlegada">
+        </div>
+        <div class="col-12 col-md-3 d-flex align-items-end">
+          <button type="button" class="btn btn-outline-primary w-100" id="calcBotonCalcular">Calcular</button>
+        </div>
+      </div>
+
+      <div class="row g-2 mt-2">
+        <div class="col-sm-6 col-xl-3">
+          <div class="panel-inline-stat">
+            <div class="small text-muted">Días de viaje</div>
+            <div class="h5 mb-0" id="calcDiasDemora">—</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="panel-inline-stat">
+            <div class="small text-muted">Días de reserva (+4)</div>
+            <div class="h5 mb-0 text-success" id="calcDiasPrecaucion">—</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="panel-inline-stat">
+            <div class="small text-muted">Precio de venta</div>
+            <div class="h5 mb-0 text-success" id="calcPrecioVenta">$0.00</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="panel-inline-stat">
+            <div class="small text-muted">Ganancia esperada</div>
+            <div class="h5 mb-0" id="calcGananciaMonto">$0.00</div>
+          </div>
+        </div>
+      </div>
+      <p class="small text-muted mt-3 mb-0">Se actualiza automáticamente en tiempo real. También puedes usar el botón “Calcular”.</p>
+    </div>
+  </div>
+
   <div class="row g-2 mb-3">
     <div class="col-sm-6 col-xl-3"><article class="metric-card metric-card-sky"><div class="metric-card__icon"><i class="bi bi-file-earmark-bar-graph"></i></div><div class="metric-card__meta">Cotizaciones del mes</div><div class="metric-card__value"><?= (int) ($resumen['cotizaciones_mes'] ?? 0) ?></div></article></div>
     <div class="col-sm-6 col-xl-3"><article class="metric-card metric-card-red"><div class="metric-card__icon"><i class="bi bi-currency-dollar"></i></div><div class="metric-card__meta">Monto cotizado</div><div class="metric-card__value">$<?= number_format((float) ($resumen['monto_mes'] ?? 0), 2) ?></div></article></div>
@@ -175,49 +230,49 @@ $formatearFecha = static function (?string $valor): string {
   const seriesConteo = <?= json_encode($conteosMes) ?>;
   const seriesMontos = <?= json_encode($montosMes) ?>;
   const canvas = document.getElementById('graficoCotizacionesMes');
-  if (!canvas || !labels.length || typeof Chart === 'undefined') return;
-
-  new Chart(canvas, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        {
-          type: 'bar',
-          label: 'Cotizaciones',
-          data: seriesConteo,
-          backgroundColor: 'rgba(70, 50, 168, 0.35)',
-          borderColor: '#4632a8',
-          borderWidth: 1,
-          borderRadius: 6
-        },
-        {
-          type: 'line',
-          label: 'Monto cotizado',
-          data: seriesMontos,
-          yAxisID: 'y1',
-          borderColor: '#22b36d',
-          backgroundColor: 'rgba(34, 179, 109, 0.18)',
-          tension: 0.35,
-          fill: true
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { position: 'bottom' } },
-      scales: {
-        y: { beginAtZero: true, ticks: { precision: 0 } },
-        y1: {
-          beginAtZero: true,
-          position: 'right',
-          grid: { drawOnChartArea: false }
+  if (canvas && labels.length && typeof Chart !== 'undefined') {
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Cotizaciones',
+            data: seriesConteo,
+            backgroundColor: 'rgba(70, 50, 168, 0.35)',
+            borderColor: '#4632a8',
+            borderWidth: 1,
+            borderRadius: 6
+          },
+          {
+            type: 'line',
+            label: 'Monto cotizado',
+            data: seriesMontos,
+            yAxisID: 'y1',
+            borderColor: '#22b36d',
+            backgroundColor: 'rgba(34, 179, 109, 0.18)',
+            tension: 0.35,
+            fill: true
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom' } },
+        scales: {
+          y: { beginAtZero: true, ticks: { precision: 0 } },
+          y1: {
+            beginAtZero: true,
+            position: 'right',
+            grid: { drawOnChartArea: false }
+          }
         }
       }
-    }
-  });
+    });
+  }
 
   const botonesFiltro = document.querySelectorAll('[data-kpi-filter]');
   const itemsKpi = document.querySelectorAll('[data-kpi-module]');
@@ -235,5 +290,74 @@ $formatearFecha = static function (?string $valor): string {
       });
     });
   }
+
+  const calculadorasPanel = document.querySelectorAll('[data-calculadora-panel]');
+  if (calculadorasPanel.length > 1) {
+    calculadorasPanel.forEach((bloque, index) => {
+      if (index > 0) {
+        bloque.remove();
+      }
+    });
+  }
+
+  const precioCompraInput = document.getElementById('calcPrecioCompra');
+  const margenGananciaInput = document.getElementById('calcMargenGanancia');
+  const gananciaEsperadaInput = document.getElementById('calcGananciaEsperadaInput');
+  const fechaLlegadaInput = document.getElementById('calcFechaLlegada');
+  const diasDemoraEl = document.getElementById('calcDiasDemora');
+  const diasPrecaucionEl = document.getElementById('calcDiasPrecaucion');
+  const precioVentaEl = document.getElementById('calcPrecioVenta');
+  const gananciaMontoEl = document.getElementById('calcGananciaMonto');
+  const botonCalcular = document.getElementById('calcBotonCalcular');
+
+  const moneyFormatter = new Intl.NumberFormat('es-CL', {
+    style: 'currency',
+    currency: 'CLP',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+  const calcularPanel = () => {
+    if (!precioCompraInput || !margenGananciaInput || !fechaLlegadaInput || !gananciaEsperadaInput) {
+      return;
+    }
+
+    const precioCompra = Number(precioCompraInput.value || 0);
+    const margenGanancia = Number(margenGananciaInput.value || 0);
+    const gananciaEsperadaValor = Number(gananciaEsperadaInput.value || 0);
+    const fechaLlegadaValor = fechaLlegadaInput.value;
+    const gananciaMonto = gananciaEsperadaValor > 0
+      ? gananciaEsperadaValor
+      : precioCompra * (margenGanancia / 100);
+    const precioVenta = precioCompra + gananciaMonto;
+
+    let diasDemoraTexto = '—';
+    let diasPrecaucionTexto = '—';
+    if (fechaLlegadaValor) {
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      const fechaLlegada = new Date(fechaLlegadaValor + 'T00:00:00');
+      const diferenciaMs = fechaLlegada.getTime() - hoy.getTime();
+      const diasDemora = Math.ceil(diferenciaMs / 86400000);
+      const diasConPrecaucion = diasDemora + 4;
+      diasDemoraTexto = diasDemora + ' días';
+      diasPrecaucionTexto = diasConPrecaucion + ' días';
+    }
+
+    if (diasDemoraEl) diasDemoraEl.textContent = diasDemoraTexto;
+    if (diasPrecaucionEl) diasPrecaucionEl.textContent = diasPrecaucionTexto;
+    if (precioVentaEl) precioVentaEl.textContent = moneyFormatter.format(precioVenta);
+    if (gananciaMontoEl) gananciaMontoEl.textContent = moneyFormatter.format(gananciaMonto);
+  };
+
+  [precioCompraInput, margenGananciaInput, gananciaEsperadaInput, fechaLlegadaInput]
+    .filter(Boolean)
+    .forEach((input) => input.addEventListener('input', calcularPanel));
+
+  if (botonCalcular) {
+    botonCalcular.addEventListener('click', calcularPanel);
+  }
+
+  calcularPanel();
 })();
 </script>
