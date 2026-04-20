@@ -72,54 +72,26 @@ $formatearFecha = static function (?string $valor): string {
     <div class="card-header">Calculadora rápida de precio y llegada</div>
     <div class="card-body">
       <div class="row g-3">
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label class="form-label" for="calcPrecioCompra">Precio de compra</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label class="form-label" for="calcMargenGanancia">Ganancia deseada (%)</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcMargenGanancia" placeholder="Ej: 30">
         </div>
-        <div class="col-md-3">
-          <label class="form-label" for="calcGananciaEsperadaInput">Ganancia esperada ($)</label>
-          <input type="number" min="0" step="0.01" class="form-control" id="calcGananciaEsperadaInput" placeholder="Ej: 4500">
-        </div>
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label class="form-label" for="calcFechaLlegada">Fecha de llegada</label>
           <input type="date" class="form-control" id="calcFechaLlegada">
         </div>
-        <div class="col-12 col-md-3 d-flex align-items-end">
-          <button type="button" class="btn btn-outline-primary w-100" id="calcBotonCalcular">Calcular</button>
-        </div>
       </div>
-
       <div class="row g-2 mt-2">
-        <div class="col-sm-6 col-xl-3">
-          <div class="panel-inline-stat">
-            <div class="small text-muted">Días de viaje</div>
-            <div class="h5 mb-0" id="calcDiasDemora">—</div>
-          </div>
-        </div>
-        <div class="col-sm-6 col-xl-3">
-          <div class="panel-inline-stat">
-            <div class="small text-muted">Días de reserva (+4)</div>
-            <div class="h5 mb-0 text-success" id="calcDiasPrecaucion">—</div>
-          </div>
-        </div>
-        <div class="col-sm-6 col-xl-3">
-          <div class="panel-inline-stat">
-            <div class="small text-muted">Precio de venta</div>
-            <div class="h5 mb-0 text-success" id="calcPrecioVenta">$0.00</div>
-          </div>
-        </div>
-        <div class="col-sm-6 col-xl-3">
-          <div class="panel-inline-stat">
-            <div class="small text-muted">Ganancia esperada</div>
-            <div class="h5 mb-0" id="calcGananciaMonto">$0.00</div>
-          </div>
-        </div>
+        <div class="col-sm-6 col-xl-3"><div class="panel-inline-stat"><div class="small text-muted">Días que demora</div><div class="h5 mb-0" id="calcDiasDemora">—</div></div></div>
+        <div class="col-sm-6 col-xl-3"><div class="panel-inline-stat"><div class="small text-muted">Días + 4 (precaución)</div><div class="h5 mb-0 text-success" id="calcDiasPrecaucion">—</div></div></div>
+        <div class="col-sm-6 col-xl-3"><div class="panel-inline-stat"><div class="small text-muted">Precio de venta sugerido</div><div class="h5 mb-0 text-success" id="calcPrecioVenta">$0.00</div></div></div>
+        <div class="col-sm-6 col-xl-3"><div class="panel-inline-stat"><div class="small text-muted">Ganancia esperada</div><div class="h5 mb-0" id="calcGananciaMonto">$0.00</div></div></div>
       </div>
-      <p class="small text-muted mt-3 mb-0">Se actualiza automáticamente en tiempo real. También puedes usar el botón “Calcular”.</p>
+      <p class="small text-muted mt-3 mb-0">Fórmulas: días de viaje = fecha llegada - hoy. Días de reserva = días de viaje + 4. Precio de venta = precio de compra + (% ganancia).</p>
     </div>
   </div>
 
@@ -274,11 +246,20 @@ $formatearFecha = static function (?string $valor): string {
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
 (() => {
-  const bloquesCalculadora = Array.from(document.querySelectorAll('[data-calculadora-panel]'));
-  const bloqueCalculadoraPrincipal = bloquesCalculadora[0] || null;
-  if (bloquesCalculadora.length > 1) {
-    bloquesCalculadora.slice(1).forEach((bloqueDuplicado) => bloqueDuplicado.remove());
-  }
+  const calculadoras = document.querySelectorAll('[data-calculadora-panel]');
+  calculadoras.forEach((card, index) => {
+    if (index > 0) {
+      card.remove();
+    }
+  });
+
+  document.querySelectorAll('.card.card-dashboard').forEach((card) => {
+    const header = card.querySelector('.card-header');
+    const titulo = header ? header.textContent.trim().toLowerCase() : '';
+    if (titulo === 'calculadora rápida de precio y llegada' && !card.hasAttribute('data-calculadora-panel')) {
+      card.remove();
+    }
+  });
 
   const labels = <?= json_encode($meses) ?>;
   const seriesConteo = <?= json_encode($conteosMes) ?>;
@@ -343,6 +324,54 @@ $formatearFecha = static function (?string $valor): string {
         });
       });
     });
+  }
+
+  const calculadoraPrincipal = document.querySelector('[data-calculadora-panel]');
+  const precioCompraInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcPrecioCompra') : null;
+  const margenGananciaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcMargenGanancia') : null;
+  const fechaLlegadaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcFechaLlegada') : null;
+  const diasDemoraEl = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcDiasDemora') : null;
+  const diasPrecaucionEl = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcDiasPrecaucion') : null;
+  const precioVentaEl = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcPrecioVenta') : null;
+  const gananciaMontoEl = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcGananciaMonto') : null;
+
+  if (precioCompraInput && margenGananciaInput && fechaLlegadaInput) {
+    const moneyFormatter = new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+    const recalcular = () => {
+      const precioCompra = Number(precioCompraInput.value || 0);
+      const margenGanancia = Number(margenGananciaInput.value || 0);
+      const fechaLlegadaValor = fechaLlegadaInput.value;
+      const ganancia = precioCompra * (margenGanancia / 100);
+      const venta = precioCompra + ganancia;
+
+      let diasDemoraTexto = '—';
+      let diasReservaTexto = '—';
+      if (fechaLlegadaValor) {
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        const llegada = new Date(fechaLlegadaValor + 'T00:00:00');
+        const dias = Math.ceil((llegada.getTime() - hoy.getTime()) / 86400000);
+        diasDemoraTexto = dias + ' días';
+        diasReservaTexto = (dias + 4) + ' días';
+      }
+
+      if (diasDemoraEl) diasDemoraEl.textContent = diasDemoraTexto;
+      if (diasPrecaucionEl) diasPrecaucionEl.textContent = diasReservaTexto;
+      if (precioVentaEl) precioVentaEl.textContent = moneyFormatter.format(venta);
+      if (gananciaMontoEl) gananciaMontoEl.textContent = moneyFormatter.format(ganancia);
+    };
+
+    [precioCompraInput, margenGananciaInput, fechaLlegadaInput].forEach((input) => {
+      input.addEventListener('input', recalcular);
+    });
+
+    recalcular();
   }
 
 })();
