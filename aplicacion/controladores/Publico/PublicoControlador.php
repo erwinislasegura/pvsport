@@ -641,14 +641,7 @@ class PublicoControlador extends Controlador
             return;
         }
 
-        $empresa = $contexto['empresa'];
-        $logoCatalogo = $contexto['logoCatalogo'];
-        $sliderCatalogo = $contexto['sliderCatalogo'];
-        $catalogoTopbar = $contexto['catalogoTopbar'];
-        $catalogoRutas = $this->construirRutasCatalogo($empresaId);
-        $ocultarNavbarPublico = true;
-
-        $this->vistaPublica('publico/catalogo_sitemap', compact('empresa', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'catalogoRutas', 'ocultarNavbarPublico'), 'catalogo_publico');
+        $this->generarSitemapCatalogoXml($empresaId);
     }
 
     public function catalogoLandingSeo(int $empresaId, string $slug): void
@@ -1912,7 +1905,7 @@ class PublicoControlador extends Controlador
                 'nosotros' => url('/nosotros'),
                 'contacto' => url('/contacto'),
                 'faq' => url('/preguntas-frecuentes'),
-                'sitemap' => url('/catalogo/sitemap'),
+                'sitemap' => url('/catalogo/sitemap.xml'),
                 'contacto_post' => '/contacto',
             ];
         }
@@ -1922,9 +1915,45 @@ class PublicoControlador extends Controlador
             'nosotros' => url('/catalogo/' . $empresaId . '/nosotros'),
             'contacto' => url('/catalogo/' . $empresaId . '/contacto'),
             'faq' => url('/catalogo/' . $empresaId . '/preguntas-frecuentes'),
-            'sitemap' => url('/catalogo/' . $empresaId . '/sitemap'),
+            'sitemap' => url('/catalogo/' . $empresaId . '/sitemap.xml'),
             'contacto_post' => '/catalogo/' . $empresaId . '/contacto',
         ];
+    }
+
+    private function generarSitemapCatalogoXml(int $empresaId): void
+    {
+        header('Content-Type: application/xml; charset=UTF-8');
+
+        $baseUrl = rtrim($this->obtenerUrlBaseSitio(), '/');
+        $catalogoRutas = $this->construirRutasCatalogo($empresaId);
+        $urls = [
+            (string) ($catalogoRutas['base'] ?? '/catalogo/' . $empresaId),
+            (string) ($catalogoRutas['nosotros'] ?? '/catalogo/' . $empresaId . '/nosotros'),
+            (string) ($catalogoRutas['contacto'] ?? '/catalogo/' . $empresaId . '/contacto'),
+            (string) ($catalogoRutas['faq'] ?? '/catalogo/' . $empresaId . '/preguntas-frecuentes'),
+        ];
+
+        $xml = new \XMLWriter();
+        $xml->openMemory();
+        $xml->startDocument('1.0', 'UTF-8');
+        $xml->startElement('urlset');
+        $xml->writeAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
+
+        foreach ($urls as $ruta) {
+            $ruta = '/' . ltrim($ruta, '/');
+
+            $xml->startElement('url');
+            $xml->writeElement('loc', $baseUrl . $ruta);
+            $xml->writeElement('lastmod', gmdate('Y-m-d'));
+            $xml->writeElement('changefreq', 'weekly');
+            $xml->writeElement('priority', $ruta === ('/' . ltrim((string) ($catalogoRutas['base'] ?? ''), '/')) ? '1.0' : '0.8');
+            $xml->endElement();
+        }
+
+        $xml->endElement();
+        $xml->endDocument();
+
+        echo $xml->outputMemory();
     }
 
     private function obtenerRutaContactoCatalogo(int $empresaId): string
