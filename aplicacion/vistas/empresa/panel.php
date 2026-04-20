@@ -175,49 +175,49 @@ $formatearFecha = static function (?string $valor): string {
   const seriesConteo = <?= json_encode($conteosMes) ?>;
   const seriesMontos = <?= json_encode($montosMes) ?>;
   const canvas = document.getElementById('graficoCotizacionesMes');
-  if (!canvas || !labels.length || typeof Chart === 'undefined') return;
-
-  new Chart(canvas, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        {
-          type: 'bar',
-          label: 'Cotizaciones',
-          data: seriesConteo,
-          backgroundColor: 'rgba(70, 50, 168, 0.35)',
-          borderColor: '#4632a8',
-          borderWidth: 1,
-          borderRadius: 6
-        },
-        {
-          type: 'line',
-          label: 'Monto cotizado',
-          data: seriesMontos,
-          yAxisID: 'y1',
-          borderColor: '#22b36d',
-          backgroundColor: 'rgba(34, 179, 109, 0.18)',
-          tension: 0.35,
-          fill: true
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: 'index', intersect: false },
-      plugins: { legend: { position: 'bottom' } },
-      scales: {
-        y: { beginAtZero: true, ticks: { precision: 0 } },
-        y1: {
-          beginAtZero: true,
-          position: 'right',
-          grid: { drawOnChartArea: false }
+  if (canvas && labels.length && typeof Chart !== 'undefined') {
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Cotizaciones',
+            data: seriesConteo,
+            backgroundColor: 'rgba(70, 50, 168, 0.35)',
+            borderColor: '#4632a8',
+            borderWidth: 1,
+            borderRadius: 6
+          },
+          {
+            type: 'line',
+            label: 'Monto cotizado',
+            data: seriesMontos,
+            yAxisID: 'y1',
+            borderColor: '#22b36d',
+            backgroundColor: 'rgba(34, 179, 109, 0.18)',
+            tension: 0.35,
+            fill: true
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom' } },
+        scales: {
+          y: { beginAtZero: true, ticks: { precision: 0 } },
+          y1: {
+            beginAtZero: true,
+            position: 'right',
+            grid: { drawOnChartArea: false }
+          }
         }
       }
-    }
-  });
+    });
+  }
 
   const botonesFiltro = document.querySelectorAll('[data-kpi-filter]');
   const itemsKpi = document.querySelectorAll('[data-kpi-module]');
@@ -235,5 +235,6 @@ $formatearFecha = static function (?string $valor): string {
       });
     });
   }
+
 })();
 </script>
