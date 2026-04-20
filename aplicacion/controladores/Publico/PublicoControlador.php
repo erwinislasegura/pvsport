@@ -27,6 +27,34 @@ class PublicoControlador extends Controlador
         ['path' => '/preguntas-frecuentes', 'changefreq' => 'monthly', 'priority' => '0.7', 'view' => 'preguntas_frecuentes.php'],
     ];
 
+    private const SEO_SLUGS_CATALOGO = [
+        'tenis-de-mesa-chile',
+        'ping-pong-chile',
+        'paletas-tenis-de-mesa-chile',
+        'gomas-tenis-de-mesa-chile',
+        'mesas-de-tenis-de-mesa-chile',
+        'pelotas-tenis-de-mesa-chile',
+        'accesorios-tenis-de-mesa-chile',
+        'implementos-tenis-de-mesa-chile',
+        'maderas-tenis-de-mesa-chile',
+        'redes-tenis-de-mesa',
+        'fundas-y-protectores',
+        'robots-de-entrenamiento',
+        'tenis-de-mesa-principiantes',
+        'tenis-de-mesa-profesional',
+        'implementacion-tenis-de-mesa',
+    ];
+
+    private const SEO_SLUG_ALIASES = [
+        'paletas-tenis-de-mesa' => 'paletas-tenis-de-mesa-chile',
+        'gomas-tenis-de-mesa' => 'gomas-tenis-de-mesa-chile',
+        'mesas-tenis-de-mesa' => 'mesas-de-tenis-de-mesa-chile',
+        'pelotas-tenis-de-mesa' => 'pelotas-tenis-de-mesa-chile',
+        'accesorios-tenis-de-mesa' => 'accesorios-tenis-de-mesa-chile',
+        'implementos-tenis-de-mesa' => 'implementos-tenis-de-mesa-chile',
+        'maderas-tenis-de-mesa' => 'maderas-tenis-de-mesa-chile',
+    ];
+
     public function inicio(): void
     {
         $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
@@ -175,6 +203,29 @@ class PublicoControlador extends Controlador
             $xml->endElement();
         }
 
+        foreach (self::SEO_SLUGS_CATALOGO as $slugSeo) {
+            $xml->startElement('url');
+            $xml->writeElement('loc', $baseUrl . url('/' . $slugSeo));
+            $xml->writeElement('lastmod', gmdate('Y-m-d'));
+            $xml->writeElement('changefreq', 'weekly');
+            $xml->writeElement('priority', '0.9');
+            $xml->endElement();
+        }
+
+        $xml->startElement('url');
+        $xml->writeElement('loc', $baseUrl . url('/faq-tenis-de-mesa-chile'));
+        $xml->writeElement('lastmod', gmdate('Y-m-d'));
+        $xml->writeElement('changefreq', 'weekly');
+        $xml->writeElement('priority', '0.8');
+        $xml->endElement();
+
+        $xml->startElement('url');
+        $xml->writeElement('loc', $baseUrl . url('/blog'));
+        $xml->writeElement('lastmod', gmdate('Y-m-d'));
+        $xml->writeElement('changefreq', 'weekly');
+        $xml->writeElement('priority', '0.8');
+        $xml->endElement();
+
         $xml->endElement();
         $xml->endDocument();
 
@@ -188,6 +239,9 @@ class PublicoControlador extends Controlador
         $baseUrl = $this->obtenerUrlBaseSitio();
         echo "User-agent: *\n";
         echo "Allow: /\n";
+        echo "Disallow: /catalogo/*/checkout\n";
+        echo "Disallow: /catalogo/*/checkout/\n";
+        echo "Disallow: /flow/\n";
         echo "Sitemap: " . $baseUrl . url('/sitemap.xml') . "\n";
     }
 
@@ -440,7 +494,48 @@ class PublicoControlador extends Controlador
             return;
         }
 
-        $this->catalogoPreguntasFrecuentes($empresaId);
+        $this->catalogoFaqSeo($empresaId);
+    }
+
+    public function catalogoLandingSeoPorDominio(): void
+    {
+        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
+        $slug = trim((string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH), '/');
+        if (isset(self::SEO_SLUG_ALIASES[$slug])) {
+            $slug = (string) self::SEO_SLUG_ALIASES[$slug];
+        }
+
+        if ($empresaId === null || !in_array($slug, self::SEO_SLUGS_CATALOGO, true)) {
+            http_response_code(404);
+            require __DIR__ . '/../../vistas/errores/404.php';
+            return;
+        }
+
+        $this->catalogoLandingSeo($empresaId, $slug);
+    }
+
+    public function catalogoBlogPorDominio(): void
+    {
+        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
+        if ($empresaId === null) {
+            http_response_code(404);
+            require __DIR__ . '/../../vistas/errores/404.php';
+            return;
+        }
+
+        $this->catalogoBlog($empresaId);
+    }
+
+    public function catalogoFaqSeoPorDominio(): void
+    {
+        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
+        if ($empresaId === null) {
+            http_response_code(404);
+            require __DIR__ . '/../../vistas/errores/404.php';
+            return;
+        }
+
+        $this->catalogoFaqSeo($empresaId);
     }
 
 
@@ -514,7 +609,14 @@ class PublicoControlador extends Controlador
         $catalogoRutas = $this->construirRutasCatalogo($empresaId);
         $ocultarNavbarPublico = true;
 
-        $this->vistaPublica('publico/catalogo_contacto', compact('empresa', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'catalogoRutas', 'ocultarNavbarPublico'), 'catalogo_publico');
+        $this->vista(
+            'publico/catalogo_contacto',
+            array_merge(
+                compact('empresa', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'catalogoRutas', 'ocultarNavbarPublico'),
+                $this->obtenerSeoContactoCatalogo($empresa)
+            ),
+            'publico'
+        );
     }
 
     public function catalogoPreguntasFrecuentes(int $empresaId): void
@@ -534,6 +636,88 @@ class PublicoControlador extends Controlador
         $ocultarNavbarPublico = true;
 
         $this->vistaPublica('publico/catalogo_preguntas_frecuentes', compact('empresa', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'catalogoRutas', 'ocultarNavbarPublico'), 'catalogo_publico');
+    }
+
+    public function catalogoLandingSeo(int $empresaId, string $slug): void
+    {
+        $contexto = $this->obtenerContextoCatalogo($empresaId);
+        if ($contexto === null) {
+            http_response_code(404);
+            require __DIR__ . '/../../vistas/errores/404.php';
+            return;
+        }
+
+        $empresa = $contexto['empresa'];
+        $catalogoRutas = $this->construirRutasCatalogo($empresaId);
+        $seoLanding = $this->obtenerSeoCatalogoLanding($slug);
+        $buscar = (string) ($seoLanding['buscar'] ?? '');
+        $productos = (new Producto())->listarParaCatalogoPublico($empresaId, $buscar, null);
+        $categorias = (new GestionComercial())->listarTablaEmpresa('categorias_productos', $empresaId, '', 300);
+        $productos = array_slice($productos, 0, 16);
+        $ocultarNavbarPublico = true;
+
+        $this->vista(
+            'publico/catalogo_landing_seo',
+            array_merge([
+                'empresa' => $empresa,
+                'productos' => $productos,
+                'categorias' => $categorias,
+                'catalogoRutas' => $catalogoRutas,
+                'seoLanding' => $seoLanding,
+                'ocultarNavbarPublico' => $ocultarNavbarPublico,
+            ], $this->obtenerSeoPaginaCatalogoLanding($slug, $empresa)),
+            'publico'
+        );
+    }
+
+    public function catalogoBlog(int $empresaId): void
+    {
+        $contexto = $this->obtenerContextoCatalogo($empresaId);
+        if ($contexto === null) {
+            http_response_code(404);
+            require __DIR__ . '/../../vistas/errores/404.php';
+            return;
+        }
+
+        $empresa = $contexto['empresa'];
+        $catalogoRutas = $this->construirRutasCatalogo($empresaId);
+        $ocultarNavbarPublico = true;
+
+        $this->vista(
+            'publico/catalogo_blog',
+            array_merge([
+                'empresa' => $empresa,
+                'catalogoRutas' => $catalogoRutas,
+                'ocultarNavbarPublico' => $ocultarNavbarPublico,
+            ], $this->obtenerSeoBlogCatalogo($empresa)),
+            'publico'
+        );
+    }
+
+    public function catalogoFaqSeo(int $empresaId): void
+    {
+        $contexto = $this->obtenerContextoCatalogo($empresaId);
+        if ($contexto === null) {
+            http_response_code(404);
+            require __DIR__ . '/../../vistas/errores/404.php';
+            return;
+        }
+
+        $empresa = $contexto['empresa'];
+        $catalogoRutas = $this->construirRutasCatalogo($empresaId);
+        $faqItems = $this->obtenerPreguntasFrecuentesSeo();
+        $ocultarNavbarPublico = true;
+
+        $this->vista(
+            'publico/catalogo_faq_seo',
+            array_merge([
+                'empresa' => $empresa,
+                'catalogoRutas' => $catalogoRutas,
+                'faqItems' => $faqItems,
+                'ocultarNavbarPublico' => $ocultarNavbarPublico,
+            ], $this->obtenerSeoFaqCatalogo($empresa, $faqItems)),
+            'publico'
+        );
     }
 
 
@@ -1742,13 +1926,143 @@ class PublicoControlador extends Controlador
         return ($esHttps ? 'https' : 'http') . '://' . $host;
     }
 
+    private function obtenerSeoCatalogoLanding(string $slug): array
+    {
+        $mapa = [
+            'tenis-de-mesa-chile' => ['h1' => 'Tenis de mesa en Chile: equipamiento profesional y recreativo', 'buscar' => 'tenis de mesa', 'keyword' => 'tenis de mesa chile'],
+            'ping-pong-chile' => ['h1' => 'Ping pong en Chile: tienda especializada para entrenar y competir', 'buscar' => 'ping pong', 'keyword' => 'ping pong chile'],
+            'paletas-tenis-de-mesa-chile' => ['h1' => 'Paletas de tenis de mesa para todos los niveles', 'buscar' => 'paleta', 'keyword' => 'paletas tenis de mesa chile'],
+            'gomas-tenis-de-mesa-chile' => ['h1' => 'Gomas de tenis de mesa para armar tu juego', 'buscar' => 'goma', 'keyword' => 'gomas ping pong chile'],
+            'mesas-de-tenis-de-mesa-chile' => ['h1' => 'Mesas de tenis de mesa para hogar, colegios y clubes', 'buscar' => 'mesa', 'keyword' => 'mesas de tenis de mesa chile'],
+            'pelotas-tenis-de-mesa-chile' => ['h1' => 'Pelotas de tenis de mesa para entrenamiento y competencia', 'buscar' => 'pelota', 'keyword' => 'pelotas tenis de mesa chile'],
+            'accesorios-tenis-de-mesa-chile' => ['h1' => 'Accesorios de tenis de mesa: fundas, limpiadores, grips y más', 'buscar' => 'accesorio', 'keyword' => 'accesorios tenis de mesa chile'],
+            'implementos-tenis-de-mesa-chile' => ['h1' => 'Implementos de tenis de mesa para armar tu set completo', 'buscar' => 'implemento', 'keyword' => 'implementos tenis de mesa chile'],
+            'maderas-tenis-de-mesa-chile' => ['h1' => 'Maderas de tenis de mesa según estilo de juego', 'buscar' => 'madera', 'keyword' => 'maderas tenis de mesa chile'],
+            'redes-tenis-de-mesa' => ['h1' => 'Redes de tenis de mesa y sistemas de sujeción', 'buscar' => 'red', 'keyword' => 'redes tenis de mesa chile'],
+            'fundas-y-protectores' => ['h1' => 'Fundas y protectores para cuidar tu paleta', 'buscar' => 'funda', 'keyword' => 'fundas tenis de mesa chile'],
+            'robots-de-entrenamiento' => ['h1' => 'Robots de entrenamiento para tenis de mesa', 'buscar' => 'robot', 'keyword' => 'robot tenis de mesa chile'],
+            'tenis-de-mesa-principiantes' => ['h1' => 'Tenis de mesa para principiantes: parte con lo justo', 'buscar' => 'principiante', 'keyword' => 'tenis de mesa para principiantes'],
+            'tenis-de-mesa-profesional' => ['h1' => 'Tenis de mesa profesional en Chile: equipa tu alto rendimiento', 'buscar' => 'profesional', 'keyword' => 'tenis de mesa profesional chile'],
+            'implementacion-tenis-de-mesa' => ['h1' => 'Implementación de tenis de mesa para colegios, clubes y empresas', 'buscar' => 'implementacion', 'keyword' => 'implementacion tenis de mesa'],
+        ];
+
+        return $mapa[$slug] ?? ['h1' => 'Tienda tenis de mesa en Chile', 'buscar' => 'tenis de mesa', 'keyword' => 'tienda tenis de mesa chile'];
+    }
+
+    private function obtenerSeoPaginaCatalogoLanding(string $slug, array $empresa): array
+    {
+        $landing = $this->obtenerSeoCatalogoLanding($slug);
+        $nombre = trim((string) ($empresa['nombre_comercial'] ?? 'PVSport'));
+        $url = $this->obtenerUrlBaseSitio() . url('/' . $slug);
+        $metaTitle = ucfirst((string) $landing['keyword']) . ' | ' . $nombre;
+        $metaDescription = 'Compra ' . (string) $landing['keyword'] . ' con despacho en Chile. Asesoría experta, stock actualizado y atención para hogares, clubes y colegios.';
+        $faqs = $this->obtenerPreguntasFrecuentesSeo();
+
+        return [
+            'meta_title' => $metaTitle,
+            'meta_description' => $metaDescription,
+            'meta_keywords' => 'tenis de mesa chile, ping pong chile, tienda tenis de mesa, accesorios tenis de mesa',
+            'meta_canonical' => $url,
+            'seo_schema' => [
+                ['@context' => 'https://schema.org', '@type' => 'CollectionPage', 'name' => $landing['h1'], 'url' => $url, 'description' => $metaDescription],
+                ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => [
+                    ['@type' => 'ListItem', 'position' => 1, 'name' => 'Inicio', 'item' => $this->obtenerUrlBaseSitio() . url('/')],
+                    ['@type' => 'ListItem', 'position' => 2, 'name' => $landing['h1'], 'item' => $url],
+                ]],
+                ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => array_map(static function (array $faq): array {
+                    return ['@type' => 'Question', 'name' => $faq['q'], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $faq['a']]];
+                }, $faqs)],
+            ],
+        ];
+    }
+
+    private function obtenerSeoBlogCatalogo(array $empresa): array
+    {
+        $nombre = trim((string) ($empresa['nombre_comercial'] ?? 'PVSport'));
+        $url = $this->obtenerUrlBaseSitio() . url('/blog');
+        return [
+            'meta_title' => 'Blog tenis de mesa Chile | ' . $nombre,
+            'meta_description' => 'Guías para elegir paletas, gomas, mesas y accesorios de tenis de mesa en Chile.',
+            'meta_keywords' => 'blog tenis de mesa, como elegir paleta ping pong, medidas mesa tenis de mesa',
+            'meta_canonical' => $url,
+            'seo_schema' => [[
+                '@context' => 'https://schema.org',
+                '@type' => 'Blog',
+                'name' => 'Blog de tenis de mesa en Chile',
+                'url' => $url,
+            ]],
+        ];
+    }
+
+    private function obtenerSeoFaqCatalogo(array $empresa, array $faqItems): array
+    {
+        $nombre = trim((string) ($empresa['nombre_comercial'] ?? 'PVSport'));
+        $url = $this->obtenerUrlBaseSitio() . url('/faq-tenis-de-mesa-chile');
+        return [
+            'meta_title' => 'FAQ tenis de mesa Chile | ' . $nombre,
+            'meta_description' => 'Resolvemos dudas sobre compra de paletas, gomas, mesas y envíos de ping pong en Chile.',
+            'meta_keywords' => 'faq tenis de mesa chile, donde comprar ping pong chile',
+            'meta_canonical' => $url,
+            'seo_schema' => [[
+                '@context' => 'https://schema.org',
+                '@type' => 'FAQPage',
+                'mainEntity' => array_map(static function (array $faq): array {
+                    return ['@type' => 'Question', 'name' => $faq['q'], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $faq['a']]];
+                }, $faqItems),
+            ]],
+        ];
+    }
+
+    private function obtenerSeoContactoCatalogo(array $empresa): array
+    {
+        $nombre = trim((string) ($empresa['nombre_comercial'] ?? 'PVSport'));
+        $url = $this->obtenerUrlBaseSitio() . url('/contacto');
+        $direccion = trim((string) ($empresa['direccion'] ?? 'Chile'));
+        $telefono = trim((string) ($empresa['telefono'] ?? ''));
+
+        return [
+            'meta_title' => 'Contacto y asesoría tenis de mesa en Chile | ' . $nombre,
+            'meta_description' => 'Contáctanos para asesoría en tenis de mesa, ayuda para elegir paletas y cotización de implementos con envío en Chile.',
+            'meta_keywords' => 'asesoría tenis de mesa chile, cotización implementos tenis de mesa, compra equipamiento ping pong chile',
+            'meta_canonical' => $url,
+            'seo_schema' => [[
+                '@context' => 'https://schema.org',
+                '@type' => 'LocalBusiness',
+                'name' => $nombre,
+                'url' => $url,
+                'address' => [
+                    '@type' => 'PostalAddress',
+                    'streetAddress' => $direccion,
+                    'addressCountry' => 'CL',
+                ],
+                'telephone' => $telefono,
+            ]],
+        ];
+    }
+
+    private function obtenerPreguntasFrecuentesSeo(): array
+    {
+        return [
+            ['grupo' => 'Compra', 'q' => '¿Dónde comprar tenis de mesa en Chile?', 'a' => 'Puedes comprar online en nuestra tienda especializada, comparar categorías y recibir asesoría antes de pagar.', 'url' => '/tenis-de-mesa-chile'],
+            ['grupo' => 'Compra', 'q' => '¿Dónde comprar paletas de ping pong en Chile?', 'a' => 'En la categoría de paletas encuentras opciones para iniciación, entrenamiento y competencia.', 'url' => '/paletas-tenis-de-mesa-chile'],
+            ['grupo' => 'Productos', 'q' => '¿Qué paleta de tenis de mesa conviene para empezar?', 'a' => 'Para comenzar conviene una paleta con alto control, goma equilibrada y buen agarre, ideal para mejorar técnica.', 'url' => '/tenis-de-mesa-principiantes'],
+            ['grupo' => 'Productos', 'q' => '¿Qué goma elegir para tenis de mesa?', 'a' => 'Depende de tu estilo: control para consistencia, velocidad para ataque y mayor spin para topspin.', 'url' => '/gomas-tenis-de-mesa-chile'],
+            ['grupo' => 'Niveles', 'q' => '¿Qué productos sirven para principiantes?', 'a' => 'Recomendamos paletas prearmadas, pelotas de entrenamiento y una mesa plegable para práctica frecuente.', 'url' => '/tenis-de-mesa-principiantes'],
+            ['grupo' => 'Niveles', 'q' => '¿Qué productos sirven para nivel intermedio o avanzado?', 'a' => 'Para subir rendimiento, combina maderas ofensivas, gomas específicas y accesorios de entrenamiento.', 'url' => '/tenis-de-mesa-profesional'],
+            ['grupo' => 'Reglas y medidas', 'q' => '¿Cuál es la diferencia entre ping pong y tenis de mesa?', 'a' => 'Ping pong se usa más en contexto recreativo; tenis de mesa es la disciplina formal con reglamento competitivo.', 'url' => '/ping-pong-chile'],
+            ['grupo' => 'Reglas y medidas', 'q' => '¿Cuánto mide una mesa de tenis de mesa?', 'a' => 'La medida oficial es 2,74 m de largo por 1,525 m de ancho y 76 cm de alto.', 'url' => '/mesas-de-tenis-de-mesa-chile'],
+            ['grupo' => 'Envíos', 'q' => '¿Hacen envíos a regiones en Chile?', 'a' => 'Sí, despachamos a Santiago y regiones con alternativas de envío según volumen del pedido.', 'url' => '/implementos-tenis-de-mesa-chile'],
+            ['grupo' => 'Implementación', 'q' => '¿Qué implementos necesito para jugar tenis de mesa?', 'a' => 'El set base incluye paleta, gomas, pelota, mesa y red. Luego puedes sumar fundas, limpiadores y robot de entrenamiento.', 'url' => '/implementos-tenis-de-mesa-chile'],
+        ];
+    }
+
     private function obtenerSeoPorPagina(string $pagina): array
     {
         $seo = [
             'inicio' => [
-                'meta_title' => 'Sistema de cotizaciones, punto de venta e inventario en Chile | PVSport',
-                'meta_description' => 'PVSport es un software de cotización online para empresas en Chile: sistema de cotizaciones, sistema punto de venta y sistema de inventario para vender más con control real.',
-                'meta_keywords' => 'sistema de cotizaciones, software de cotización online, sistema punto de venta, sistema de inventario, software para empresas chile, sistema de ventas con inventario',
+                'meta_title' => 'Tienda tenis de mesa en Chile | Ping pong, paletas, gomas y accesorios',
+                'meta_description' => 'Compra tenis de mesa en Chile: paletas, gomas, mesas, pelotas y accesorios de ping pong con despacho a regiones y atención especializada.',
+                'meta_keywords' => 'tenis de mesa chile, ping pong chile, tienda tenis de mesa chile, implementos tenis de mesa chile',
             ],
             'caracteristicas' => [
                 'meta_title' => 'Características del sistema de cotizaciones | PVSport',
@@ -1786,9 +2100,9 @@ class PublicoControlador extends Controlador
                 'meta_keywords' => 'orden de compra online, proveedor, documento compra',
             ],
             'catalogo_publico' => [
-                'meta_title' => 'Catálogo en línea | PVSport',
-                'meta_description' => 'Explora productos y servicios, usa filtros por categoría y compra con checkout Flow.',
-                'meta_keywords' => 'catalogo en linea, tienda b2b, checkout flow, carrito de compra',
+                'meta_title' => 'Catálogo tenis de mesa y ping pong en Chile | PVSport',
+                'meta_description' => 'Explora nuestro catálogo de tenis de mesa en Chile: paletas, gomas, mesas, pelotas, maderas y accesorios con checkout seguro.',
+                'meta_keywords' => 'catalogo tenis de mesa chile, tienda ping pong chile, accesorios tenis de mesa',
             ],
         ];
 

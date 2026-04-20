@@ -4,6 +4,17 @@
   # Si el hosting apunta a la raíz del proyecto, redirige assets a /public
   RewriteRule ^assets/(.*)$ public/assets/$1 [L]
 
+  # Redirecciones SEO (categorías antiguas -> slugs comerciales en Chile)
+  RewriteRule ^paletas-tenis-de-mesa/?$ /paletas-tenis-de-mesa-chile [R=301,L]
+  RewriteRule ^gomas-tenis-de-mesa/?$ /gomas-tenis-de-mesa-chile [R=301,L]
+  RewriteRule ^mesas-tenis-de-mesa/?$ /mesas-de-tenis-de-mesa-chile [R=301,L]
+  RewriteRule ^pelotas-tenis-de-mesa/?$ /pelotas-tenis-de-mesa-chile [R=301,L]
+  RewriteRule ^accesorios-tenis-de-mesa/?$ /accesorios-tenis-de-mesa-chile [R=301,L]
+  RewriteRule ^implementos-tenis-de-mesa/?$ /implementos-tenis-de-mesa-chile [R=301,L]
+  RewriteRule ^maderas-tenis-de-mesa/?$ /maderas-tenis-de-mesa-chile [R=301,L]
+  RewriteRule ^preguntas-frecuentes/?$ /faq-tenis-de-mesa-chile [R=301,L]
+  RewriteRule ^catalogo/preguntas-frecuentes/?$ /faq-tenis-de-mesa-chile [R=301,L]
+
   # Front controller
   RewriteRule ^$ public/index.php [L]
 
