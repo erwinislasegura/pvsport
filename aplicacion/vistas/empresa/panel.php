@@ -146,6 +146,54 @@ $formatearFecha = static function (?string $valor): string {
   </div>
 
   <div class="card card-dashboard mb-3">
+    <div class="card-header">Calculadora rápida de precio y llegada</div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label" for="calcPrecioCompra">Precio de compra</label>
+          <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="calcMargenGanancia">Ganancia deseada (%)</label>
+          <input type="number" min="0" step="0.01" class="form-control" id="calcMargenGanancia" placeholder="Ej: 30">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="calcFechaLlegada">Fecha de llegada</label>
+          <input type="date" class="form-control" id="calcFechaLlegada">
+        </div>
+      </div>
+
+      <div class="row g-2 mt-2">
+        <div class="col-sm-6 col-xl-3">
+          <div class="panel-inline-stat">
+            <div class="small text-muted">Días que demora</div>
+            <div class="h5 mb-0" id="calcDiasDemora">—</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="panel-inline-stat">
+            <div class="small text-muted">Días + 4 (precaución)</div>
+            <div class="h5 mb-0" id="calcDiasPrecaucion">—</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="panel-inline-stat">
+            <div class="small text-muted">Precio de venta sugerido</div>
+            <div class="h5 mb-0" id="calcPrecioVenta">$0.00</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+          <div class="panel-inline-stat">
+            <div class="small text-muted">Ganancia esperada</div>
+            <div class="h5 mb-0" id="calcGananciaMonto">$0.00</div>
+          </div>
+        </div>
+      </div>
+      <p class="small text-muted mt-3 mb-0">Fórmulas: días de viaje = fecha llegada - hoy. Días de reserva = días de viaje + 4. Precio de venta = precio de compra + (% ganancia).</p>
+    </div>
+  </div>
+
+  <div class="card card-dashboard mb-3">
     <div class="card-header">Resumen comercial rápido</div>
     <div class="card-body">
       <div class="row g-2">
@@ -235,5 +283,57 @@ $formatearFecha = static function (?string $valor): string {
       });
     });
   }
+
+  const precioCompraInput = document.getElementById('calcPrecioCompra');
+  const margenGananciaInput = document.getElementById('calcMargenGanancia');
+  const fechaLlegadaInput = document.getElementById('calcFechaLlegada');
+  const diasDemoraEl = document.getElementById('calcDiasDemora');
+  const diasPrecaucionEl = document.getElementById('calcDiasPrecaucion');
+  const precioVentaEl = document.getElementById('calcPrecioVenta');
+  const gananciaMontoEl = document.getElementById('calcGananciaMonto');
+
+  const moneyFormatter = new Intl.NumberFormat('es-CL', {
+    style: 'currency',
+    currency: 'CLP',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+  const calcularPanel = () => {
+    if (!precioCompraInput || !margenGananciaInput || !fechaLlegadaInput) {
+      return;
+    }
+
+    const precioCompra = Number(precioCompraInput.value || 0);
+    const margenGanancia = Number(margenGananciaInput.value || 0);
+    const fechaLlegadaValor = fechaLlegadaInput.value;
+
+    const gananciaMonto = precioCompra * (margenGanancia / 100);
+    const precioVenta = precioCompra + gananciaMonto;
+
+    let diasDemoraTexto = '—';
+    let diasPrecaucionTexto = '—';
+    if (fechaLlegadaValor) {
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      const fechaLlegada = new Date(fechaLlegadaValor + 'T00:00:00');
+      const diferenciaMs = fechaLlegada.getTime() - hoy.getTime();
+      const diasDemora = Math.ceil(diferenciaMs / 86400000);
+      const diasConPrecaucion = diasDemora + 4;
+      diasDemoraTexto = diasDemora + ' días';
+      diasPrecaucionTexto = diasConPrecaucion + ' días';
+    }
+
+    if (diasDemoraEl) diasDemoraEl.textContent = diasDemoraTexto;
+    if (diasPrecaucionEl) diasPrecaucionEl.textContent = diasPrecaucionTexto;
+    if (precioVentaEl) precioVentaEl.textContent = moneyFormatter.format(precioVenta);
+    if (gananciaMontoEl) gananciaMontoEl.textContent = moneyFormatter.format(gananciaMonto);
+  };
+
+  [precioCompraInput, margenGananciaInput, fechaLlegadaInput]
+    .filter(Boolean)
+    .forEach((input) => input.addEventListener('input', calcularPanel));
+
+  calcularPanel();
 })();
 </script>
