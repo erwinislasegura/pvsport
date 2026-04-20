@@ -8,6 +8,7 @@ $catalogoHeaderSearchButtonId = (string) ($catalogoHeaderSearchButtonId ?? '');
 $catalogoHeaderCartHref = (string) ($catalogoHeaderCartHref ?? $catalogoBaseUrl);
 $catalogoHeaderCartAsButton = (bool) ($catalogoHeaderCartAsButton ?? false);
 $catalogoHeaderCartButtonId = (string) ($catalogoHeaderCartButtonId ?? '');
+$catalogoFaqUrl = (string) ($catalogoFaqUrl ?? ($catalogoBaseUrl . '/preguntas-frecuentes'));
 ?>
 <div class="catalogo-topbar">
   <div class="catalogo-container catalogo-topbar__content">
@@ -30,6 +31,7 @@ $catalogoHeaderCartButtonId = (string) ($catalogoHeaderCartButtonId ?? '');
       <a class="menu-link" href="<?= e($catalogoBaseUrl) ?>">Inicio</a>
       <a class="menu-link" href="<?= e($catalogoNosotrosUrl) ?>">Nosotros</a>
       <a class="menu-link" href="<?= e($catalogoContactoUrl) ?>">Contacto</a>
+      <a class="menu-link" href="<?= e($catalogoFaqUrl) ?>">Preguntas frecuentes</a>
     </nav>
     <?php if ($catalogoHeaderCartAsButton): ?>
       <button class="btn-primary-custom d-inline-flex align-items-center gap-2" type="button"<?= $catalogoHeaderCartButtonId !== '' ? ' id="' . e($catalogoHeaderCartButtonId) . '"' : '' ?>><svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16"><path d="M3 4h2l2.4 10.2a2 2 0 0 0 2 1.5h7.7a2 2 0 0 0 2-1.6L21 7H7" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/></svg><span>Ver carrito</span></button>

@@ -2,6 +2,7 @@
 $catalogoRutas = is_array($catalogoRutas ?? null) ? $catalogoRutas : [];
 $catalogoBaseUrl = (string) ($catalogoRutas['base'] ?? url('/catalogo/' . (int) ($empresa['id'] ?? 0)));
 $catalogoContactoUrl = (string) ($catalogoRutas['contacto'] ?? ($catalogoBaseUrl . '/contacto'));
+$catalogoFaqUrl = (string) ($catalogoRutas['faq'] ?? ($catalogoBaseUrl . '/preguntas-frecuentes'));
 $catalogoNosotrosUrl = (string) ($catalogoRutas['nosotros'] ?? ($catalogoBaseUrl . '/nosotros'));
 $accionFormulario = (string) ($catalogoRutas['contacto'] ?? ($catalogoBaseUrl . '/contacto'));
 
