@@ -431,6 +431,19 @@ class PublicoControlador extends Controlador
         $this->catalogoContacto($empresaId);
     }
 
+    public function catalogoPreguntasFrecuentesPorDominio(): void
+    {
+        $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
+        if ($empresaId === null) {
+            http_response_code(404);
+            require __DIR__ . '/../../vistas/errores/404.php';
+            return;
+        }
+
+        $this->catalogoPreguntasFrecuentes($empresaId);
+    }
+
+
     public function enviarContactoCatalogoPorDominio(): void
     {
         $empresaId = $this->resolverEmpresaIdPorDominioCatalogo();
@@ -503,6 +516,26 @@ class PublicoControlador extends Controlador
 
         $this->vistaPublica('publico/catalogo_contacto', compact('empresa', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'catalogoRutas', 'ocultarNavbarPublico'), 'catalogo_publico');
     }
+
+    public function catalogoPreguntasFrecuentes(int $empresaId): void
+    {
+        $contexto = $this->obtenerContextoCatalogo($empresaId);
+        if ($contexto === null) {
+            http_response_code(404);
+            require __DIR__ . '/../../vistas/errores/404.php';
+            return;
+        }
+
+        $empresa = $contexto['empresa'];
+        $logoCatalogo = $contexto['logoCatalogo'];
+        $sliderCatalogo = $contexto['sliderCatalogo'];
+        $catalogoTopbar = $contexto['catalogoTopbar'];
+        $catalogoRutas = $this->construirRutasCatalogo($empresaId);
+        $ocultarNavbarPublico = true;
+
+        $this->vistaPublica('publico/catalogo_preguntas_frecuentes', compact('empresa', 'logoCatalogo', 'sliderCatalogo', 'catalogoTopbar', 'catalogoRutas', 'ocultarNavbarPublico'), 'catalogo_publico');
+    }
+
 
     public function enviarContactoCatalogo(int $empresaId): void
     {
@@ -1681,6 +1714,7 @@ class PublicoControlador extends Controlador
                 'base' => url('/'),
                 'nosotros' => url('/nosotros'),
                 'contacto' => url('/contacto'),
+                'faq' => url('/preguntas-frecuentes'),
                 'contacto_post' => '/contacto',
             ];
         }
@@ -1689,6 +1723,7 @@ class PublicoControlador extends Controlador
             'base' => url('/catalogo/' . $empresaId),
             'nosotros' => url('/catalogo/' . $empresaId . '/nosotros'),
             'contacto' => url('/catalogo/' . $empresaId . '/contacto'),
+            'faq' => url('/catalogo/' . $empresaId . '/preguntas-frecuentes'),
             'contacto_post' => '/catalogo/' . $empresaId . '/contacto',
         ];
     }

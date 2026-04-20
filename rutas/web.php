@@ -25,10 +25,12 @@ $enrutador->agregar('GET', '/media/archivo', [PublicoControlador::class, 'mediaA
 $enrutador->agregar('GET', '/catalogo', [PublicoControlador::class, 'catalogoEnLineaPorDominio']);
 $enrutador->agregar('GET', '/catalogo/nosotros', [PublicoControlador::class, 'catalogoNosotrosPorDominio']);
 $enrutador->agregar('GET', '/catalogo/contacto', [PublicoControlador::class, 'catalogoContactoPorDominio']);
+$enrutador->agregar('GET', '/catalogo/preguntas-frecuentes', [PublicoControlador::class, 'catalogoPreguntasFrecuentesPorDominio']);
 $enrutador->agregar('POST', '/catalogo/contacto', [PublicoControlador::class, 'enviarContactoCatalogoPorDominio']);
 $enrutador->agregar('GET', '/catalogo/{empresaId}', [PublicoControlador::class, 'catalogoEnLinea']);
 $enrutador->agregar('GET', '/catalogo/{empresaId}/nosotros', [PublicoControlador::class, 'catalogoNosotros']);
 $enrutador->agregar('GET', '/catalogo/{empresaId}/contacto', [PublicoControlador::class, 'catalogoContacto']);
+$enrutador->agregar('GET', '/catalogo/{empresaId}/preguntas-frecuentes', [PublicoControlador::class, 'catalogoPreguntasFrecuentes']);
 $enrutador->agregar('POST', '/catalogo/{empresaId}/contacto', [PublicoControlador::class, 'enviarContactoCatalogo']);
 $enrutador->agregar('GET', '/catalogo/{empresaId}/logo', [PublicoControlador::class, 'logoCatalogoEmpresa']);
 $enrutador->agregar('GET', '/catalogo/{empresaId}/slider/{tipo}', [PublicoControlador::class, 'sliderCatalogoImagen']);

@@ -4,6 +4,7 @@ $catalogoRutas = is_array($catalogoRutas ?? null) ? $catalogoRutas : [];
 $catalogoBaseUrl = (string) ($catalogoRutas['base'] ?? url('/catalogo/' . (int) ($empresa['id'] ?? 0)));
 $catalogoNosotrosUrl = (string) ($catalogoRutas['nosotros'] ?? ($catalogoBaseUrl . '/nosotros'));
 $catalogoContactoUrl = (string) ($catalogoRutas['contacto'] ?? ($catalogoBaseUrl . '/contacto'));
+$catalogoFaqUrl = (string) ($catalogoRutas['faq'] ?? ($catalogoBaseUrl . '/preguntas-frecuentes'));
 $resolverImagenProducto = static function (?string $ruta): string {
     $ruta = trim((string) $ruta);
     if ($ruta === '') {
