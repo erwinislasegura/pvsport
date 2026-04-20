@@ -76,13 +76,13 @@ $formatearFecha = static function (?string $valor): string {
           <label class="form-label" for="calcPrecioCompra">Precio de compra</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
         </div>
-        <div class="col-md-4">
-          <label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($) [NUEVO]</label>
-          <input type="number" min="0" step="0.01" class="form-control border-primary" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
+        <div class="col-md-3">
+          <label class="form-label" for="calcMargenGanancia">Ganancia deseada (%)</label>
+          <input type="number" min="0" step="0.01" class="form-control" id="calcMargenGanancia" placeholder="Ej: 30">
         </div>
         <div class="col-md-3">
-          <label class="form-label" for="calcMontoGananciaEsperada">Ingresa ganancia esperada ($)</label>
-          <input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
+          <label class="form-label" for="calcGananciaEsperadaMonto">Ganancia esperada ($)</label>
+          <input type="text" inputmode="numeric" class="form-control" id="calcGananciaEsperadaMonto" placeholder="$ 4.500" autocomplete="off">
         </div>
         <div class="col-md-3">
           <label class="form-label" for="calcFechaLlegada">Fecha de llegada</label>
@@ -95,7 +95,7 @@ $formatearFecha = static function (?string $valor): string {
         <div class="col-sm-6 col-xl-3"><div class="panel-inline-stat"><div class="small text-muted">Precio de venta sugerido</div><div class="h5 mb-0 text-success" id="calcPrecioVenta">$0.00</div></div></div>
         <div class="col-sm-6 col-xl-3"><div class="panel-inline-stat"><div class="small text-muted">Ganancia calculada</div><div class="h5 mb-0" id="calcGananciaMonto">$0.00</div></div></div>
       </div>
-      <p class="small text-muted mt-3 mb-0">Fórmulas: días de viaje = fecha llegada - hoy. Días de reserva = días de viaje + 4. Valor de venta = valor compra + ganancia esperada.</p>
+      <p class="small text-muted mt-3 mb-0">Fórmulas: días de viaje = fecha llegada - hoy. Días de reserva = días de viaje + 4. Valor de venta = valor compra + ganancia (monto ingresado o %).</p>
     </div>
   </div>
 
@@ -282,73 +282,26 @@ $formatearFecha = static function (?string $valor): string {
     });
   }
 
-  const buscarTarjetaCalculadora = () => {
-    const porData = document.querySelector('[data-calculadora-panel]');
-    if (porData) {
-      return porData;
-    }
-    const tarjetas = document.querySelectorAll('.card.card-dashboard');
-    for (const tarjeta of tarjetas) {
-      const header = tarjeta.querySelector('.card-header');
-      if (header && header.textContent.trim().toLowerCase() === 'calculadora rápida de precio y llegada') {
-        return tarjeta;
-      }
-    }
-    return null;
-  };
+  const calculadoraPrincipal = document.querySelector('[data-calculadora-panel]');
 
-  const calculadoraPrincipal = buscarTarjetaCalculadora();
-  if (calculadoraPrincipal) {
-    calculadoraPrincipal.querySelectorAll('label.form-label').forEach((label) => {
-      if (label.textContent.trim().toLowerCase() === 'ganancia deseada (%)') {
-        const forId = label.getAttribute('for');
-        const input = forId ? calculadoraPrincipal.querySelector('#' + forId) : null;
-        label.textContent = 'Monto ganancia esperada ($) [NUEVO]';
-        label.setAttribute('for', 'calcMontoGananciaEsperada');
-        if (input) {
-          input.id = 'calcMontoGananciaEsperada';
-          input.placeholder = 'Ej: 4500';
-          input.classList.add('border-primary');
-        }
-      }
-    });
-  }
-
-  if (calculadoraPrincipal && !calculadoraPrincipal.querySelector('#calcMontoGananciaEsperada')) {
+  if (calculadoraPrincipal && !calculadoraPrincipal.querySelector('#calcGananciaEsperadaMonto')) {
     const filaCampos = calculadoraPrincipal.querySelector('.row.g-3');
-    const campoMargen = calculadoraPrincipal.querySelector('#calcMargenGanancia');
-    const columnaMargen = campoMargen ? campoMargen.closest('[class*="col-"]') : null;
-    if (campoMargen && columnaMargen) {
-      const labelMargen = calculadoraPrincipal.querySelector('label[for="calcMargenGanancia"]');
-      campoMargen.id = 'calcMontoGananciaEsperada';
-      campoMargen.placeholder = 'Ej: 4500';
-      if (labelMargen) {
-        labelMargen.setAttribute('for', 'calcMontoGananciaEsperada');
-        labelMargen.textContent = 'Monto ganancia esperada ($) [NUEVO]';
-      }
+    const columnaFecha = calculadoraPrincipal.querySelector('#calcFechaLlegada')?.closest('[class*="col-"]');
+    const columnaGananciaMonto = document.createElement('div');
+    columnaGananciaMonto.className = 'col-md-3';
+    columnaGananciaMonto.innerHTML = '<label class="form-label" for="calcGananciaEsperadaMonto">Ganancia esperada ($)</label>'
+      + '<input type="text" inputmode="numeric" class="form-control" id="calcGananciaEsperadaMonto" placeholder="$ 4.500" autocomplete="off">';
+
+    if (filaCampos && columnaFecha) {
+      filaCampos.insertBefore(columnaGananciaMonto, columnaFecha);
     } else if (filaCampos) {
-      const columnaGanancia = document.createElement('div');
-      columnaGanancia.className = 'col-md-4';
-      columnaGanancia.innerHTML = '<label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($) [NUEVO]</label>'
-        + '<input type="number" min="0" step="0.01" class="form-control border-primary" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">';
-      filaCampos.appendChild(columnaGanancia);
-    }
-  }
-  if (calculadoraPrincipal) {
-    const formula = calculadoraPrincipal.querySelector('p.small.text-muted');
-    if (formula && formula.textContent.includes('Precio de venta = precio de compra + (% ganancia).')) {
-      formula.textContent = 'Fórmulas: días de viaje = fecha llegada - hoy. Días de reserva = días de viaje + 4. Valor de venta = valor compra + ganancia esperada.';
-    }
-    const tituloGanancia = calculadoraPrincipal.querySelector('#calcGananciaMonto')?.closest('.panel-inline-stat')?.querySelector('.small.text-muted');
-    if (tituloGanancia && tituloGanancia.textContent.trim().toLowerCase() === 'ganancia esperada') {
-      tituloGanancia.textContent = 'Ganancia calculada';
+      filaCampos.appendChild(columnaGananciaMonto);
     }
   }
 
   const precioCompraInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcPrecioCompra') : null;
-  const gananciaEsperadaInput = calculadoraPrincipal
-    ? (calculadoraPrincipal.querySelector('#calcMontoGananciaEsperada') || calculadoraPrincipal.querySelector('#calcMargenGanancia'))
-    : null;
+  const margenGananciaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcMargenGanancia') : null;
+  const gananciaEsperadaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcGananciaEsperadaMonto') : null;
   const fechaLlegadaInput = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcFechaLlegada') : null;
   const diasDemoraEl = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcDiasDemora') : null;
   const diasPrecaucionEl = calculadoraPrincipal ? calculadoraPrincipal.querySelector('#calcDiasPrecaucion') : null;
@@ -359,8 +312,8 @@ $formatearFecha = static function (?string $valor): string {
     const moneyFormatter = new Intl.NumberFormat('es-CL', {
       style: 'currency',
       currency: 'CLP',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     });
 
     const numeroSeguro = (valor) => {
@@ -371,9 +324,21 @@ $formatearFecha = static function (?string $valor): string {
       return numero;
     };
 
+    const formatearPesosChilenos = (valor) => moneyFormatter.format(numeroSeguro(valor));
+
+    const parsearPesosChilenos = (valor) => {
+      const soloDigitos = String(valor || '').replace(/[^\d]/g, '');
+      if (!soloDigitos) {
+        return 0;
+      }
+      return numeroSeguro(Number(soloDigitos));
+    };
+
     const recalcular = () => {
       const precioCompra = numeroSeguro(precioCompraInput.value);
-      const ganancia = numeroSeguro(gananciaEsperadaInput.value);
+      const porcentajeGanancia = margenGananciaInput ? numeroSeguro(margenGananciaInput.value) : 0;
+      const gananciaMontoIngresada = parsearPesosChilenos(gananciaEsperadaInput.value);
+      const ganancia = gananciaMontoIngresada > 0 ? gananciaMontoIngresada : (precioCompra * porcentajeGanancia) / 100;
       const fechaLlegadaValor = fechaLlegadaInput.value;
       const venta = precioCompra + ganancia;
 
@@ -395,8 +360,20 @@ $formatearFecha = static function (?string $valor): string {
     };
 
     precioCompraInput.addEventListener('input', recalcular);
+    if (margenGananciaInput) {
+      margenGananciaInput.addEventListener('input', recalcular);
+    }
+    gananciaEsperadaInput.addEventListener('input', () => {
+      const monto = parsearPesosChilenos(gananciaEsperadaInput.value);
+      gananciaEsperadaInput.value = monto > 0 ? formatearPesosChilenos(monto) : '';
+      recalcular();
+    });
     fechaLlegadaInput.addEventListener('input', recalcular);
-    gananciaEsperadaInput.addEventListener('input', recalcular);
+
+    const montoInicial = parsearPesosChilenos(gananciaEsperadaInput.value);
+    if (montoInicial > 0) {
+      gananciaEsperadaInput.value = formatearPesosChilenos(montoInicial);
+    }
 
     recalcular();
   }
