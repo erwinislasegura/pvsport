@@ -158,12 +158,8 @@ $formatearFecha = static function (?string $valor): string {
           <input type="number" min="0" step="0.01" class="form-control" id="calcMargenGanancia" placeholder="Ej: 30">
         </div>
         <div class="col-md-3">
-          <label class="form-label" for="calcObjetivoLlegada">Objetivo de llegada (%)</label>
-          <input type="number" min="0" step="0.01" class="form-control" id="calcObjetivoLlegada" value="100">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label" for="calcPorcentajeDiario">Avance diario de llegada (%)</label>
-          <input type="number" min="0" step="0.01" class="form-control" id="calcPorcentajeDiario" placeholder="Ej: 12.5">
+          <label class="form-label" for="calcFechaLlegada">Fecha de llegada</label>
+          <input type="date" class="form-control" id="calcFechaLlegada">
         </div>
       </div>
 
@@ -193,7 +189,7 @@ $formatearFecha = static function (?string $valor): string {
           </div>
         </div>
       </div>
-      <p class="small text-muted mt-3 mb-0">Fórmulas: días = objetivo / avance diario. Precio de venta = precio de compra + (% ganancia).</p>
+      <p class="small text-muted mt-3 mb-0">Fórmulas: días de viaje = fecha llegada - hoy. Días de reserva = días de viaje + 4. Precio de venta = precio de compra + (% ganancia).</p>
     </div>
   </div>
 
@@ -290,8 +286,7 @@ $formatearFecha = static function (?string $valor): string {
 
   const precioCompraInput = document.getElementById('calcPrecioCompra');
   const margenGananciaInput = document.getElementById('calcMargenGanancia');
-  const objetivoLlegadaInput = document.getElementById('calcObjetivoLlegada');
-  const porcentajeDiarioInput = document.getElementById('calcPorcentajeDiario');
+  const fechaLlegadaInput = document.getElementById('calcFechaLlegada');
   const diasDemoraEl = document.getElementById('calcDiasDemora');
   const diasPrecaucionEl = document.getElementById('calcDiasPrecaucion');
   const precioVentaEl = document.getElementById('calcPrecioVenta');
@@ -305,25 +300,28 @@ $formatearFecha = static function (?string $valor): string {
   });
 
   const calcularPanel = () => {
-    if (!precioCompraInput || !margenGananciaInput || !objetivoLlegadaInput || !porcentajeDiarioInput) {
+    if (!precioCompraInput || !margenGananciaInput || !fechaLlegadaInput) {
       return;
     }
 
     const precioCompra = Number(precioCompraInput.value || 0);
     const margenGanancia = Number(margenGananciaInput.value || 0);
-    const objetivoLlegada = Number(objetivoLlegadaInput.value || 0);
-    const porcentajeDiario = Number(porcentajeDiarioInput.value || 0);
+    const fechaLlegadaValor = fechaLlegadaInput.value;
 
     const gananciaMonto = precioCompra * (margenGanancia / 100);
     const precioVenta = precioCompra + gananciaMonto;
 
     let diasDemoraTexto = '—';
     let diasPrecaucionTexto = '—';
-    if (porcentajeDiario > 0 && objetivoLlegada > 0) {
-      const diasDemora = objetivoLlegada / porcentajeDiario;
+    if (fechaLlegadaValor) {
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      const fechaLlegada = new Date(fechaLlegadaValor + 'T00:00:00');
+      const diferenciaMs = fechaLlegada.getTime() - hoy.getTime();
+      const diasDemora = Math.ceil(diferenciaMs / 86400000);
       const diasConPrecaucion = diasDemora + 4;
-      diasDemoraTexto = diasDemora.toFixed(1) + ' días';
-      diasPrecaucionTexto = diasConPrecaucion.toFixed(1) + ' días';
+      diasDemoraTexto = diasDemora + ' días';
+      diasPrecaucionTexto = diasConPrecaucion + ' días';
     }
 
     if (diasDemoraEl) diasDemoraEl.textContent = diasDemoraTexto;
@@ -332,7 +330,7 @@ $formatearFecha = static function (?string $valor): string {
     if (gananciaMontoEl) gananciaMontoEl.textContent = moneyFormatter.format(gananciaMonto);
   };
 
-  [precioCompraInput, margenGananciaInput, objetivoLlegadaInput, porcentajeDiarioInput]
+  [precioCompraInput, margenGananciaInput, fechaLlegadaInput]
     .filter(Boolean)
     .forEach((input) => input.addEventListener('input', calcularPanel));
 
