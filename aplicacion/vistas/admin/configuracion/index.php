@@ -8,7 +8,7 @@
 
       <div class="col-md-3">
         <label class="form-label">Nombre del sistema</label>
-        <input class="form-control" name="nombre_plataforma" value="<?= e($config['nombre_plataforma'] ?? 'Vextra') ?>" required>
+        <input class="form-control" name="nombre_plataforma" value="<?= e($config['nombre_plataforma'] ?? 'PVSport') ?>" required>
       </div>
 
       <div class="col-md-3">
@@ -71,7 +71,7 @@
 
       <div class="col-md-3">
         <label class="form-label">Servidor SMTP</label>
-        <input class="form-control" name="smtp_notif_host" value="<?= e($config['smtp_notif_host'] ?? 'mail.vextra.cl') ?>">
+        <input class="form-control" name="smtp_notif_host" value="<?= e($config['smtp_notif_host'] ?? 'mail.pvsport.cl') ?>">
       </div>
 
       <div class="col-md-2">
@@ -91,7 +91,7 @@
 
       <div class="col-md-5">
         <label class="form-label">Usuario SMTP</label>
-        <input class="form-control" name="smtp_notif_usuario" value="<?= e($config['smtp_notif_usuario'] ?? 'noresponder@vextra.cl') ?>">
+        <input class="form-control" name="smtp_notif_usuario" value="<?= e($config['smtp_notif_usuario'] ?? 'noresponder@pvsport.cl') ?>">
       </div>
 
       <div class="col-md-3">
@@ -111,12 +111,12 @@
 
       <div class="col-md-4">
         <label class="form-label">Remitente correo</label>
-        <input class="form-control" name="smtp_notif_remitente_correo" value="<?= e($config['smtp_notif_remitente_correo'] ?? 'noresponder@vextra.cl') ?>">
+        <input class="form-control" name="smtp_notif_remitente_correo" value="<?= e($config['smtp_notif_remitente_correo'] ?? 'noresponder@pvsport.cl') ?>">
       </div>
 
       <div class="col-md-4">
         <label class="form-label">Remitente nombre</label>
-        <input class="form-control" name="smtp_notif_remitente_nombre" value="<?= e($config['smtp_notif_remitente_nombre'] ?? 'Vextra Notificaciones') ?>">
+        <input class="form-control" name="smtp_notif_remitente_nombre" value="<?= e($config['smtp_notif_remitente_nombre'] ?? 'PVSport Notificaciones') ?>">
       </div>
 
       <div class="col-12">

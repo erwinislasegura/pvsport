@@ -1,4 +1,4 @@
-# Análisis técnico y visual completo del proyecto PVSport (Vextra)
+# Análisis técnico y visual completo del proyecto PVSport (PVSport)
 
 ## 1) Resumen ejecutivo
 

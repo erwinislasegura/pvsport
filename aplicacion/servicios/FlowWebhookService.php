@@ -160,7 +160,7 @@ class FlowWebhookService
         $html = '<div style="font-family:Arial,sans-serif;background:#f6f7fb;padding:24px 0;">'
             . '<table role="presentation" style="width:100%;max-width:640px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;">'
             . '<tr><td style="background:#4632a8;color:#ffffff;padding:18px 24px;border-radius:12px 12px 0 0;">'
-            . '<h2 style="margin:0;font-size:22px;">Pago confirmado en Vextra</h2>'
+            . '<h2 style="margin:0;font-size:22px;">Pago confirmado en PVSport</h2>'
             . '</td></tr>'
             . '<tr><td style="padding:20px 24px;color:#1f2937;">'
             . '<p style="margin:0 0 12px;">Hola ' . htmlspecialchars($nombreAdmin !== '' ? $nombreAdmin : 'equipo') . ',</p>'
@@ -173,12 +173,12 @@ class FlowWebhookService
             . '<tr><td style="padding:8px;border-bottom:1px solid #e5e7eb;"><strong>Duración</strong></td><td style="padding:8px;border-bottom:1px solid #e5e7eb;">' . htmlspecialchars($duracionPlan) . '</td></tr>'
             . '<tr><td style="padding:8px;"><strong>Inicio de sesión</strong></td><td style="padding:8px;"><a href="' . htmlspecialchars($linkLogin) . '">' . htmlspecialchars($linkLogin) . '</a></td></tr>'
             . '</table>'
-            . '<p style="margin:16px 0 0;font-size:12px;color:#6b7280;">Correo enviado automáticamente desde noresponder@vextra.cl.</p>'
+            . '<p style="margin:16px 0 0;font-size:12px;color:#6b7280;">Correo enviado automáticamente desde noresponder@pvsport.cl.</p>'
             . '</div>';
 
         (new ServicioCorreo())->enviarNotificacionCliente(
             $correo,
-            'Pago confirmado en Flow - Vextra',
+            'Pago confirmado en Flow - PVSport',
             'flow_pago_confirmado',
             ['html' => $html]
         );

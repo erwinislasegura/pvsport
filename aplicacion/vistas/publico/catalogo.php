@@ -565,7 +565,7 @@ $renderIconoRed = static function (string $id): string {
     if (limpio.length <= max) return limpio;
     return `${limpio.slice(0, max).trimEnd()}…`;
   };
-  const storageKey = 'vextra_catalogo_carrito_<?= (int) $empresa['id'] ?>';
+  const storageKey = 'pvsport_catalogo_carrito_<?= (int) $empresa['id'] ?>';
 
   const cards = $$('.product-card');
   const products = cards.map((card) => ({

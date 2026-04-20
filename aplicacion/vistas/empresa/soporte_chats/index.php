@@ -6,7 +6,7 @@ $chatAbierto = ($chat['estado'] ?? 'abierto') === 'abierto';
 <section class="row g-3" id="soporteApp" data-chat-id="<?= $chatId ?>" data-ultimo-id="<?= $ultimoId ?>" data-chat-estado="<?= e((string) ($chat['estado'] ?? 'abierto')) ?>" data-mensajes-url-base="<?= e(url('/app/soporte-chats/mensajes')) ?>" data-responder-url-base="<?= e(url('/app/soporte-chats/responder')) ?>" data-adjunto-url-base="<?= e(url('/app/soporte-chats/adjunto')) ?>">
   <div class="col-lg-4">
     <div class="card h-100 shadow-sm border-0">
-      <div class="card-header bg-body-tertiary"><strong><i class="bi bi-headset me-1"></i>Soporte Vextra</strong></div>
+      <div class="card-header bg-body-tertiary"><strong><i class="bi bi-headset me-1"></i>Soporte PVSport</strong></div>
       <div class="card-body border-bottom">
         <div class="alert alert-warning small mb-2">
           <strong>Importante:</strong> los mensajes y archivos de este chat son temporales. Al cerrar/eliminar el chat por soporte, se elimina historial y adjuntos.
@@ -56,7 +56,7 @@ $chatAbierto = ($chat['estado'] ?? 'abierto') === 'abierto';
             <?php foreach ($mensajes as $mensaje): ?>
               <?php $esAdmin = ($mensaje['remitente_tipo'] ?? '') === 'admin'; ?>
               <div class="p-2 rounded border <?= $esAdmin ? 'bg-light border-success-subtle ms-4' : 'border-primary-subtle me-4' ?>">
-                <div class="small fw-semibold <?= $esAdmin ? 'text-success' : 'text-primary' ?>"><?= $esAdmin ? 'Soporte Vextra' : 'Mi empresa' ?></div>
+                <div class="small fw-semibold <?= $esAdmin ? 'text-success' : 'text-primary' ?>"><?= $esAdmin ? 'Soporte PVSport' : 'Mi empresa' ?></div>
                 <?php if (trim((string) ($mensaje['mensaje'] ?? '')) !== ''): ?><div><?= nl2br(e($mensaje['mensaje'] ?? '')) ?></div><?php endif; ?>
                 <?php if (!empty($mensaje['archivo_ruta'])): ?>
                   <div class="mt-1"><a href="<?= e(url('/app/soporte-chats/adjunto/' . (int) ($mensaje['id'] ?? 0))) ?>" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="bi bi-paperclip"></i> <?= e($mensaje['archivo_nombre'] ?? 'Adjunto') ?></a></div>
@@ -137,7 +137,7 @@ $chatAbierto = ($chat['estado'] ?? 'abierto') === 'abierto';
     box.className = 'p-2 rounded border ' + (esAdmin ? 'bg-light border-success-subtle ms-4' : 'border-primary-subtle me-4');
     const mensajeHtml = m.mensaje ? `<div>${escapeHtml(m.mensaje).replace(/\n/g, '<br>')}</div>` : '';
     const archivoHtml = m.archivo_ruta ? `<div class="mt-1"><a href="${normalizarRutaArchivo(`${adjuntoUrlBase}/${m.id}`)}" target="_blank" class="btn btn-sm btn-outline-secondary"><i class="bi bi-paperclip"></i> ${escapeHtml(m.archivo_nombre || 'Adjunto')}</a></div>` : '';
-    box.innerHTML = `<div class="small fw-semibold ${esAdmin ? 'text-success' : 'text-primary'}">${esAdmin ? 'Soporte Vextra' : 'Mi empresa'}</div>${mensajeHtml}${archivoHtml}<div class="small text-muted mt-1">${m.fecha_creacion || ''}</div>`;
+    box.innerHTML = `<div class="small fw-semibold ${esAdmin ? 'text-success' : 'text-primary'}">${esAdmin ? 'Soporte PVSport' : 'Mi empresa'}</div>${mensajeHtml}${archivoHtml}<div class="small text-muted mt-1">${m.fecha_creacion || ''}</div>`;
     hilo.appendChild(box);
   };
 

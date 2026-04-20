@@ -2,22 +2,22 @@
 <html lang="es">
 <head>
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-X41LED0NXW"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0GM9XBKGP"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
-    gtag('config', 'G-X41LED0NXW');
+    gtag('config', 'G-Z0GM9XBKGP');
   </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#4632a8">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>Admin - Vextra</title>
-  <link rel="icon" type="image/png" href="<?= e(url('/img/logo/logo_vextra.png')) ?>">
-  <link rel="apple-touch-icon" href="<?= e(url('/img/logo/logo_vextra.png')) ?>">
+  <title>Admin - PVSport</title>
+  <link rel="icon" type="image/png" href="<?= e(url('/img/logo/pvsport-logo-red.svg')) ?>">
+  <link rel="apple-touch-icon" href="<?= e(url('/img/logo/pvsport-logo-red.svg')) ?>">
   <link rel="manifest" href="<?= e(url('/site.webmanifest')) ?>">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">

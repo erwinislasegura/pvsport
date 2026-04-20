@@ -2,7 +2,7 @@
     <div class="container" style="max-width: 560px;">
         <div class="text-center mb-3">
             <span class="badge bg-info-subtle text-info-emphasis mb-2">Acceso seguro</span>
-            <h1 class="h3 mb-2">Iniciar sesión en Vextra</h1>
+            <h1 class="h3 mb-2">Iniciar sesión en PVSport</h1>
             <p class="text-secondary small mb-0">Accede a tu cuenta para gestionar cotizaciones, clientes y seguimiento comercial en un entorno profesional.</p>
         </div>
 

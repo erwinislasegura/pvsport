@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top public-navbar">
   <div class="container">
     <a class="navbar-brand d-inline-flex align-items-center fw-semibold" href="<?= e(url('/')) ?>">
-      <img src="<?= e(url('/img/logo/logo_vextra.png')) ?>" alt="Vextra" class="brand-logo-public" width="146" height="72" fetchpriority="high" decoding="async">
+      <img src="<?= e(url('/img/logo/pvsport-logo-red.svg')) ?>" alt="PVSport" class="brand-logo-public" width="146" height="72" fetchpriority="high" decoding="async">
     </a>
     <button class="navbar-toggler" type="button" data-nav-toggle="#n" aria-controls="n" aria-expanded="false" aria-label="Abrir menú"><span class="navbar-toggler-icon"></span></button>
     <div class="navbar-collapse" id="n" data-nav-collapse>

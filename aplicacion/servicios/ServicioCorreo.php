@@ -30,9 +30,9 @@ class ServicioCorreo
         }
 
         $remitenteCorreo = trim((string) ($smtp['remitente_correo'] ?? ''));
-        $remitenteNombre = trim((string) ($smtp['remitente_nombre'] ?? 'Vextra'));
+        $remitenteNombre = trim((string) ($smtp['remitente_nombre'] ?? 'PVSport'));
         if ($remitenteCorreo === '' || !filter_var($remitenteCorreo, FILTER_VALIDATE_EMAIL)) {
-            $remitenteCorreo = 'noresponder@vextra.cl';
+            $remitenteCorreo = 'noresponder@pvsport.cl';
         }
 
         $html = (string) ($datos['html'] ?? '');
@@ -40,7 +40,7 @@ class ServicioCorreo
             $html = (string) $datos['mensaje_html'];
         }
         if ($html === '') {
-            $html = '<p>Notificación automática de Vextra.</p>';
+            $html = '<p>Notificación automática de PVSport.</p>';
         }
         if (!preg_match('/<\\s*html[\\s>]/i', $html)) {
             $html = '<!doctype html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;">' . $html . '</body></html>';
@@ -103,13 +103,13 @@ class ServicioCorreo
         ]);
 
         $datos['smtp_global'] = [
-            'host' => (string) ($config['smtp_notif_host'] ?? 'mail.vextra.cl'),
+            'host' => (string) ($config['smtp_notif_host'] ?? 'mail.pvsport.cl'),
             'puerto' => (string) ($config['smtp_notif_port'] ?? '465'),
-            'usuario' => (string) ($config['smtp_notif_usuario'] ?? 'noresponder@vextra.cl'),
+            'usuario' => (string) ($config['smtp_notif_usuario'] ?? 'noresponder@pvsport.cl'),
             'password' => (string) ($config['smtp_notif_password'] ?? 'Tb*Kz{ny{[_E!%,Q'),
             'encryption' => (string) ($config['smtp_notif_encryption'] ?? 'ssl'),
-            'remitente_correo' => 'noresponder@vextra.cl',
-            'remitente_nombre' => (string) ($config['smtp_notif_remitente_nombre'] ?? 'Vextra Notificaciones'),
+            'remitente_correo' => 'noresponder@pvsport.cl',
+            'remitente_nombre' => (string) ($config['smtp_notif_remitente_nombre'] ?? 'PVSport Notificaciones'),
         ];
 
         return $this->enviar($destinatario, $asunto, $plantilla, $datos);

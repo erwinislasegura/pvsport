@@ -345,7 +345,7 @@ HTML;
         $config = require __DIR__ . '/../../../configuracion/aplicacion.php';
         $base = rtrim((string) ($config['url'] ?? ''), '/');
         if ($base === '' || preg_match('/localhost|127\\.0\\.0\\.1/i', $base)) {
-            $base = 'https://vextra.cl';
+            $base = 'https://pvsport.cl';
         }
 
         return $base . url($ruta);
