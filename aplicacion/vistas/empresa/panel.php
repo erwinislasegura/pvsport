@@ -185,7 +185,7 @@ $formatearFecha = static function (?string $valor): string {
           <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
         </div>
         <div class="col-md-3">
-          <label class="form-label" for="calcMargenGanancia">Ganancia deseada (%)</label>
+          <label class="form-label" for="calcMargenGanancia">Margen de ganancia (%)</label>
           <input type="number" min="0" step="0.01" class="form-control" id="calcMargenGanancia" placeholder="Ej: 30">
         </div>
         <div class="col-md-3">
