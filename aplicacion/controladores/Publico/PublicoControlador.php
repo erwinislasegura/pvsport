@@ -1273,14 +1273,18 @@ class PublicoControlador extends Controlador
 
         $comprador = is_array($orden['comprador'] ?? null) ? $orden['comprador'] : [];
         $correo = trim((string) ($comprador['correo'] ?? ''));
-        if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-            return;
-        }
+        $correoValidoCliente = filter_var($correo, FILTER_VALIDATE_EMAIL) !== false;
+        $correoClienteMostrar = $correoValidoCliente ? $correo : 'no-informado@cliente.local';
 
         $estadoTitulo = match ($estado) {
             'aprobado' => 'Pago aprobado',
             'rechazado', 'anulado' => 'Pago no aprobado',
             default => 'Pago en revisión',
+        };
+        $estadoVisla = match ($estado) {
+            'aprobado' => 'ACEPTADO',
+            'rechazado', 'anulado' => 'RECHAZADO',
+            default => 'EN REVISIÓN',
         };
 
         $metodoEnvio = match ((string) ($comprador['envio_metodo'] ?? 'starken')) {
@@ -1369,7 +1373,7 @@ class PublicoControlador extends Controlador
             . '<h3 style="margin:14px 0 8px;font-size:16px;">Datos personales</h3>'
             . '<table style="width:100%;border-collapse:collapse;font-size:14px;">'
             . '<tr><td style="padding:5px 0;"><strong>Nombre:</strong> ' . htmlspecialchars((string) ($comprador['nombre'] ?? '-')) . '</td></tr>'
-            . '<tr><td style="padding:5px 0;"><strong>Correo:</strong> ' . htmlspecialchars($correo) . '</td></tr>'
+            . '<tr><td style="padding:5px 0;"><strong>Correo:</strong> ' . htmlspecialchars($correoClienteMostrar) . '</td></tr>'
             . '<tr><td style="padding:5px 0;"><strong>Teléfono:</strong> ' . htmlspecialchars((string) ($comprador['telefono'] ?? '-')) . '</td></tr>'
             . '<tr><td style="padding:5px 0;"><strong>Documento:</strong> ' . htmlspecialchars((string) ($comprador['documento'] ?? '-')) . '</td></tr>'
             . '<tr><td style="padding:5px 0;"><strong>Empresa:</strong> ' . htmlspecialchars((string) ($comprador['empresa'] ?? '-')) . '</td></tr>'
@@ -1391,11 +1395,38 @@ class PublicoControlador extends Controlador
             . '</table>'
             . '</div>';
 
-        (new ServicioCorreo())->enviarNotificacionCliente(
-            $correo,
-            'Resumen de compra catálogo - ' . (string) ($empresa['nombre_comercial'] ?? 'PVSport'),
-            'catalogo_checkout_resumen',
-            ['html' => $html]
+        $servicioCorreo = new ServicioCorreo();
+        if ($correoValidoCliente) {
+            $servicioCorreo->enviarNotificacionCliente(
+                $correo,
+                'Resumen de compra catálogo - ' . (string) ($empresa['nombre_comercial'] ?? 'PVSport'),
+                'catalogo_checkout_resumen',
+                ['html' => $html]
+            );
+        }
+
+        $htmlVisla = '<div style="font-family:Arial,sans-serif;background:#f4f6fb;padding:20px 0;">'
+            . '<table role="presentation" style="width:100%;max-width:700px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">'
+            . '<tr><td style="background:#111827;color:#fff;padding:18px 24px;">'
+            . '<h2 style="margin:0;font-size:22px;">Notificación de compra catálogo</h2>'
+            . '<div style="margin-top:6px;font-size:13px;opacity:.95;">' . htmlspecialchars((string) ($empresa['nombre_comercial'] ?? 'Catálogo')) . '</div>'
+            . '</td></tr>'
+            . '<tr><td style="padding:20px 24px;color:#1f2937;">'
+            . '<p style="margin:0 0 10px;"><strong>Estado de pago:</strong> ' . htmlspecialchars($estadoVisla) . '</p>'
+            . '<p style="margin:0 0 10px;"><strong>Token Flow:</strong> ' . htmlspecialchars($token) . '</p>'
+            . '<p style="margin:0 0 10px;"><strong>Cliente:</strong> ' . htmlspecialchars((string) ($comprador['nombre'] ?? '-')) . ' · ' . htmlspecialchars($correoClienteMostrar) . '</p>'
+            . '<p style="margin:0 0 14px;"><strong>Total:</strong> $' . number_format((float) ($orden['total'] ?? 0), 0, ',', '.') . '</p>'
+            . '<h3 style="margin:18px 0 8px;font-size:16px;">Detalle de compra</h3>'
+            . '<table style="width:100%;border-collapse:collapse;">' . $filas . '</table>'
+            . '</td></tr>'
+            . '</table>'
+            . '</div>';
+
+        $servicioCorreo->enviarNotificacionCliente(
+            'visla@pvsport.cl',
+            'Compra catálogo [' . $estadoVisla . '] - ' . (string) ($empresa['nombre_comercial'] ?? 'PVSport'),
+            'catalogo_checkout_resumen_admin',
+            ['html' => $htmlVisla]
         );
 
         $_SESSION[$sessionKey] = 1;
