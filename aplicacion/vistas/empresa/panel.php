@@ -77,8 +77,8 @@ $formatearFecha = static function (?string $valor): string {
           <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
         </div>
         <div class="col-md-4">
-          <label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($)</label>
-          <input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
+          <label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($) [NUEVO]</label>
+          <input type="number" min="0" step="0.01" class="form-control border-primary" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
         </div>
         <div class="col-md-3">
           <label class="form-label" for="calcMontoGananciaEsperada">Ingresa ganancia esperada ($)</label>
@@ -185,8 +185,8 @@ $formatearFecha = static function (?string $valor): string {
           <input type="number" min="0" step="0.01" class="form-control" id="calcPrecioCompra" placeholder="Ej: 15000">
         </div>
         <div class="col-md-4">
-          <label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($)</label>
-          <input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
+          <label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($) [NUEVO]</label>
+          <input type="number" min="0" step="0.01" class="form-control border-primary" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">
         </div>
         <div class="col-md-4">
           <label class="form-label" for="calcFechaLlegada">Fecha de llegada</label>
@@ -346,6 +346,22 @@ $formatearFecha = static function (?string $valor): string {
   };
 
   const calculadoraPrincipal = buscarTarjetaCalculadora();
+  if (calculadoraPrincipal) {
+    calculadoraPrincipal.querySelectorAll('label.form-label').forEach((label) => {
+      if (label.textContent.trim().toLowerCase() === 'ganancia deseada (%)') {
+        const forId = label.getAttribute('for');
+        const input = forId ? calculadoraPrincipal.querySelector('#' + forId) : null;
+        label.textContent = 'Monto ganancia esperada ($) [NUEVO]';
+        label.setAttribute('for', 'calcMontoGananciaEsperada');
+        if (input) {
+          input.id = 'calcMontoGananciaEsperada';
+          input.placeholder = 'Ej: 4500';
+          input.classList.add('border-primary');
+        }
+      }
+    });
+  }
+
   if (calculadoraPrincipal && !calculadoraPrincipal.querySelector('#calcMontoGananciaEsperada')) {
     const filaCampos = calculadoraPrincipal.querySelector('.row.g-3');
     const campoMargen = calculadoraPrincipal.querySelector('#calcMargenGanancia');
@@ -356,13 +372,13 @@ $formatearFecha = static function (?string $valor): string {
       campoMargen.placeholder = 'Ej: 4500';
       if (labelMargen) {
         labelMargen.setAttribute('for', 'calcMontoGananciaEsperada');
-        labelMargen.textContent = 'Monto ganancia esperada ($)';
+        labelMargen.textContent = 'Monto ganancia esperada ($) [NUEVO]';
       }
     } else if (filaCampos) {
       const columnaGanancia = document.createElement('div');
       columnaGanancia.className = 'col-md-4';
-      columnaGanancia.innerHTML = '<label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($)</label>'
-        + '<input type="number" min="0" step="0.01" class="form-control" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">';
+      columnaGanancia.innerHTML = '<label class="form-label" for="calcMontoGananciaEsperada">Monto ganancia esperada ($) [NUEVO]</label>'
+        + '<input type="number" min="0" step="0.01" class="form-control border-primary" id="calcMontoGananciaEsperada" placeholder="Ej: 4500">';
       filaCampos.appendChild(columnaGanancia);
     }
   }
