@@ -77,11 +77,8 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
   .menu-link:hover{color:var(--accent)}
   .btn-primary-custom{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:10px;font-weight:700;border:1px solid var(--accent);background:var(--accent);color:#fff;text-decoration:none}
   .btn-primary-custom svg{stroke:#fff;fill:none}
-  .footer{position:relative;color:#fff;padding:30px 0 20px;margin-top:20px;background:linear-gradient(120deg,var(--primary),var(--accent))}
-  .footer-content{display:grid;grid-template-columns:1.1fr .9fr 1fr .9fr;gap:22px}
-  .footer-col h4{font-size:18px;font-weight:600;margin:0 0 10px}
-  .footer-bottom{background:#fff;border-top:1px solid #e5e7eb;padding:10px 0}
-  .footer-bottom__content{display:flex;justify-content:space-between;align-items:center;color:#4b5563;font-size:13px;font-weight:500;gap:12px}
+  .cfg-next-btn{background:#4a257a !important;border:1px solid #4a257a !important;color:#fff !important;box-shadow:none !important;background-image:none !important}
+  .cfg-next-btn:hover{background:#5b3292 !important;border-color:#5b3292 !important;color:#fff !important}
   body.public-page > footer.border-top.bg-white.mt-5{display:none}
   footer.border-top.bg-white.mt-5{display:none !important}
   :root{--cfg-primary:#ff3131;--cfg-text:#0f172a;--cfg-muted:#64748b;--cfg-border:#dbe3ee;--cfg-bg:#eef2f7;--cfg-card:#fff;--cfg-ok:#16a34a}
@@ -377,10 +374,10 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
 
   function renderStep(){
     renderProgress();
-    if(state.step===0){ elMain.innerHTML = `<h2 class="h5">Paso 1 · Selecciona tu madero</h2><button class="btn btn-primary btn-sm mb-2" id="cfgNextTop">Siguiente</button>${renderCards(byRole('blade'),'blade')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
-    } else if(state.step===1){ elMain.innerHTML = `<h2 class="h5">Paso 2 · Selecciona goma para derecho (FH)</h2><button class="btn btn-primary btn-sm mb-2" id="cfgNextTop">Siguiente</button>${renderCards(byRole('rubber'),'fh')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
+    if(state.step===0){ elMain.innerHTML = `<h2 class="h5">Paso 1 · Selecciona tu madero</h2><button class="btn cfg-next-btn btn-sm mb-2" id="cfgNextTop">Siguiente</button>${renderCards(byRole('blade'),'blade')}<button class="btn cfg-next-btn mt-3" id="cfgNext">Siguiente</button>`;
+    } else if(state.step===1){ elMain.innerHTML = `<h2 class="h5">Paso 2 · Selecciona goma para derecho (FH)</h2><button class="btn cfg-next-btn btn-sm mb-2" id="cfgNextTop">Siguiente</button>${renderCards(byRole('rubber'),'fh')}<button class="btn cfg-next-btn mt-3" id="cfgNext">Siguiente</button>`;
     } else if(state.step===2){
-      elMain.innerHTML = `<h2 class="h5">Paso 3 · Selecciona goma para revés (BH)</h2><button class="btn btn-primary btn-sm mb-2" id="cfgNextTop">Ir al resumen</button><p class="small text-muted">Si quieres la misma goma del derecho, selecciónala nuevamente.</p>${renderCards(byRole('rubber'),'bh')}<button class="btn btn-primary mt-3" id="cfgNext">Ir al resumen</button>`;
+      elMain.innerHTML = `<h2 class="h5">Paso 3 · Selecciona goma para revés (BH)</h2><button class="btn cfg-next-btn btn-sm mb-2" id="cfgNextTop">Ir al resumen</button><p class="small text-muted">Si quieres la misma goma del derecho, selecciónala nuevamente.</p>${renderCards(byRole('rubber'),'bh')}<button class="btn cfg-next-btn mt-3" id="cfgNext">Ir al resumen</button>`;
     } else {
       const bladePrice = state.blade ? getPrice(state.blade) : 0;
       const fhPrice = state.fh ? getPrice(state.fh) : 0;
