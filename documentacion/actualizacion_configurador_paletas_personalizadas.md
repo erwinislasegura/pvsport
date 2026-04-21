@@ -21,8 +21,10 @@ Aplicar `base_datos/actualizaciones/actualizacion_configurador_paletas_personali
 Ejemplo (formato correcto del bloque inicial):
 
 ```sql
--- Modulo: Configurador de Paletas Personalizadas PV Sport
--- Fecha: 2026-04-21
+/*
+  Modulo: Configurador de Paletas Personalizadas PV Sport
+  Fecha: 2026-04-21
+*/
 
 CREATE TABLE IF NOT EXISTS product_attributes (
   id INT AUTO_INCREMENT PRIMARY KEY,

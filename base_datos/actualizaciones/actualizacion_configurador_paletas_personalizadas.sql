@@ -1,5 +1,7 @@
--- Modulo: Configurador de Paletas Personalizadas PV Sport
--- Fecha: 2026-04-21
+/*
+  Modulo: Configurador de Paletas Personalizadas PV Sport
+  Fecha: 2026-04-21
+*/
 
 CREATE TABLE IF NOT EXISTS product_attributes (
   id INT AUTO_INCREMENT PRIMARY KEY,
