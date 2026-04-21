@@ -17,7 +17,7 @@ class ConfiguradorPaletas extends Modelo
                                  NULL AS player_level, NULL AS play_style, NULL AS rubber_type, NULL AS category_role,
                                  NULL AS is_forehand_recommended, NULL AS is_backhand_recommended, NULL AS tags, NULL AS featured_order) pa ON 1=0';
 
-        $sql = 'SELECT p.id, p.nombre, p.descripcion, p.precio, p.precio_oferta, p.stock_actual, p.estado, c.nombre AS categoria,
+        $sql = 'SELECT p.id, p.nombre, p.descripcion, p.precio, p.precio_oferta, p.stock_actual, p.proximo_catalogo, p.proximo_dias_catalogo, p.estado, c.nombre AS categoria,
                        pa.speed, pa.control_score, pa.spin, pa.hardness, pa.tacky_type, pa.arc, pa.weight_grams,
                        pa.composition, pa.handle_type, pa.player_level, pa.play_style, pa.rubber_type, pa.category_role,
                        pa.is_forehand_recommended, pa.is_backhand_recommended, pa.tags,
@@ -72,7 +72,7 @@ class ConfiguradorPaletas extends Modelo
                                  NULL AS player_level, NULL AS play_style, NULL AS rubber_type, NULL AS category_role,
                                  NULL AS is_forehand_recommended, NULL AS is_backhand_recommended, NULL AS tags) pa ON 1=0';
 
-        $stmt = $this->db->prepare('SELECT p.id, p.nombre, p.descripcion, p.precio, p.precio_oferta, p.stock_actual, p.estado,
+        $stmt = $this->db->prepare('SELECT p.id, p.nombre, p.descripcion, p.precio, p.precio_oferta, p.stock_actual, p.proximo_catalogo, p.proximo_dias_catalogo, p.estado,
                                            c.nombre AS categoria,
                                            pa.speed, pa.control_score, pa.spin, pa.hardness, pa.tacky_type, pa.arc, pa.weight_grams,
                                            pa.composition, pa.handle_type, pa.player_level, pa.play_style, pa.rubber_type, pa.category_role,

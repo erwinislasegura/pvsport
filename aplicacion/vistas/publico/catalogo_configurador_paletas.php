@@ -17,12 +17,15 @@ $inferirRolFallback = static function (array $item): string {
         return $rol;
     }
     $texto = mb_strtolower(trim((string) ($item['categoria'] ?? '') . ' ' . (string) ($item['nombre'] ?? '') . ' ' . (string) ($item['descripcion'] ?? '')));
-    if ($texto !== '' && preg_match('/mader|blade|paleta|raqueta|racket|allwood|carbon|wood|mango fl|mango an|mango st/', $texto) === 1) {
+    $categoria = mb_strtolower(trim((string) ($item['categoria'] ?? '')));
+    if ($categoria !== '' && preg_match('/mader/', $categoria) === 1) {
         return 'blade';
     }
-    if ($texto !== '' && preg_match('/goma|caucho|revest|rubber|tacky|tensor|esponja|forehand|backhand|spin/', $texto) === 1) {
+    if ($categoria !== '' && preg_match('/goma/', $categoria) === 1) {
         return 'rubber';
     }
+    if ($texto !== '' && preg_match('/mader|blade|wood|mango fl|mango an|mango st/', $texto) === 1) { return 'blade'; }
+    if ($texto !== '' && preg_match('/goma|caucho|revest|rubber|tacky|tensor|esponja/', $texto) === 1) { return 'rubber'; }
     return 'accessory';
 };
 $productosBladeFallback = [];
@@ -128,6 +131,9 @@ foreach (($productos ?? []) as $productoItem) {
                     <div class="cfg-meta">
                       <span><?= e((string) ($item['categoria'] ?? '')) ?></span>
                       <span><?= $fmon($resolverPrecioProducto((array) $item)) ?></span>
+                      <?php if ((int) ($item['proximo_catalogo'] ?? 0) === 1): ?>
+                        <span class="badge bg-success-subtle text-success">Próximamente · llega en <?= max(0, (int) ($item['proximo_dias_catalogo'] ?? 0)) ?> día(s)</span>
+                      <?php endif; ?>
                     </div>
                   </article>
                 <?php endforeach; ?>
@@ -146,6 +152,9 @@ foreach (($productos ?? []) as $productoItem) {
                     <div class="cfg-meta">
                       <span><?= e((string) ($item['categoria'] ?? '')) ?></span>
                       <span><?= $fmon($resolverPrecioProducto((array) $item)) ?></span>
+                      <?php if ((int) ($item['proximo_catalogo'] ?? 0) === 1): ?>
+                        <span class="badge bg-success-subtle text-success">Próximamente · llega en <?= max(0, (int) ($item['proximo_dias_catalogo'] ?? 0)) ?> día(s)</span>
+                      <?php endif; ?>
                     </div>
                   </article>
                 <?php endforeach; ?>
@@ -223,11 +232,14 @@ foreach (($productos ?? []) as $productoItem) {
   const saveBtnMobile = document.getElementById('cfgMobileSave');
 
   const inferRole = (item) => {
-    const currentRole = String(item?.category_role || '').toLowerCase().trim();
+    const currentRole = String((item && item.category_role) || '').toLowerCase().trim();
     if (currentRole && currentRole !== 'unknown') return currentRole;
-    const text = `${item?.categoria || ''} ${item?.nombre || ''} ${item?.descripcion || ''}`.toLowerCase();
-    if (/(mader|blade|paleta|raqueta|racket|allwood|carbon|wood|mango fl|mango an|mango st)/.test(text)) return 'blade';
-    if (/(goma|caucho|revest|rubber|tacky|tensor|esponja|forehand|backhand|spin)/.test(text)) return 'rubber';
+    const categoria = String((item && item.categoria) || '').toLowerCase();
+    const text = `${(item && item.categoria) || ''} ${(item && item.nombre) || ''} ${(item && item.descripcion) || ''}`.toLowerCase();
+    if (/(mader)/.test(categoria)) return 'blade';
+    if (/(goma)/.test(categoria)) return 'rubber';
+    if (/(mader|blade|wood|mango fl|mango an|mango st)/.test(text)) return 'blade';
+    if (/(goma|caucho|revest|rubber|tacky|tensor|esponja)/.test(text)) return 'rubber';
     if (/(armado|pegado|ensamblado)/.test(text)) return 'assembly_service';
     return 'accessory';
   };
@@ -238,6 +250,11 @@ foreach (($productos ?? []) as $productoItem) {
     return inferred;
   };
   const clp = n => '$' + Math.round(Number(n || 0)).toLocaleString('es-CL');
+  const getPrice = (item) => {
+    const price = Number((item && item.precio) || 0);
+    const offer = Number((item && item.precio_oferta) || 0);
+    return (offer > 0 && (price <= 0 || offer < price)) ? offer : price;
+  };
 
   function renderProgress(){
     elProgress.innerHTML = steps.map((s,i)=>`<div class="cfg-step ${i===state.step?'active':''}">${i+1}. ${s}</div>`).join('');
@@ -246,11 +263,12 @@ foreach (($productos ?? []) as $productoItem) {
   function renderCards(items, key){
     const selected = state[key] ? Number(state[key].id) : 0;
     return `<div class="cfg-list">${items.map(item=>{
-      const price = Number(item.precio_oferta||0) > 0 && Number(item.precio_oferta) < Number(item.precio) ? Number(item.precio_oferta) : Number(item.precio || 0);
+      const price = getPrice(item);
       const tags = (item.tags || '').split(',').filter(Boolean).slice(0,3).map(t=>`<span class="cfg-chip">${t.trim()}</span>`).join('');
+      const incoming = Number(item.proximo_catalogo || 0) === 1 ? `<span class="cfg-chip" style="background:#dcfce7;color:#166534">Próximamente · ${Math.max(0, Number(item.proximo_dias_catalogo || 0))} día(s)</span>` : '';
       return `<article class="cfg-item ${selected===Number(item.id)?'active':''}" data-pick="${key}" data-id="${item.id}">
         <img src="${item.imagen ? '/media/archivo?ruta='+encodeURIComponent(item.imagen) : '/img/placeholder-producto.svg'}" alt="${item.nombre}">
-        <h4>${item.nombre}</h4><div class="cfg-meta"><span>${item.categoria||''}</span><span>Vel ${item.speed||'-'} · Ctrl ${item.control_score||'-'} · Spin ${item.spin||'-'}</span><span>${clp(price)}</span></div>${tags}</article>`;
+        <h4>${item.nombre}</h4><div class="cfg-meta"><span>${item.categoria||''}</span><span>Vel ${item.speed||'-'} · Ctrl ${item.control_score||'-'} · Spin ${item.spin||'-'}</span><span>${clp(price)}</span>${incoming}</div>${tags}</article>`;
     }).join('')}</div>`;
   }
 
@@ -267,7 +285,7 @@ foreach (($productos ?? []) as $productoItem) {
   function recalc(){
     const selected = [state.blade, state.fh, state.bh].filter(Boolean);
     const extrasPrice = state.extras.reduce((acc,x)=>acc + Number(x.price||0),0);
-    const subtotal = selected.reduce((acc,p)=>acc + Number(p.precio||0),0) + extrasPrice;
+    const subtotal = selected.reduce((acc,p)=>acc + getPrice(p),0) + extrasPrice;
     const avg = (field)=> selected.length ? (selected.reduce((a,p)=>a+Number(p[field]||0),0)/selected.length).toFixed(1) : '-';
 
     const summary = document.getElementById('cfgSummary');
@@ -275,7 +293,7 @@ foreach (($productos ?? []) as $productoItem) {
     const full = Boolean(state.blade && state.fh && state.bh);
 
     if(full){ summary.style.display='block'; empty.style.display='none'; } else { summary.style.display='none'; empty.style.display='block'; }
-    document.getElementById('cfgCombo').innerHTML = `${state.blade?.nombre||'-'}<br>${state.fh?.nombre||'-'} (FH)<br>${state.bh?.nombre||'-'} (BH)`;
+    document.getElementById('cfgCombo').innerHTML = `${(state.blade && state.blade.nombre) || '-'}<br>${(state.fh && state.fh.nombre) || '-'} (FH)<br>${(state.bh && state.bh.nombre) || '-'} (BH)`;
     document.getElementById('cfgKpis').innerHTML = `<span><b>Velocidad</b><b>${avg('speed')}</b></span><span><b>Control</b><b>${avg('control_score')}</b></span><span><b>Efecto</b><b>${avg('spin')}</b></span><span><b>Dureza</b><b>${avg('hardness')}</b></span>`;
     document.getElementById('cfgTotal').textContent = clp(subtotal);
     document.getElementById('cfgMobileTotal').textContent = clp(subtotal);
@@ -307,9 +325,9 @@ foreach (($productos ?? []) as $productoItem) {
     document.getElementById('form_profile_priority').value = state.profile.priority || '';
     document.getElementById('form_profile_budget').value = state.profile.budget || '';
     document.getElementById('form_profile_transition').value = state.profile.transition || 'suave';
-    document.getElementById('form_blade_product_id').value = state.blade?.id || '';
-    document.getElementById('form_fh_rubber_product_id').value = state.fh?.id || '';
-    document.getElementById('form_bh_rubber_product_id').value = state.bh?.id || '';
+    document.getElementById('form_blade_product_id').value = (state.blade && state.blade.id) || '';
+    document.getElementById('form_fh_rubber_product_id').value = (state.fh && state.fh.id) || '';
+    document.getElementById('form_bh_rubber_product_id').value = (state.bh && state.bh.id) || '';
     document.getElementById('form_extras_json').value = JSON.stringify(state.extras || []);
     document.getElementById('form_extras_price').value = extrasPrice;
     document.getElementById('cfgForm').submit();
