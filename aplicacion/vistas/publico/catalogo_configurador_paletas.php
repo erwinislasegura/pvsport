@@ -1,6 +1,6 @@
 <?php
 $fmon = static fn(float $m): string => '$' . number_format($m, 0, ',', '.');
-$jsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+$jsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE;
 $productosJson = json_encode($productos, $jsonFlags);
 $settingsMap = [];
 foreach (($settings ?? []) as $k => $v) {
@@ -147,7 +147,21 @@ $rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
   const saveBtn = document.getElementById('cfgSaveBtn');
   const saveBtnMobile = document.getElementById('cfgMobileSave');
 
-  const byRole = (role) => productos.filter(p => p.category_role === role);
+  const inferRole = (item) => {
+    const currentRole = String(item?.category_role || '').toLowerCase().trim();
+    if (currentRole && currentRole !== 'unknown') return currentRole;
+    const text = `${item?.categoria || ''} ${item?.nombre || ''} ${item?.descripcion || ''}`.toLowerCase();
+    if (/(mader|blade|paleta|raqueta|racket|allwood|carbon|wood|mango fl|mango an|mango st)/.test(text)) return 'blade';
+    if (/(goma|caucho|revest|rubber|tacky|tensor|esponja|forehand|backhand|spin)/.test(text)) return 'rubber';
+    if (/(armado|pegado|ensamblado)/.test(text)) return 'assembly_service';
+    return 'accessory';
+  };
+  const byRole = (role) => {
+    const direct = productos.filter(p => String(p.category_role || '').toLowerCase() === role);
+    if (direct.length > 0) return direct;
+    const inferred = productos.filter(p => inferRole(p) === role);
+    return inferred;
+  };
   const clp = n => '$' + Math.round(Number(n || 0)).toLocaleString('es-CL');
 
   function renderProgress(){
