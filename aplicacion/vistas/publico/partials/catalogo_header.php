@@ -9,6 +9,7 @@ $catalogoHeaderCartHref = (string) ($catalogoHeaderCartHref ?? $catalogoBaseUrl)
 $catalogoHeaderCartAsButton = (bool) ($catalogoHeaderCartAsButton ?? false);
 $catalogoHeaderCartButtonId = (string) ($catalogoHeaderCartButtonId ?? '');
 $catalogoFaqUrl = (string) ($catalogoFaqUrl ?? ($catalogoBaseUrl . '/preguntas-frecuentes'));
+$catalogoConfiguradorUrl = (string) ($catalogoConfiguradorUrl ?? ($catalogoBaseUrl . '/configurador-paletas'));
 ?>
 <div class="catalogo-topbar">
   <div class="catalogo-container catalogo-topbar__content">
@@ -31,6 +32,7 @@ $catalogoFaqUrl = (string) ($catalogoFaqUrl ?? ($catalogoBaseUrl . '/preguntas-f
       <a class="menu-link" href="<?= e($catalogoBaseUrl) ?>">Inicio</a>
       <a class="menu-link" href="<?= e($catalogoNosotrosUrl) ?>">Nosotros</a>
       <a class="menu-link" href="<?= e($catalogoContactoUrl) ?>">Contacto</a>
+      <a class="menu-link" href="<?= e($catalogoConfiguradorUrl) ?>">Configurador</a>
       <a class="menu-link" href="<?= e($catalogoFaqUrl) ?>">Preguntas frecuentes</a>
     </nav>
     <?php if ($catalogoHeaderCartAsButton): ?>
