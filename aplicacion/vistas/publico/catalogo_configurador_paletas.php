@@ -302,6 +302,7 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
     const offer = Number((item && item.precio_oferta) || 0);
     return (offer > 0 && (price <= 0 || offer < price)) ? offer : price;
   };
+  const getImage = (item) => (item && item.imagen) ? ('/media/archivo?ruta=' + encodeURIComponent(item.imagen)) : '/img/placeholder-producto.svg';
 
   function renderProgress(){
     elProgress.innerHTML = steps.map((s,i)=>`<div class="cfg-step ${i===state.step?'active':''}">${i+1}. ${s}</div>`).join('');
@@ -332,12 +333,12 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
       const total = bladePrice + fhPrice + bhPrice;
       elMain.innerHTML = `<h2 class="h5">Paso 4 · Resumen final detallado</h2>
       <div class="table-responsive"><table class="table table-sm">
-        <thead><tr><th>Componente</th><th>Producto</th><th class="text-end">Precio</th></tr></thead>
+        <thead><tr><th>Componente</th><th>Foto</th><th>Producto</th><th class="text-end">Precio</th></tr></thead>
         <tbody>
-          <tr><td>Madero</td><td>${(state.blade && state.blade.nombre) || '-'}</td><td class="text-end">${clp(bladePrice)}</td></tr>
-          <tr><td>Goma FH</td><td>${(state.fh && state.fh.nombre) || '-'}</td><td class="text-end">${clp(fhPrice)}</td></tr>
-          <tr><td>Goma BH</td><td>${(state.bh && state.bh.nombre) || '-'}</td><td class="text-end">${clp(bhPrice)}</td></tr>
-          <tr><td colspan="2"><strong>Total</strong></td><td class="text-end"><strong>${clp(total)}</strong></td></tr>
+          <tr><td>Madero</td><td><img src="${getImage(state.blade)}" alt="Madero" style="width:54px;height:54px;object-fit:contain;border-radius:8px;border:1px solid #dbe3ee;background:#fff"></td><td>${(state.blade && state.blade.nombre) || '-'}</td><td class="text-end">${clp(bladePrice)}</td></tr>
+          <tr><td>Goma FH</td><td><img src="${getImage(state.fh)}" alt="Goma FH" style="width:54px;height:54px;object-fit:contain;border-radius:8px;border:1px solid #dbe3ee;background:#fff"></td><td>${(state.fh && state.fh.nombre) || '-'}</td><td class="text-end">${clp(fhPrice)}</td></tr>
+          <tr><td>Goma BH</td><td><img src="${getImage(state.bh)}" alt="Goma BH" style="width:54px;height:54px;object-fit:contain;border-radius:8px;border:1px solid #dbe3ee;background:#fff"></td><td>${(state.bh && state.bh.nombre) || '-'}</td><td class="text-end">${clp(bhPrice)}</td></tr>
+          <tr><td colspan="3"><strong>Total</strong></td><td class="text-end"><strong>${clp(total)}</strong></td></tr>
         </tbody>
       </table></div>
       <div class="alert alert-light border">Tiempo de preparación: ${settings.assembly_lead_time_message || '24 a 72 horas hábiles con armado profesional.'}</div>`;
