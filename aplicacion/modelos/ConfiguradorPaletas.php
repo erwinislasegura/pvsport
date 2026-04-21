@@ -248,6 +248,16 @@ class ConfiguradorPaletas extends Modelo
         ]);
     }
 
+    public function obtenerAtributosProducto(int $productoId): array
+    {
+        if (!$this->tieneTabla('product_attributes')) {
+            return [];
+        }
+        $stmt = $this->db->prepare('SELECT * FROM product_attributes WHERE product_id = :product_id LIMIT 1');
+        $stmt->execute(['product_id' => $productoId]);
+        return $stmt->fetch() ?: [];
+    }
+
     private function tieneTabla(string $tabla): bool
     {
         if (array_key_exists($tabla, $this->cacheTablas)) {
