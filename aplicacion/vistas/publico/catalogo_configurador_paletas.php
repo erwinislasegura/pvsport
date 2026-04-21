@@ -268,8 +268,8 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
   try {
   const productos = JSON.parse(atob('<?= e($productosB64) ?>') || '[]');
   const settings = JSON.parse(atob('<?= e($settingsB64) ?>') || '{}');
-  const steps = ['Madero','Goma FH','Goma BH (opcional)','Resumen'];
-  const state = {step:0, mode:'experto', profile:{}, blade:null, fh:null, bh:null, useSameBh:true, extras:[]};
+  const steps = ['Madero','Goma FH','Goma BH','Resumen'];
+  const state = {step:0, mode:'experto', profile:{}, blade:null, fh:null, bh:null, extras:[]};
 
   const elMain = document.getElementById('cfgMain');
   const elProgress = document.getElementById('cfgProgress');
@@ -280,12 +280,8 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
     const currentRole = String((item && item.category_role) || '').toLowerCase().trim();
     if (currentRole && currentRole !== 'unknown') return currentRole;
     const categoria = String((item && item.categoria) || '').toLowerCase();
-    const text = `${(item && item.categoria) || ''} ${(item && item.nombre) || ''} ${(item && item.descripcion) || ''}`.toLowerCase();
     if (/(mader|blade)/.test(categoria)) return 'blade';
     if (/(goma|caucho|rubber|revest)/.test(categoria)) return 'rubber';
-    if (/(mader|blade|wood|mango fl|mango an|mango st)/.test(text)) return 'blade';
-    if (/(goma|caucho|revest|rubber|tacky|tensor|esponja)/.test(text)) return 'rubber';
-    if (/(armado|pegado|ensamblado)/.test(text)) return 'assembly_service';
     return 'accessory';
   };
   const byRole = (role) => {
@@ -319,13 +315,8 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
     if(state.step===0){ elMain.innerHTML = `<h2 class="h5">Paso 1 · Selecciona tu madero</h2>${renderCards(byRole('blade'),'blade')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
     } else if(state.step===1){ elMain.innerHTML = `<h2 class="h5">Paso 2 · Selecciona goma para derecho (FH)</h2>${renderCards(byRole('rubber'),'fh')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
     } else if(state.step===2){
-      if (!state.bh) { state.bh = state.fh; }
-      elMain.innerHTML = `<h2 class="h5">Paso 3 · Goma revés (BH)</h2>
-      <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="cfgSameBh" ${state.useSameBh ? 'checked' : ''}>
-      <label class="form-check-label" for="cfgSameBh">Usar la misma goma del derecho (FH) en el revés.</label></div>
-      ${state.useSameBh ? '<div class="alert alert-light border small mb-2">BH usará automáticamente la goma FH seleccionada.</div>' : renderCards(byRole('rubber'),'bh')}
-      <button class="btn btn-primary mt-3" id="cfgNext">Ir al resumen</button>`;
-    } else { elMain.innerHTML = `<h2 class="h5">Resumen final</h2><p class="text-muted">Revisa métricas, guarda tu configuración o solicita asesoría por WhatsApp.</p><div class="alert alert-light border">Tiempo de preparación: ${settings.assembly_lead_time_message || '24 a 72 horas hábiles con armado profesional.'}</div>`; }
+      elMain.innerHTML = `<h2 class="h5">Paso 3 · Selecciona goma para revés (BH)</h2><p class="small text-muted">Si quieres la misma goma del derecho, selecciónala nuevamente.</p>${renderCards(byRole('rubber'),'bh')}<button class="btn btn-primary mt-3" id="cfgNext">Ir al resumen</button>`;
+    } else { elMain.innerHTML = `<h2 class="h5">Paso 4 · Resumen final</h2><p class="text-muted">Revisa métricas, guarda tu configuración o solicita asesoría por WhatsApp.</p><div class="alert alert-light border">Tiempo de preparación: ${settings.assembly_lead_time_message || '24 a 72 horas hábiles con armado profesional.'}</div>`; }
 
     bindStepEvents();
     recalc();
@@ -342,7 +333,8 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
     if (state.useSameBh && state.fh) { state.bh = state.fh; }
     const full = Boolean(state.blade && state.fh && state.bh);
 
-    if(full){ summary.style.display='block'; empty.style.display='none'; } else { summary.style.display='none'; empty.style.display='block'; }
+    summary.style.display = 'block';
+    empty.style.display = full ? 'none' : 'block';
     document.getElementById('cfgCombo').innerHTML = `${(state.blade && state.blade.nombre) || '-'}<br>${(state.fh && state.fh.nombre) || '-'} (FH)<br>${(state.bh && state.bh.nombre) || '-'} (BH)`;
     document.getElementById('cfgKpis').innerHTML = `<span><b>Velocidad</b><b>${avg('speed')}</b></span><span><b>Control</b><b>${avg('control_score')}</b></span><span><b>Efecto</b><b>${avg('spin')}</b></span><span><b>Dureza</b><b>${avg('hardness')}</b></span>`;
     document.getElementById('cfgTotal').textContent = clp(subtotal);
@@ -361,14 +353,6 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
   function bindStepEvents(){
     elMain.querySelectorAll('[data-mode]').forEach(btn=>btn.onclick = ()=>{ state.mode=btn.dataset.mode; });
     elMain.querySelectorAll('[data-pick]').forEach(card=>card.onclick=()=>{const key = card.dataset.pick; const id=Number(card.dataset.id); state[key]=productos.find(p=>Number(p.id)===id)||null; renderStep();});
-    const sameBh = document.getElementById('cfgSameBh');
-    if (sameBh) {
-      sameBh.onchange = () => {
-        state.useSameBh = Boolean(sameBh.checked);
-        if (state.useSameBh) { state.bh = state.fh; }
-        renderStep();
-      };
-    }
     const n = document.getElementById('cfgNext'); if(n) n.onclick = ()=>{ state.step=Math.min(3,state.step+1); renderStep(); };
     elMain.querySelectorAll('.form-check-input').forEach(i=>i.onchange = captureExtras);
   }
