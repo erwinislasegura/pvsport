@@ -1,4 +1,39 @@
 <?php
+$catalogoRutas = is_array($catalogoRutas ?? null) ? $catalogoRutas : [];
+$catalogoBaseUrl = (string) ($catalogoRutas['base'] ?? url('/catalogo/' . (int) ($empresa['id'] ?? 0)));
+$catalogoContactoUrl = (string) ($catalogoRutas['contacto'] ?? ($catalogoBaseUrl . '/contacto'));
+$catalogoFaqUrl = (string) ($catalogoRutas['faq'] ?? ($catalogoBaseUrl . '/preguntas-frecuentes'));
+$catalogoNosotrosUrl = (string) ($catalogoRutas['nosotros'] ?? ($catalogoBaseUrl . '/nosotros'));
+$colorPrimario = trim((string) ($catalogoTopbar['color_primario'] ?? ''));
+if (preg_match('/^#([A-Fa-f0-9]{6})$/', $colorPrimario) !== 1) {
+    $colorPrimario = '#FF3131';
+}
+$colorAcento = trim((string) ($catalogoTopbar['color_acento'] ?? ''));
+if (preg_match('/^#([A-Fa-f0-9]{6})$/', $colorAcento) !== 1) {
+    $colorAcento = '#7B2CBF';
+}
+$topbarTexto = trim((string) ($catalogoTopbar['texto'] ?? ''));
+if ($topbarTexto === '') {
+    $topbarTexto = 'Envíos a todo el país • Garantía en todos los productos';
+}
+$socialesTopbar = [
+    ['id' => 'facebook', 'url' => trim((string) ($catalogoTopbar['sociales']['facebook'] ?? '')), 'label' => 'Facebook'],
+    ['id' => 'instagram', 'url' => trim((string) ($catalogoTopbar['sociales']['instagram'] ?? '')), 'label' => 'Instagram'],
+    ['id' => 'tiktok', 'url' => trim((string) ($catalogoTopbar['sociales']['tiktok'] ?? '')), 'label' => 'TikTok'],
+    ['id' => 'linkedin', 'url' => trim((string) ($catalogoTopbar['sociales']['linkedin'] ?? '')), 'label' => 'LinkedIn'],
+    ['id' => 'youtube', 'url' => trim((string) ($catalogoTopbar['sociales']['youtube'] ?? '')), 'label' => 'YouTube'],
+];
+$socialesTopbar = array_values(array_filter($socialesTopbar, static fn(array $red): bool => $red['url'] !== ''));
+$renderIconoRed = static function (string $id): string {
+    return match ($id) {
+        'facebook' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8.2h2.8l.5-3.2h-3.3V7.5c0-.9.3-1.6 1.6-1.6h1.8V3.1c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.4H8v3.2h2.4V21h3.1z"/></svg>',
+        'instagram' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2zm0 1.9A3.9 3.9 0 0 0 3.9 7.8v8.4a3.9 3.9 0 0 0 3.9 3.9h8.4a3.9 3.9 0 0 0 3.9-3.9V7.8a3.9 3.9 0 0 0-3.9-3.9H7.8zm8.9 1.5a1.2 1.2 0 1 1 0 2.3 1.2 1.2 0 0 1 0-2.3zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 1.9a3.1 3.1 0 1 0 0 6.2 3.1 3.1 0 0 0 0-6.2z"/></svg>',
+        'tiktok' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 3h2.7c.2 1.5 1 2.8 2.3 3.6.9.6 1.9.9 3 .9V10a8 8 0 0 1-4.9-1.7v7.3a5.6 5.6 0 1 1-5.6-5.6c.4 0 .7 0 1 .1v2.7a2.9 2.9 0 1 0 1.5 2.5V3z"/></svg>',
+        'linkedin' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 8.9H3.5V21h2.9V8.9zM5 3A1.8 1.8 0 1 0 5 6.6 1.8 1.8 0 0 0 5 3zM21 13.8c0-3.3-1.8-5.3-4.6-5.3-2.1 0-3 .8-3.6 1.6V8.9h-2.9V21h2.9v-6.7c0-1.8 1-2.8 2.5-2.8s2.2 1 2.2 2.8V21H21v-7.2z"/></svg>',
+        'youtube' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 12s0-3.2-.4-4.7a3 3 0 0 0-2.1-2.1C18.9 4.8 12 4.8 12 4.8s-6.9 0-8.5.4a3 3 0 0 0-2.1 2.1C1 8.8 1 12 1 12s0 3.2.4 4.7a3 3 0 0 0 2.1 2.1c1.6.4 8.5.4 8.5.4s6.9 0 8.5-.4a3 3 0 0 0 2.1-2.1c.4-1.5.4-4.7.4-4.7zm-13.8 3.9V8.1l6.1 3.9-6.1 3.9z"/></svg>',
+        default => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/></svg>',
+    };
+};
 $fmon = static fn(float $m): string => '$' . number_format($m, 0, ',', '.');
 $jsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE;
 $productosJson = json_encode($productos, $jsonFlags);
@@ -59,25 +94,33 @@ $productosBladeB64 = base64_encode((string) json_encode(array_values($productosB
 $productosRubberB64 = base64_encode((string) json_encode(array_values($productosRubberFallback), $jsonFlags));
 ?>
 <style>
-  :root{--primary:#ff3131;--accent:#7b2cbf;--bg:#eef2f7;--border:#dbe3ee;--muted:#64748b;--text:#0f172a;--shadow:0 10px 25px rgba(15,23,42,.08)}
+  :root{--primary:<?= e($colorPrimario) ?>;--accent:<?= e($colorAcento) ?>;--bg:#eef2f7;--border:#dbe3ee;--muted:#64748b;--text:#0f172a;--shadow:0 10px 25px rgba(15,23,42,.08)}
   .catalogo-page{background:var(--bg);min-height:100vh}
   .catalogo-container{width:min(1280px,92%);margin:0 auto}
   .catalogo-topbar{background:var(--primary);color:#fff;padding:8px 0;font-size:13px}
   .catalogo-topbar__content{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .catalogo-topbar__sociales{display:flex;align-items:center;gap:10px}
+  .catalogo-topbar__sociales a{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:999px;border:1px solid rgba(255,255,255,.5);color:#fff;text-decoration:none}
+  .catalogo-topbar__sociales a svg{width:14px;height:14px;fill:#fff}
   .catalogo-header{position:sticky;top:0;z-index:45;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
   .catalogo-navbar{display:grid;grid-template-columns:340px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 0}
   .catalogo-logo{display:flex;align-items:center;gap:.55rem;color:var(--text);font-size:16px;font-weight:800;text-decoration:none;line-height:1.05}
-  .catalogo-logo img{width:120px;height:60px;object-fit:contain}
-  .catalogo-mobile-toggle{display:none}
+  .catalogo-logo img{width:120px;height:60px;object-fit:contain;background:transparent}
+  .catalogo-mobile-toggle{display:none;align-items:center;justify-content:center;flex-direction:column;gap:4px;width:42px;height:42px;border-radius:12px;border:1px solid var(--primary);background:var(--primary);color:#fff}
+  .catalogo-mobile-toggle span{display:block;width:18px;height:2px;background:currentColor;border-radius:999px;transition:all .2s ease}
+  .catalogo-header.is-mobile-open .catalogo-mobile-toggle span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+  .catalogo-header.is-mobile-open .catalogo-mobile-toggle span:nth-child(2){opacity:0}
+  .catalogo-header.is-mobile-open .catalogo-mobile-toggle span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
   .search-box{display:flex;align-items:center;background:#fff;border:1px solid var(--border);border-radius:999px;overflow:hidden;min-width:0}
   .search-box input{width:100%;padding:10px 14px;border:none;outline:none;background:transparent;font-size:14px}
   .search-box button{background:var(--accent);color:#fff;padding:10px 18px;font-weight:700;border:none}
   .nav-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .menu-link{padding:9px 6px;font-weight:600;color:var(--primary);text-decoration:none;border:none;background:transparent;white-space:nowrap}
   .menu-link:hover{color:var(--accent)}
-  .btn-primary-custom{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:10px;font-weight:700;border:1px solid var(--accent);background:var(--accent);color:#fff;text-decoration:none}
-  .btn-primary-custom svg{stroke:#fff;fill:none}
-  .footer{position:relative;color:#fff;padding:30px 0 20px;margin-top:20px;background:var(--primary)}
+  .btn-outline,.btn-primary-custom,.btn-soft,.btn-danger-soft{padding:9px 13px;border-radius:10px;font-weight:700;border:1px solid var(--border);background:#fff;color:var(--text)}
+  .btn-primary-custom{background:var(--accent);border-color:var(--accent);color:#fff}
+  .catalogo-navbar .btn-primary-custom,.catalogo-navbar .btn-primary-custom span,.catalogo-navbar .btn-primary-custom svg{color:#fff !important;fill:#fff !important;stroke:#fff !important;text-decoration:none !important}
+  .footer{position:relative;color:#fff;padding:30px 0 20px;margin-top:20px;background:linear-gradient(120deg,var(--primary),var(--accent))}
   .footer-content{display:grid;grid-template-columns:1.1fr .9fr 1fr .9fr;gap:22px}
   .footer-col h4{font-size:18px;font-weight:600;margin:0 0 10px}
   .footer-brand img{width:128px;height:60px;object-fit:contain;background:#fff;border-radius:10px;padding:4px 8px;border:1px solid rgba(255,255,255,.35);margin-bottom:8px}
@@ -114,9 +157,34 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
   .cfg-mobile-bar{display:none;position:fixed;left:10px;right:10px;bottom:10px;background:#fff;border:1px solid var(--cfg-border);box-shadow:0 10px 24px rgba(15,23,42,.16);border-radius:12px;padding:10px;z-index:70}
   .cfg-hero{margin-top:12px;background:#fff;border:1px solid var(--cfg-border);border-radius:18px;padding:16px}.cfg-hero h1{font-size:30px;margin:0 0 8px}
   .cfg-faq{margin-top:20px}
-  @media (max-width:1100px){.catalogo-navbar,.footer-content{grid-template-columns:1fr}.search-box{width:100%}}
+  @media (max-width:1100px){
+    .catalogo-navbar,.footer-content{grid-template-columns:1fr}
+    .catalogo-navbar{gap:12px}
+    .search-box{width:100%}
+    .nav-actions{justify-content:flex-start}
+  }
   @media (max-width:980px){.cfg-grid{grid-template-columns:1fr}.cfg-list{grid-template-columns:repeat(2,minmax(0,1fr))}.cfg-sidebar{position:static}.cfg-mobile-bar{display:block}}
-  @media (max-width:720px){.cfg-list{grid-template-columns:1fr}.cfg-progress{grid-template-columns:repeat(2,1fr)}.cfg-hero h1{font-size:22px}}
+  @media (max-width:720px){
+    .catalogo-topbar__content{flex-direction:column;align-items:flex-start}
+    .catalogo-navbar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px}
+    .catalogo-logo{justify-content:flex-start}
+    .catalogo-logo img{width:110px;height:56px}
+    .catalogo-mobile-toggle{display:inline-flex}
+    .search-box,.nav-actions,.catalogo-navbar > .btn-primary-custom{display:none}
+    .catalogo-header.is-mobile-open .search-box{display:flex;grid-column:1/-1}
+    .catalogo-header.is-mobile-open .nav-actions{display:flex;grid-column:1/-1}
+    .catalogo-header.is-mobile-open .catalogo-navbar > .btn-primary-custom{display:flex;grid-column:1/-1}
+    .search-box{border-radius:14px}
+    .search-box input,.search-box button{font-size:13px}
+    .search-box button{padding:10px 14px}
+    .nav-actions{justify-content:space-between;gap:6px}
+    .menu-link{flex:1;text-align:center;padding:8px 8px;border:1px solid color-mix(in srgb,var(--primary) 25%,#fff);border-radius:10px;background:#fff;color:var(--primary);font-size:13px;font-weight:500}
+    .catalogo-navbar .btn-primary-custom{width:100%;justify-content:center;font-size:14px;font-weight:600}
+    .catalogo-header.is-mobile-open .catalogo-navbar > .btn-primary-custom{width:100%}
+    .cfg-list{grid-template-columns:1fr}
+    .cfg-progress{grid-template-columns:repeat(2,1fr)}
+    .cfg-hero h1{font-size:22px}
+  }
 </style>
 
 <div class="cfg-page">
