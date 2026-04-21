@@ -95,7 +95,7 @@ $productosBladeB64 = base64_encode((string) json_encode(array_values($productosB
 $productosRubberB64 = base64_encode((string) json_encode(array_values($productosRubberFallback), $jsonFlags));
 ?>
 <style>
-  :root{--primary:<?= e($colorPrimario) ?>;--accent:<?= e($colorAcento) ?>;--bg:#eef2f7;--border:#dbe3ee;--muted:#64748b;--text:#0f172a;--shadow:0 10px 25px rgba(15,23,42,.08)}
+  :root{--catalogo-menu-color:<?= e($colorPrimario) ?>;--primary:<?= e($colorPrimario) ?>;--accent:<?= e($colorAcento) ?>;--bg:#eef2f7;--border:#dbe3ee;--muted:#64748b;--text:#0f172a;--shadow:0 10px 25px rgba(15,23,42,.08)}
   .catalogo-page{background:var(--bg);min-height:100vh}
   .catalogo-container{width:min(1280px,92%);margin:0 auto}
   .catalogo-topbar{background:var(--primary);color:#fff;padding:8px 0;font-size:13px}
@@ -116,8 +116,8 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
   .search-box input{width:100%;padding:10px 14px;border:none;outline:none;background:transparent;font-size:14px}
   .search-box button{background:var(--accent);color:#fff;padding:10px 18px;font-weight:700;border:none}
   .nav-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .menu-link{padding:9px 6px;font-weight:600;color:var(--primary);text-decoration:none;border:none;background:transparent;white-space:nowrap}
-  .menu-link:hover{color:var(--accent)}
+  .catalogo-header .menu-link{padding:9px 6px;font-weight:500;font-family:inherit;color:var(--catalogo-menu-color) !important;text-decoration:none;border:none;background:transparent;white-space:nowrap}
+  .catalogo-header .menu-link:hover{color:var(--catalogo-menu-color) !important;opacity:.85}
   .btn-outline,.btn-primary-custom,.btn-soft,.btn-danger-soft{padding:9px 13px;border-radius:10px;font-weight:700;border:1px solid var(--border);background:#fff;color:var(--text)}
   .btn-primary-custom{background:var(--accent);border-color:var(--accent);color:#fff}
   .catalogo-navbar .btn-primary-custom,.catalogo-navbar .btn-primary-custom span,.catalogo-navbar .btn-primary-custom svg{color:#fff !important;fill:#fff !important;stroke:#fff !important;text-decoration:none !important}
@@ -179,7 +179,7 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
     .search-box input,.search-box button{font-size:13px}
     .search-box button{padding:10px 14px}
     .nav-actions{justify-content:space-between;gap:6px}
-    .menu-link{flex:1;text-align:center;padding:8px 8px;border:1px solid color-mix(in srgb,var(--primary) 25%,#fff);border-radius:10px;background:#fff;color:var(--primary);font-size:13px;font-weight:500}
+    .catalogo-header .menu-link{flex:1;text-align:center;padding:8px 8px;border:1px solid color-mix(in srgb,var(--catalogo-menu-color) 25%,#fff);border-radius:10px;background:#fff;color:var(--catalogo-menu-color) !important;font-size:13px;font-weight:400;font-family:inherit}
     .catalogo-navbar .btn-primary-custom{width:100%;justify-content:center;font-size:14px;font-weight:600}
     .catalogo-header.is-mobile-open .catalogo-navbar > .btn-primary-custom{width:100%}
     .cfg-list{grid-template-columns:1fr}
