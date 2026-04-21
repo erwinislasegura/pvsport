@@ -18,6 +18,8 @@ Se incorporó un módulo nativo de **Configurador de Paletas Personalizadas** co
 ## 3) Script SQL / migración
 Aplicar `base_datos/actualizaciones/actualizacion_configurador_paletas_personalizadas.sql`.
 
+La migración quedó **idempotente**: puede ejecutarse en entornos donde las tablas ya existen (despliegues parciales) porque incluye validaciones por `information_schema` para agregar columnas/índices faltantes sin provocar error por duplicados.
+
 Ejemplo (formato correcto del bloque inicial):
 
 ```sql
