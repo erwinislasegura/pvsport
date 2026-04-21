@@ -18,6 +18,40 @@ Se incorporó un módulo nativo de **Configurador de Paletas Personalizadas** co
 ## 3) Script SQL / migración
 Aplicar `base_datos/actualizaciones/actualizacion_configurador_paletas_personalizadas.sql`.
 
+Ejemplo (formato correcto del bloque inicial):
+
+```sql
+-- Modulo: Configurador de Paletas Personalizadas PV Sport
+-- Fecha: 2026-04-21
+
+CREATE TABLE IF NOT EXISTS product_attributes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT NOT NULL,
+  speed DECIMAL(5,2) DEFAULT 0,
+  control_score DECIMAL(5,2) DEFAULT 0,
+  spin DECIMAL(5,2) DEFAULT 0,
+  hardness DECIMAL(5,2) DEFAULT 0,
+  tacky_type VARCHAR(60) DEFAULT NULL,
+  arc VARCHAR(60) DEFAULT NULL,
+  weight_grams DECIMAL(7,2) DEFAULT NULL,
+  composition VARCHAR(120) DEFAULT NULL,
+  handle_type VARCHAR(60) DEFAULT NULL,
+  player_level VARCHAR(40) DEFAULT NULL,
+  play_style VARCHAR(60) DEFAULT NULL,
+  rubber_type VARCHAR(60) DEFAULT NULL,
+  category_role ENUM('blade','rubber','accessory','assembly_service') NOT NULL DEFAULT 'accessory',
+  is_forehand_recommended TINYINT(1) NOT NULL DEFAULT 0,
+  is_backhand_recommended TINYINT(1) NOT NULL DEFAULT 0,
+  tags VARCHAR(255) DEFAULT NULL,
+  featured_order INT NOT NULL DEFAULT 999,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL,
+  UNIQUE KEY uq_product_attributes_product (product_id),
+  CONSTRAINT fk_product_attributes_product FOREIGN KEY (product_id) REFERENCES productos(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
 Incluye tablas:
 - `product_attributes`
 - `product_variants`
