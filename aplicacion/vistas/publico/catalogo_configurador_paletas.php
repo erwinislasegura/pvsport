@@ -11,6 +11,10 @@ $rulesJson = json_encode($reglas ?? [], $jsonFlags);
 $productosB64 = base64_encode((string) ($productosJson !== false ? $productosJson : '[]'));
 $settingsB64 = base64_encode((string) ($settingsJson !== false ? $settingsJson : '{}'));
 $rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
+$whatsappDestino = preg_replace('/\D+/', '', (string) ($settingsMap['whatsapp_phone'] ?? $empresa['telefono'] ?? '56900000000'));
+if ($whatsappDestino === '') {
+    $whatsappDestino = '56900000000';
+}
 $inferirRolFallback = static function (array $item): string {
     $categoria = mb_strtolower(trim((string) ($item['categoria'] ?? '')));
     $categoriaNorm = preg_replace('/[^a-z0-9]+/u', '', $categoria ?? '');
@@ -222,7 +226,7 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
           <div class="small text-muted" id="cfgPolicy"><?= e((string) ($settingsMap['commercial_policy_message'] ?? 'Producto configurado a pedido. Sujeto a disponibilidad y validación técnica.')) ?></div>
         </div>
         <div class="cfg-actions">
-          <button class="btn btn-dark" id="cfgSaveBtn" disabled>Guardar configuración</button>
+          <button class="btn btn-dark" id="cfgSaveBtn" disabled>Agregar al carrito</button>
           <a class="btn btn-success" id="cfgWaBtn" href="#" target="_blank" rel="noopener" style="display:none">Pedir asesoría por WhatsApp</a>
         </div>
       </aside>
@@ -240,7 +244,7 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
   <div class="cfg-mobile-bar" id="cfgMobileBar">
     <div class="d-flex justify-content-between align-items-center">
       <strong id="cfgMobileTotal"><?= $fmon(0) ?></strong>
-      <button class="btn btn-dark btn-sm" id="cfgMobileSave" disabled>Guardar</button>
+      <button class="btn btn-dark btn-sm" id="cfgMobileSave" disabled>Agregar</button>
     </div>
   </div>
 
@@ -275,6 +279,9 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
   const productosFuente = [...productosBlade, ...productosRubber];
   const settings = JSON.parse(atob('<?= e($settingsB64) ?>') || '{}');
   const steps = ['Madero','Goma FH','Goma BH','Resumen'];
+  const empresaId = <?= (int) ($empresa['id'] ?? 0) ?>;
+  const cartStorageKey = `pvsport_catalogo_carrito_${empresaId}`;
+  const whatsappDestino = '<?= e((string) $whatsappDestino) ?>';
   const state = {step:0, mode:'experto', profile:{}, blade:null, fh:null, bh:null, extras:[]};
 
   const elMain = document.getElementById('cfgMain');
@@ -423,7 +430,7 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
     const wa = document.getElementById('cfgWaBtn');
     if(full){
       const txt = encodeURIComponent(`Hola PV Sport, quiero asesoría para esta paleta: ${state.blade.nombre} + ${state.fh.nombre} (FH) + ${state.bh.nombre} (BH).`);
-      wa.href = `https://wa.me/56900000000?text=${txt}`;
+      wa.href = `https://wa.me/${whatsappDestino}?text=${txt}`;
       wa.style.display='inline-block';
     }
   }
@@ -440,19 +447,35 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
   function captureExtras(){ state.extras=[...elMain.querySelectorAll('.form-check-input:checked')].map(i=>({code:i.value,price:Number(i.dataset.price||0)})); recalc(); }
 
   function submitForm(){
-    const extrasPrice = state.extras.reduce((acc,x)=>acc + Number(x.price||0),0);
-    document.getElementById('form_mode').value = state.mode || 'experto';
-    document.getElementById('form_profile_level').value = state.profile.level || '';
-    document.getElementById('form_profile_style').value = state.profile.style || '';
-    document.getElementById('form_profile_priority').value = state.profile.priority || '';
-    document.getElementById('form_profile_budget').value = state.profile.budget || '';
-    document.getElementById('form_profile_transition').value = state.profile.transition || 'suave';
-    document.getElementById('form_blade_product_id').value = (state.blade && state.blade.id) || '';
-    document.getElementById('form_fh_rubber_product_id').value = (state.fh && state.fh.id) || '';
-    document.getElementById('form_bh_rubber_product_id').value = (state.bh && state.bh.id) || '';
-    document.getElementById('form_extras_json').value = JSON.stringify(state.extras || []);
-    document.getElementById('form_extras_price').value = extrasPrice;
-    document.getElementById('cfgForm').submit();
+    if (!(state.blade && state.fh && state.bh)) return;
+    const components = [state.blade, state.fh, state.bh];
+    let cart = [];
+    try { cart = JSON.parse(localStorage.getItem(cartStorageKey) || '[]'); } catch (e) { cart = []; }
+    cart = Array.isArray(cart) ? cart : [];
+    components.forEach((item) => {
+      const id = Number(item.id || 0);
+      if (id <= 0) return;
+      const price = getPrice(item);
+      const oldPrice = Number(item.precio || 0);
+      const existing = cart.find((i) => Number(i.id || 0) === id);
+      if (existing) {
+        existing.quantity = Number(existing.quantity || 1) + 1;
+      } else {
+        cart.push({
+          id,
+          name: item.nombre || 'Producto',
+          description: item.descripcion || '',
+          image: getImage(item),
+          price,
+          oldPrice: oldPrice > price ? oldPrice : 0,
+          quantity: 1,
+          proximo: Number(item.proximo_catalogo || 0) === 1,
+          proximoDias: Number(item.proximo_dias_catalogo || 0)
+        });
+      }
+    });
+    localStorage.setItem(cartStorageKey, JSON.stringify(cart));
+    window.location.href = `<?= e($catalogoBaseUrl) ?>`;
   }
 
   saveBtn.addEventListener('click', submitForm);
