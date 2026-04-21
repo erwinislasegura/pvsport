@@ -100,6 +100,7 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
   .cfg-next-btn{background:#4a257a !important;border:1px solid #4a257a !important;color:#fff !important;box-shadow:none !important;background-image:none !important}
   .cfg-next-btn:hover{background:#5b3292 !important;border-color:#5b3292 !important;color:#fff !important}
   body.public-page > footer.border-top.bg-white.mt-5{display:none}
+  footer.border-top.bg-white.mt-5{display:none !important}
   :root{--cfg-primary:#ff3131;--cfg-text:#0f172a;--cfg-muted:#64748b;--cfg-border:#dbe3ee;--cfg-bg:#eef2f7;--cfg-card:#fff;--cfg-ok:#16a34a}
   .cfg-page{background:var(--cfg-bg)} .cfg-wrap{width:min(1280px,92%);margin:0 auto;padding:18px 0 36px}
   .cfg-grid{display:grid;grid-template-columns:1fr 340px;gap:18px}.cfg-card{background:#fff;border:1px solid var(--cfg-border);border-radius:16px;padding:16px}
@@ -124,8 +125,8 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
     $catalogoHeaderSearchMethod = 'GET';
     $catalogoHeaderSearchName = 'q';
     $catalogoHeaderSearchValue = '';
-    $catalogoHeaderCartAsButton = false;
-    $catalogoHeaderCartHref = $catalogoBaseUrl;
+    $catalogoHeaderCartAsButton = true;
+    $catalogoHeaderCartButtonId = 'openCartHeader';
     require __DIR__ . '/partials/catalogo_header.php';
   ?>
   <section class="cfg-wrap">
@@ -431,6 +432,7 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
 
     const summary = document.getElementById('cfgSummary');
     const empty = document.getElementById('cfgSummaryEmpty');
+    if (state.useSameBh && state.fh) { state.bh = state.fh; }
     const full = Boolean(state.blade && state.fh && state.bh);
 
     summary.style.display = 'block';
