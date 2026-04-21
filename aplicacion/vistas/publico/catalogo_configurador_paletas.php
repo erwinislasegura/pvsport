@@ -310,6 +310,10 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
   const getTech = (item, role) => {
     const tags = parseTags(item);
     if (!item) return null;
+    const hasTagData = ['capas','layers','material','tipo','flexibilidad','flex','rigidez','feeling','adherencia','tags_texto'].some(k => String(tags[k] || '').trim() !== '');
+    const hasMetricData = Number(item.speed || 0) > 0 || Number(item.control_score || 0) > 0 || Number(item.spin || 0) > 0 || Number(item.hardness || 0) > 0;
+    const hasTextData = String(item.composition || '').trim() !== '' || String(item.play_style || '').trim() !== '' || String(item.tacky_type || '').trim() !== '' || String(item.rubber_type || '').trim() !== '';
+    if (!hasTagData && !hasMetricData && !hasTextData) return null;
     if (role === 'blade') {
       return {
         capas: tags.capas || tags.layers || '-',
