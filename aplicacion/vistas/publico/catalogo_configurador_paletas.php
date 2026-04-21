@@ -12,20 +12,13 @@ $productosB64 = base64_encode((string) ($productosJson !== false ? $productosJso
 $settingsB64 = base64_encode((string) ($settingsJson !== false ? $settingsJson : '{}'));
 $rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
 $inferirRolFallback = static function (array $item): string {
-    $rol = strtolower(trim((string) ($item['category_role'] ?? '')));
-    if ($rol !== '' && $rol !== 'unknown') {
-        return $rol;
-    }
-    $texto = mb_strtolower(trim((string) ($item['categoria'] ?? '') . ' ' . (string) ($item['nombre'] ?? '') . ' ' . (string) ($item['descripcion'] ?? '')));
     $categoria = mb_strtolower(trim((string) ($item['categoria'] ?? '')));
-    if ($categoria !== '' && preg_match('/mader/', $categoria) === 1) {
+    if ($categoria !== '' && preg_match('/\bmader/', $categoria) === 1) {
         return 'blade';
     }
-    if ($categoria !== '' && preg_match('/goma/', $categoria) === 1) {
+    if ($categoria !== '' && preg_match('/\bgoma/', $categoria) === 1) {
         return 'rubber';
     }
-    if ($texto !== '' && preg_match('/mader|blade|wood|mango fl|mango an|mango st/', $texto) === 1) { return 'blade'; }
-    if ($texto !== '' && preg_match('/goma|caucho|revest|rubber|tacky|tensor|esponja/', $texto) === 1) { return 'rubber'; }
     return 'accessory';
 };
 $productosBladeFallback = [];
@@ -48,6 +41,15 @@ foreach (($productos ?? []) as $productoItem) {
         $productosRubberFallback[] = (array) $productoItem;
     }
 }
+$fallbackOpciones = [
+    'blades' => array_map(static function (array $item) use ($resolverPrecioProducto): array {
+        return ['id' => (int) ($item['id'] ?? 0), 'nombre' => (string) ($item['nombre'] ?? ''), 'precio' => $resolverPrecioProducto($item)];
+    }, $productosBladeFallback),
+    'rubbers' => array_map(static function (array $item) use ($resolverPrecioProducto): array {
+        return ['id' => (int) ($item['id'] ?? 0), 'nombre' => (string) ($item['nombre'] ?? ''), 'precio' => $resolverPrecioProducto($item)];
+    }, $productosRubberFallback),
+];
+$fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $jsonFlags));
 ?>
 <style>
   :root{--primary:#ff3131;--accent:#7b2cbf;--bg:#eef2f7;--border:#dbe3ee;--muted:#64748b;--text:#0f172a;--shadow:0 10px 25px rgba(15,23,42,.08)}
@@ -161,6 +163,48 @@ foreach (($productos ?? []) as $productoItem) {
               </div>
               </div>
             <?php endif; ?>
+            <?php if ($productosBladeFallback !== [] && $productosRubberFallback !== []): ?>
+              <div class="cfg-card mt-3">
+                <h3 class="h6 mb-2">Selección rápida</h3>
+                <form method="POST" action="<?= e(url('/catalogo/' . (int) ($empresa['id'] ?? 0) . '/configurador-paletas/guardar')) ?>" id="fallbackConfigForm">
+                  <?= csrf_input() ?>
+                  <input type="hidden" name="mode" value="experto">
+                  <div class="row g-2">
+                    <div class="col-md-4">
+                      <label class="form-label small">Madero</label>
+                      <select class="form-select" id="fallback_blade" name="blade_product_id" required>
+                        <option value="">Selecciona madero</option>
+                        <?php foreach ($productosBladeFallback as $item): ?>
+                          <option value="<?= (int) ($item['id'] ?? 0) ?>"><?= e((string) ($item['nombre'] ?? '')) ?></option>
+                        <?php endforeach; ?>
+                      </select>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label small">Goma FH (derecho)</label>
+                      <select class="form-select" id="fallback_fh" name="fh_rubber_product_id" required>
+                        <option value="">Selecciona goma FH</option>
+                        <?php foreach ($productosRubberFallback as $item): ?>
+                          <option value="<?= (int) ($item['id'] ?? 0) ?>"><?= e((string) ($item['nombre'] ?? '')) ?></option>
+                        <?php endforeach; ?>
+                      </select>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label small">Goma BH (revés)</label>
+                      <select class="form-select" id="fallback_bh" name="bh_rubber_product_id" required>
+                        <option value="">Selecciona goma BH</option>
+                        <?php foreach ($productosRubberFallback as $item): ?>
+                          <option value="<?= (int) ($item['id'] ?? 0) ?>"><?= e((string) ($item['nombre'] ?? '')) ?></option>
+                        <?php endforeach; ?>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="small text-muted mt-2">Puedes elegir la misma goma en FH y BH.</div>
+                  <div class="small mt-2" id="fallbackDetalle"></div>
+                  <div class="h5 mt-1" id="fallbackTotal">$0</div>
+                  <button type="submit" class="btn btn-dark btn-sm mt-2">Guardar selección</button>
+                </form>
+              </div>
+            <?php endif; ?>
           <?php endif; ?>
         </div>
       </main>
@@ -244,10 +288,7 @@ foreach (($productos ?? []) as $productoItem) {
     return 'accessory';
   };
   const byRole = (role) => {
-    const direct = productos.filter(p => String(p.category_role || '').toLowerCase() === role);
-    if (direct.length > 0) return direct;
-    const inferred = productos.filter(p => inferRole(p) === role);
-    return inferred;
+    return productos.filter(p => inferRole(p) === role);
   };
   const clp = n => '$' + Math.round(Number(n || 0)).toLocaleString('es-CL');
   const getPrice = (item) => {
@@ -343,6 +384,45 @@ foreach (($productos ?? []) as $productoItem) {
       host.innerHTML = '<div class="alert alert-warning">No pudimos cargar el configurador en este navegador. Recarga la página o contáctanos por WhatsApp.</div>';
     }
     console.error('Configurador error:', error);
+  }
+})();
+
+(() => {
+  try {
+    var data = JSON.parse(atob('<?= e($fallbackOpcionesB64) ?>') || '{}');
+    var blades = Array.isArray(data.blades) ? data.blades : [];
+    var rubbers = Array.isArray(data.rubbers) ? data.rubbers : [];
+    var bladeSel = document.getElementById('fallback_blade');
+    var fhSel = document.getElementById('fallback_fh');
+    var bhSel = document.getElementById('fallback_bh');
+    var detalle = document.getElementById('fallbackDetalle');
+    var total = document.getElementById('fallbackTotal');
+    if (!bladeSel || !fhSel || !bhSel || !detalle || !total) { return; }
+
+    var byId = function (arr, id) {
+      for (var i = 0; i < arr.length; i += 1) {
+        if (Number(arr[i].id || 0) === Number(id || 0)) { return arr[i]; }
+      }
+      return null;
+    };
+    var clp = function (n) { return '$' + Math.round(Number(n || 0)).toLocaleString('es-CL'); };
+    var refresh = function () {
+      var b = byId(blades, bladeSel.value);
+      var fh = byId(rubbers, fhSel.value);
+      var bh = byId(rubbers, bhSel.value);
+      var sum = Number((b && b.precio) || 0) + Number((fh && fh.precio) || 0) + Number((bh && bh.precio) || 0);
+      detalle.innerHTML = (b ? ('Madero: <strong>' + b.nombre + '</strong><br>') : '')
+        + (fh ? ('FH: <strong>' + fh.nombre + '</strong><br>') : '')
+        + (bh ? ('BH: <strong>' + bh.nombre + '</strong>') : '');
+      total.textContent = clp(sum);
+    };
+
+    bladeSel.addEventListener('change', refresh);
+    fhSel.addEventListener('change', refresh);
+    bhSel.addEventListener('change', refresh);
+    refresh();
+  } catch (e) {
+    console.error('Fallback selector error', e);
   }
 })();
 </script>
