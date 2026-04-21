@@ -167,7 +167,7 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
               <div class="cfg-card mt-3">
                 <h3 class="h6 mb-2">Selección rápida</h3>
                 <form method="POST" action="<?= e(url('/catalogo/' . (int) ($empresa['id'] ?? 0) . '/configurador-paletas/guardar')) ?>" id="fallbackConfigForm">
-                  <?= csrf_input() ?>
+                  <?= csrf_campo() ?>
                   <input type="hidden" name="mode" value="experto">
                   <div class="row g-2">
                     <div class="col-md-4">
@@ -241,7 +241,7 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
   </div>
 
   <form id="cfgForm" method="POST" action="<?= e(url('/catalogo/' . (int) ($empresa['id'] ?? 0) . '/configurador-paletas/guardar')) ?>" class="d-none">
-    <?= csrf_input() ?>
+    <?= csrf_campo() ?>
     <input type="hidden" name="mode" id="form_mode">
     <input type="hidden" name="profile_level" id="form_profile_level">
     <input type="hidden" name="profile_style" id="form_profile_style">
