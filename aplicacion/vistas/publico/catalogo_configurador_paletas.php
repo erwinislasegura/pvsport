@@ -101,8 +101,8 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
     $catalogoHeaderSearchMethod = 'GET';
     $catalogoHeaderSearchName = 'q';
     $catalogoHeaderSearchValue = '';
-    $catalogoHeaderCartAsButton = false;
-    $catalogoHeaderCartHref = $catalogoBaseUrl;
+    $catalogoHeaderCartAsButton = true;
+    $catalogoHeaderCartButtonId = 'openCartHeader';
     require __DIR__ . '/partials/catalogo_header.php';
   ?>
   <section class="cfg-wrap">
@@ -312,10 +312,10 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
 
   function renderStep(){
     renderProgress();
-    if(state.step===0){ elMain.innerHTML = `<h2 class="h5">Paso 1 · Selecciona tu madero</h2>${renderCards(byRole('blade'),'blade')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
-    } else if(state.step===1){ elMain.innerHTML = `<h2 class="h5">Paso 2 · Selecciona goma para derecho (FH)</h2>${renderCards(byRole('rubber'),'fh')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
+    if(state.step===0){ elMain.innerHTML = `<h2 class="h5">Paso 1 · Selecciona tu madero</h2><button class="btn btn-primary btn-sm mb-2" id="cfgNextTop">Siguiente</button>${renderCards(byRole('blade'),'blade')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
+    } else if(state.step===1){ elMain.innerHTML = `<h2 class="h5">Paso 2 · Selecciona goma para derecho (FH)</h2><button class="btn btn-primary btn-sm mb-2" id="cfgNextTop">Siguiente</button>${renderCards(byRole('rubber'),'fh')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
     } else if(state.step===2){
-      elMain.innerHTML = `<h2 class="h5">Paso 3 · Selecciona goma para revés (BH)</h2><p class="small text-muted">Si quieres la misma goma del derecho, selecciónala nuevamente.</p>${renderCards(byRole('rubber'),'bh')}<button class="btn btn-primary mt-3" id="cfgNext">Ir al resumen</button>`;
+      elMain.innerHTML = `<h2 class="h5">Paso 3 · Selecciona goma para revés (BH)</h2><button class="btn btn-primary btn-sm mb-2" id="cfgNextTop">Ir al resumen</button><p class="small text-muted">Si quieres la misma goma del derecho, selecciónala nuevamente.</p>${renderCards(byRole('rubber'),'bh')}<button class="btn btn-primary mt-3" id="cfgNext">Ir al resumen</button>`;
     } else { elMain.innerHTML = `<h2 class="h5">Paso 4 · Resumen final</h2><p class="text-muted">Revisa métricas, guarda tu configuración o solicita asesoría por WhatsApp.</p><div class="alert alert-light border">Tiempo de preparación: ${settings.assembly_lead_time_message || '24 a 72 horas hábiles con armado profesional.'}</div>`; }
 
     bindStepEvents();
@@ -353,7 +353,9 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
   function bindStepEvents(){
     elMain.querySelectorAll('[data-mode]').forEach(btn=>btn.onclick = ()=>{ state.mode=btn.dataset.mode; });
     elMain.querySelectorAll('[data-pick]').forEach(card=>card.onclick=()=>{const key = card.dataset.pick; const id=Number(card.dataset.id); state[key]=productos.find(p=>Number(p.id)===id)||null; renderStep();});
-    const n = document.getElementById('cfgNext'); if(n) n.onclick = ()=>{ state.step=Math.min(3,state.step+1); renderStep(); };
+    const goNext = () => { state.step=Math.min(3,state.step+1); renderStep(); };
+    const n = document.getElementById('cfgNext'); if(n) n.onclick = goNext;
+    const nt = document.getElementById('cfgNextTop'); if(nt) nt.onclick = goNext;
     elMain.querySelectorAll('.form-check-input').forEach(i=>i.onchange = captureExtras);
   }
 
