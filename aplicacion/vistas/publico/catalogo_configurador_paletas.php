@@ -12,6 +12,7 @@ $colorAcento = trim((string) ($catalogoTopbar['color_acento'] ?? ''));
 if (preg_match('/^#([A-Fa-f0-9]{6})$/', $colorAcento) !== 1) {
     $colorAcento = '#7B2CBF';
 }
+$colorAcento = $colorPrimario;
 $topbarTexto = trim((string) ($catalogoTopbar['texto'] ?? ''));
 if ($topbarTexto === '') {
     $topbarTexto = 'Envíos a todo el país • Garantía en todos los productos';
@@ -120,7 +121,7 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
   .btn-outline,.btn-primary-custom,.btn-soft,.btn-danger-soft{padding:9px 13px;border-radius:10px;font-weight:700;border:1px solid var(--border);background:#fff;color:var(--text)}
   .btn-primary-custom{background:var(--accent);border-color:var(--accent);color:#fff}
   .catalogo-navbar .btn-primary-custom,.catalogo-navbar .btn-primary-custom span,.catalogo-navbar .btn-primary-custom svg{color:#fff !important;fill:#fff !important;stroke:#fff !important;text-decoration:none !important}
-  .footer{position:relative;color:#fff;padding:30px 0 20px;margin-top:20px;background:var(--primary)}
+  .footer{position:relative;color:#fff;padding:30px 0 20px;margin-top:20px;background:linear-gradient(120deg,var(--primary),var(--accent))}
   .footer-content{display:grid;grid-template-columns:1.1fr .9fr 1fr .9fr;gap:22px}
   .footer-col h4{font-size:18px;font-weight:600;margin:0 0 10px}
   .footer-brand img{width:128px;height:60px;object-fit:contain;background:#fff;border-radius:10px;padding:4px 8px;border:1px solid rgba(255,255,255,.35);margin-bottom:8px}
@@ -144,12 +145,12 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
   .cfg-next-btn:hover{background:var(--accent) !important;border-color:var(--accent) !important;color:#fff !important}
   body.public-page > footer.border-top.bg-white.mt-5{display:none}
   footer.border-top.bg-white.mt-5{display:none !important}
-  :root{--cfg-primary:#ff3131;--cfg-text:#0f172a;--cfg-muted:#64748b;--cfg-border:#dbe3ee;--cfg-bg:#eef2f7;--cfg-card:#fff;--cfg-ok:#16a34a}
+  :root{--cfg-primary:<?= e($colorPrimario) ?>;--cfg-text:#0f172a;--cfg-muted:#64748b;--cfg-border:#dbe3ee;--cfg-bg:#eef2f7;--cfg-card:#fff;--cfg-ok:#16a34a}
   .cfg-page{background:var(--cfg-bg)} .cfg-wrap{width:min(1280px,92%);margin:0 auto;padding:18px 0 36px}
   .cfg-grid{display:grid;grid-template-columns:1fr 340px;gap:18px}.cfg-card{background:#fff;border:1px solid var(--cfg-border);border-radius:16px;padding:16px}
   .cfg-progress{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.cfg-step{font-size:12px;padding:8px;border-radius:999px;background:#f1f5f9;text-align:center}
   .cfg-step.active{background:var(--cfg-primary);color:#fff;font-weight:700}.cfg-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-  .cfg-item{border:1px solid var(--cfg-border);border-radius:12px;padding:10px;cursor:pointer}.cfg-item.active{border-color:var(--cfg-primary);box-shadow:0 0 0 2px rgba(255,49,49,.14)}
+  .cfg-item{border:1px solid var(--cfg-border);border-radius:12px;padding:10px;cursor:pointer}.cfg-item.active{border-color:var(--cfg-primary);box-shadow:0 0 0 2px color-mix(in srgb,var(--cfg-primary) 28%,transparent)}
   .cfg-item img{width:100%;height:120px;object-fit:contain;background:#fff;border-radius:10px}.cfg-item h4{font-size:14px;margin:8px 0 6px}
   .cfg-meta{font-size:12px;color:var(--cfg-muted);display:grid;gap:2px}.cfg-chip{display:inline-block;padding:2px 8px;border-radius:999px;background:#e2e8f0;font-size:11px;margin:2px 2px 0 0}
   .cfg-sidebar{position:sticky;top:84px;height:fit-content}.cfg-total{font-size:30px;font-weight:800}.cfg-kpi{display:grid;gap:6px;margin-top:8px}
@@ -193,8 +194,8 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
     $catalogoHeaderSearchMethod = 'GET';
     $catalogoHeaderSearchName = 'q';
     $catalogoHeaderSearchValue = '';
-    $catalogoHeaderCartAsButton = true;
-    $catalogoHeaderCartButtonId = 'openCartHeader';
+    $catalogoHeaderCartAsButton = false;
+    $catalogoHeaderCartHref = $catalogoBaseUrl;
     require __DIR__ . '/partials/catalogo_header.php';
   ?>
   <section class="cfg-wrap">

@@ -42,10 +42,21 @@ class ConfiguradorPaletasControlador extends Controlador
             'contacto' => url('/catalogo/' . $empresaId . '/contacto'),
             'faq' => url('/catalogo/' . $empresaId . '/preguntas-frecuentes'),
         ];
-        $catalogoTopbar = ['texto' => 'Configurador premium PV Sport • Armado profesional y asesoría experta'];
-        $logoCatalogo = url('/catalogo/' . $empresaId . '/logo');
+        $catalogoTopbar = [
+            'texto' => trim((string) ($empresa['catalogo_topbar_texto'] ?? '')),
+            'color_primario' => trim((string) ($empresa['catalogo_color_primario'] ?? '')),
+            'color_acento' => trim((string) ($empresa['catalogo_color_acento'] ?? '')),
+            'sociales' => [
+                'facebook' => trim((string) ($empresa['catalogo_social_facebook'] ?? '')),
+                'instagram' => trim((string) ($empresa['catalogo_social_instagram'] ?? '')),
+                'tiktok' => trim((string) ($empresa['catalogo_social_tiktok'] ?? '')),
+                'linkedin' => trim((string) ($empresa['catalogo_social_linkedin'] ?? '')),
+                'youtube' => trim((string) ($empresa['catalogo_social_youtube'] ?? '')),
+            ],
+        ];
+        $logoCatalogo = url('/catalogo/' . $empresaId . '/logo?v=' . rawurlencode((string) ($empresa['fecha_actualizacion'] ?? time())));
         $socialesTopbar = [];
-        $topbarTexto = (string) $catalogoTopbar['texto'];
+        $topbarTexto = (string) ($catalogoTopbar['texto'] !== '' ? $catalogoTopbar['texto'] : 'Configurador premium PV Sport • Armado profesional y asesoría experta');
         $renderIconoRed = static fn(string $id): string => '';
         $catalogoBaseUrl = $catalogoRutas['base'];
         $catalogoNosotrosUrl = $catalogoRutas['nosotros'];
