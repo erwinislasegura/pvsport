@@ -13,6 +13,7 @@ use Aplicacion\Controladores\Empresa\DocumentosControlador;
 use Aplicacion\Controladores\Empresa\PuntoVentaControlador;
 use Aplicacion\Controladores\Empresa\InventarioControlador;
 use Aplicacion\Controladores\Empresa\SoporteChatControlador;
+use Aplicacion\Controladores\Empresa\ConfiguradorPaletasControlador;
 use Aplicacion\Controladores\Admin\AdministradoresEmpresasControlador;
 
 $mwEmpresa = [AutenticadoMiddleware::class, EmpresaMiddleware::class];
@@ -21,6 +22,10 @@ $enrutador->agregar('GET', '/app/panel', [GestionComercialControlador::class, 'i
 $enrutador->agregar('POST', '/app/panel/iniciar-pago-trial', [GestionComercialControlador::class, 'iniciarPagoPlanTrial'], $mwEmpresa);
 $enrutador->agregar('POST', '/app/panel/iniciar-pago-cambio-plan', [GestionComercialControlador::class, 'iniciarPagoCambioPlan'], $mwEmpresa);
 $enrutador->agregar('GET', '/app/catalogo-en-linea', [GestionComercialControlador::class, 'catalogoEnLinea'], $mwEmpresa);
+$enrutador->agregar('GET', '/app/configurador-paletas', [ConfiguradorPaletasControlador::class, 'index'], $mwEmpresa);
+$enrutador->agregar('POST', '/app/configurador-paletas/atributos', [ConfiguradorPaletasControlador::class, 'guardarAtributos'], $mwEmpresa);
+$enrutador->agregar('POST', '/app/configurador-paletas/reglas', [ConfiguradorPaletasControlador::class, 'guardarRegla'], $mwEmpresa);
+$enrutador->agregar('POST', '/app/configurador-paletas/configuracion', [ConfiguradorPaletasControlador::class, 'guardarConfiguracion'], $mwEmpresa);
 $enrutador->agregar('GET', '/app/compras-catalogo', [GestionComercialControlador::class, 'comprasCatalogo'], $mwEmpresa);
 $enrutador->agregar('POST', '/app/compras-catalogo/estado-envio/{id}', [GestionComercialControlador::class, 'actualizarEstadoEnvioCompraCatalogo'], $mwEmpresa);
 $enrutador->agregar('POST', '/app/catalogo-en-linea/configuracion', [GestionComercialControlador::class, 'guardarConfiguracionCatalogoEnLinea'], $mwEmpresa);
