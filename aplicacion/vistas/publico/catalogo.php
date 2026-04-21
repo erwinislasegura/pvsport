@@ -53,6 +53,7 @@ $colorAcento = trim((string) ($catalogoTopbar['color_acento'] ?? ''));
 if (preg_match('/^#([A-Fa-f0-9]{6})$/', $colorAcento) !== 1) {
     $colorAcento = '#7B2CBF';
 }
+$colorAcento = $colorPrimario;
 $columnasProductos = (int) ($catalogoTopbar['columnas_productos'] ?? 3);
 if ($columnasProductos < 2 || $columnasProductos > 5) {
     $columnasProductos = 3;
