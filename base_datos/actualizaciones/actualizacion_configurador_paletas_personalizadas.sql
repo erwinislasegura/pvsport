@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS product_attributes (
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
   UNIQUE KEY uq_product_attributes_product (product_id),
-  CONSTRAINT fk_product_attributes_product FOREIGN KEY (product_id) REFERENCES productos(id) ON DELETE CASCADE
+  KEY idx_product_attributes_product_id (product_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS product_variants (
@@ -37,8 +37,7 @@ CREATE TABLE IF NOT EXISTS product_variants (
   is_active TINYINT(1) NOT NULL DEFAULT 1,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
-  KEY idx_product_variants_product (product_id),
-  CONSTRAINT fk_product_variants_product FOREIGN KEY (product_id) REFERENCES productos(id) ON DELETE CASCADE
+  KEY idx_product_variants_product (product_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS racket_builds (
@@ -69,8 +68,7 @@ CREATE TABLE IF NOT EXISTS racket_builds (
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
   KEY idx_racket_builds_empresa_estado (empresa_id, status),
-  KEY idx_racket_builds_session (session_id),
-  CONSTRAINT fk_racket_builds_empresa FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
+  KEY idx_racket_builds_session (session_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS racket_recommendation_rules (
@@ -88,8 +86,7 @@ CREATE TABLE IF NOT EXISTS racket_recommendation_rules (
   bh_weight DECIMAL(6,2) DEFAULT 1,
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
-  KEY idx_racket_rules_empresa (empresa_id),
-  CONSTRAINT fk_racket_rules_empresa FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
+  KEY idx_racket_rules_empresa (empresa_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS racket_configuration_settings (
@@ -101,8 +98,7 @@ CREATE TABLE IF NOT EXISTS racket_configuration_settings (
   `description` VARCHAR(255) DEFAULT NULL,
   updated_at DATETIME NOT NULL,
   UNIQUE KEY uq_racket_settings_empresa_key (empresa_id, `key`),
-  KEY idx_racket_settings_empresa (empresa_id),
-  CONSTRAINT fk_racket_settings_empresa FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
+  KEY idx_racket_settings_empresa (empresa_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------------------------
@@ -185,6 +181,7 @@ CALL pvs_cfg_ensure_column('product_attributes', 'is_active', 'TINYINT(1) NOT NU
 CALL pvs_cfg_ensure_column('product_attributes', 'created_at', 'DATETIME NOT NULL');
 CALL pvs_cfg_ensure_column('product_attributes', 'updated_at', 'DATETIME NOT NULL');
 CALL pvs_cfg_ensure_index('product_attributes', 'uq_product_attributes_product', 'UNIQUE KEY `uq_product_attributes_product` (`product_id`)');
+CALL pvs_cfg_ensure_index('product_attributes', 'idx_product_attributes_product_id', 'KEY `idx_product_attributes_product_id` (`product_id`)');
 
 -- product_variants
 CALL pvs_cfg_ensure_column('product_variants', 'id', 'INT AUTO_INCREMENT PRIMARY KEY');

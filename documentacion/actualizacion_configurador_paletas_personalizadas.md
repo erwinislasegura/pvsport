@@ -20,6 +20,8 @@ Aplicar `base_datos/actualizaciones/actualizacion_configurador_paletas_personali
 
 La migración quedó **idempotente**: puede ejecutarse en entornos donde las tablas ya existen (despliegues parciales) porque incluye validaciones por `information_schema` para agregar columnas/índices faltantes sin provocar error por duplicados.
 
+Además, para evitar errores por incompatibilidad de tipos entre instalaciones (por ejemplo `productos.id` signed/unsigned distinto), la migración crea índices de relación pero **no fuerza foreign keys** en estas tablas del configurador.
+
 Ejemplo (formato correcto del bloque inicial):
 
 ```sql
@@ -47,7 +49,7 @@ CREATE TABLE IF NOT EXISTS product_attributes (
   created_at DATETIME NOT NULL,
   updated_at DATETIME NOT NULL,
   UNIQUE KEY uq_product_attributes_product (product_id),
-  CONSTRAINT fk_product_attributes_product FOREIGN KEY (product_id) REFERENCES productos(id) ON DELETE CASCADE
+  KEY idx_product_attributes_product_id (product_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
