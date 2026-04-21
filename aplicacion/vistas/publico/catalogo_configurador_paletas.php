@@ -8,6 +8,9 @@ foreach (($settings ?? []) as $k => $v) {
 }
 $settingsJson = json_encode($settingsMap, $jsonFlags);
 $rulesJson = json_encode($reglas ?? [], $jsonFlags);
+$productosB64 = base64_encode((string) ($productosJson !== false ? $productosJson : '[]'));
+$settingsB64 = base64_encode((string) ($settingsJson !== false ? $settingsJson : '{}'));
+$rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
 ?>
 <style>
   :root{--primary:#ff3131;--accent:#7b2cbf;--bg:#eef2f7;--border:#dbe3ee;--muted:#64748b;--text:#0f172a;--shadow:0 10px 25px rgba(15,23,42,.08)}
@@ -134,8 +137,8 @@ $rulesJson = json_encode($reglas ?? [], $jsonFlags);
 <script>
 (() => {
   try {
-  const productos = <?= $productosJson ?: '[]' ?>;
-  const settings = <?= $settingsJson ?: '{}' ?>;
+  const productos = JSON.parse(atob('<?= e($productosB64) ?>') || '[]');
+  const settings = JSON.parse(atob('<?= e($settingsB64) ?>') || '{}');
   const steps = ['Modo','Madero','Goma FH','Goma BH','Extras','Resumen'];
   const state = {step:0, mode:'guiado', profile:{}, blade:null, fh:null, bh:null, extras:[]};
 
