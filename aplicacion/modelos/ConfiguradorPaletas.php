@@ -10,9 +10,12 @@ class ConfiguradorPaletas extends Modelo
 
     public function listarProductosConfigurador(int $empresaId, string $rol = ''): array
     {
-        if (!$this->tieneTabla('product_attributes')) {
-            return [];
-        }
+        $joinAtributos = $this->tieneTabla('product_attributes')
+            ? 'LEFT JOIN product_attributes pa ON pa.product_id = p.id AND pa.is_active = 1'
+            : 'LEFT JOIN (SELECT NULL AS product_id, NULL AS speed, NULL AS control_score, NULL AS spin, NULL AS hardness,
+                                 NULL AS tacky_type, NULL AS arc, NULL AS weight_grams, NULL AS composition, NULL AS handle_type,
+                                 NULL AS player_level, NULL AS play_style, NULL AS rubber_type, NULL AS category_role,
+                                 NULL AS is_forehand_recommended, NULL AS is_backhand_recommended, NULL AS tags, NULL AS featured_order) pa ON 1=0';
 
         $sql = 'SELECT p.id, p.nombre, p.descripcion, p.precio, p.precio_oferta, p.stock_actual, p.estado, c.nombre AS categoria,
                        pa.speed, pa.control_score, pa.spin, pa.hardness, pa.tacky_type, pa.arc, pa.weight_grams,
@@ -20,7 +23,7 @@ class ConfiguradorPaletas extends Modelo
                        pa.is_forehand_recommended, pa.is_backhand_recommended, pa.tags,
                        (SELECT pi.ruta FROM productos_imagenes pi WHERE pi.producto_id = p.id ORDER BY pi.es_principal DESC, pi.id ASC LIMIT 1) AS imagen
                 FROM productos p
-                INNER JOIN product_attributes pa ON pa.product_id = p.id AND pa.is_active = 1
+                ' . $joinAtributos . '
                 LEFT JOIN categorias_productos c ON c.id = p.categoria_id
                 WHERE p.empresa_id = :empresa_id
                   AND p.fecha_eliminacion IS NULL
@@ -28,23 +31,28 @@ class ConfiguradorPaletas extends Modelo
                   AND COALESCE(p.mostrar_catalogo, 1) = 1';
 
         $params = ['empresa_id' => $empresaId];
-        if ($rol !== '') {
-            $sql .= ' AND pa.category_role = :rol';
-            $params['rol'] = $rol;
-        }
-
         $sql .= ' ORDER BY COALESCE(pa.featured_order, 9999) ASC, p.nombre ASC';
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
         $items = $stmt->fetchAll() ?: [];
 
+        $filtrados = [];
         foreach ($items as &$item) {
+            $item['category_role'] = $this->inferirRolConfigurador($item);
+            $this->normalizarMetricas($item);
             $item['variants'] = $this->listarVariantesProducto((int) ($item['id'] ?? 0));
+            if ($item['category_role'] === 'unknown') {
+                continue;
+            }
+            if ($rol !== '' && $item['category_role'] !== $rol) {
+                continue;
+            }
+            $filtrados[] = $item;
         }
         unset($item);
 
-        return $items;
+        return $filtrados;
     }
 
     public function listarVariantesProducto(int $productoId): array
@@ -60,17 +68,22 @@ class ConfiguradorPaletas extends Modelo
 
     public function obtenerProductoConfigurador(int $empresaId, int $productoId): ?array
     {
-        if (!$this->tieneTabla('product_attributes')) {
-            return null;
-        }
+        $joinAtributos = $this->tieneTabla('product_attributes')
+            ? 'LEFT JOIN product_attributes pa ON pa.product_id = p.id AND pa.is_active = 1'
+            : 'LEFT JOIN (SELECT NULL AS product_id, NULL AS speed, NULL AS control_score, NULL AS spin, NULL AS hardness,
+                                 NULL AS tacky_type, NULL AS arc, NULL AS weight_grams, NULL AS composition, NULL AS handle_type,
+                                 NULL AS player_level, NULL AS play_style, NULL AS rubber_type, NULL AS category_role,
+                                 NULL AS is_forehand_recommended, NULL AS is_backhand_recommended, NULL AS tags) pa ON 1=0';
 
         $stmt = $this->db->prepare('SELECT p.id, p.nombre, p.descripcion, p.precio, p.precio_oferta, p.stock_actual, p.estado,
+                                           c.nombre AS categoria,
                                            pa.speed, pa.control_score, pa.spin, pa.hardness, pa.tacky_type, pa.arc, pa.weight_grams,
                                            pa.composition, pa.handle_type, pa.player_level, pa.play_style, pa.rubber_type, pa.category_role,
                                            pa.is_forehand_recommended, pa.is_backhand_recommended, pa.tags,
                                            (SELECT pi.ruta FROM productos_imagenes pi WHERE pi.producto_id = p.id ORDER BY pi.es_principal DESC, pi.id ASC LIMIT 1) AS imagen
                                     FROM productos p
-                                    INNER JOIN product_attributes pa ON pa.product_id = p.id AND pa.is_active = 1
+                                    ' . $joinAtributos . '
+                                    LEFT JOIN categorias_productos c ON c.id = p.categoria_id
                                     WHERE p.empresa_id = :empresa_id
                                       AND p.id = :id
                                       AND p.fecha_eliminacion IS NULL
@@ -81,6 +94,8 @@ class ConfiguradorPaletas extends Modelo
         ]);
         $producto = $stmt->fetch() ?: null;
         if ($producto) {
+            $producto['category_role'] = $this->inferirRolConfigurador($producto);
+            $this->normalizarMetricas($producto);
             $producto['variants'] = $this->listarVariantesProducto((int) $producto['id']);
         }
         return $producto;
@@ -246,5 +261,57 @@ class ConfiguradorPaletas extends Modelo
         $stmt->execute(['tabla' => $tabla]);
         $this->cacheTablas[$tabla] = ((int) $stmt->fetchColumn()) > 0;
         return $this->cacheTablas[$tabla];
+    }
+
+    private function inferirRolConfigurador(array $item): string
+    {
+        $rolActual = trim((string) ($item['category_role'] ?? ''));
+        if ($rolActual !== '') {
+            return $rolActual;
+        }
+
+        $texto = mb_strtolower(
+            trim((string) ($item['categoria'] ?? '') . ' ' . (string) ($item['nombre'] ?? '') . ' ' . (string) ($item['descripcion'] ?? ''))
+        );
+
+        if ($texto === '') {
+            return 'unknown';
+        }
+        if (preg_match('/mader|blade|mango fl|mango an|mango st|allwood|carbon/', $texto) === 1) {
+            return 'blade';
+        }
+        if (preg_match('/goma|rubber|tacky|tensor|esponja|spin|forehand|backhand/', $texto) === 1) {
+            return 'rubber';
+        }
+        if (preg_match('/armado|pegado|ensamblado/', $texto) === 1) {
+            return 'assembly_service';
+        }
+        if (preg_match('/funda|cinta|pegamento|cleaner|limpiador|protector/', $texto) === 1) {
+            return 'accessory';
+        }
+
+        return 'unknown';
+    }
+
+    private function normalizarMetricas(array &$item): void
+    {
+        $item['speed'] = (float) ($item['speed'] ?? 0);
+        $item['control_score'] = (float) ($item['control_score'] ?? 0);
+        $item['spin'] = (float) ($item['spin'] ?? 0);
+        $item['hardness'] = (float) ($item['hardness'] ?? 0);
+
+        $texto = mb_strtolower((string) ($item['descripcion'] ?? ''));
+        if ($item['speed'] <= 0) {
+            $item['speed'] = str_contains($texto, 'rápid') || str_contains($texto, 'rapid') ? 8.2 : 7.0;
+        }
+        if ($item['control_score'] <= 0) {
+            $item['control_score'] = str_contains($texto, 'control') ? 8.2 : 7.0;
+        }
+        if ($item['spin'] <= 0) {
+            $item['spin'] = str_contains($texto, 'spin') || str_contains($texto, 'efecto') ? 8.0 : 7.0;
+        }
+        if ($item['hardness'] <= 0) {
+            $item['hardness'] = str_contains($texto, 'duro') ? 8.0 : 6.8;
+        }
     }
 }

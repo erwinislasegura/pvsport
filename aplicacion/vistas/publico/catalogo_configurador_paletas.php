@@ -9,6 +9,30 @@ $settingsJson = json_encode($settingsMap, JSON_UNESCAPED_UNICODE | JSON_UNESCAPE
 $rulesJson = json_encode($reglas ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 ?>
 <style>
+  :root{--primary:#ff3131;--accent:#7b2cbf;--bg:#eef2f7;--border:#dbe3ee;--muted:#64748b;--text:#0f172a;--shadow:0 10px 25px rgba(15,23,42,.08)}
+  .catalogo-page{background:var(--bg);min-height:100vh}
+  .catalogo-container{width:min(1280px,92%);margin:0 auto}
+  .catalogo-topbar{background:var(--primary);color:#fff;padding:8px 0;font-size:13px}
+  .catalogo-topbar__content{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .catalogo-header{position:sticky;top:0;z-index:45;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+  .catalogo-navbar{display:grid;grid-template-columns:340px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px 0}
+  .catalogo-logo{display:flex;align-items:center;gap:.55rem;color:var(--text);font-size:16px;font-weight:800;text-decoration:none;line-height:1.05}
+  .catalogo-logo img{width:120px;height:60px;object-fit:contain}
+  .catalogo-mobile-toggle{display:none}
+  .search-box{display:flex;align-items:center;background:#fff;border:1px solid var(--border);border-radius:999px;overflow:hidden;min-width:0}
+  .search-box input{width:100%;padding:10px 14px;border:none;outline:none;background:transparent;font-size:14px}
+  .search-box button{background:var(--accent);color:#fff;padding:10px 18px;font-weight:700;border:none}
+  .nav-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .menu-link{padding:9px 6px;font-weight:600;color:var(--primary);text-decoration:none;border:none;background:transparent;white-space:nowrap}
+  .menu-link:hover{color:var(--accent)}
+  .btn-primary-custom{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:10px;font-weight:700;border:1px solid var(--accent);background:var(--accent);color:#fff;text-decoration:none}
+  .btn-primary-custom svg{stroke:#fff;fill:none}
+  .footer{position:relative;color:#fff;padding:30px 0 20px;margin-top:20px;background:linear-gradient(120deg,var(--primary),var(--accent))}
+  .footer-content{display:grid;grid-template-columns:1.1fr .9fr 1fr .9fr;gap:22px}
+  .footer-col h4{font-size:18px;font-weight:600;margin:0 0 10px}
+  .footer-bottom{background:#fff;border-top:1px solid #e5e7eb;padding:10px 0}
+  .footer-bottom__content{display:flex;justify-content:space-between;align-items:center;color:#4b5563;font-size:13px;font-weight:500;gap:12px}
+  body.public-page > footer.border-top.bg-white.mt-5{display:none}
   :root{--cfg-primary:#ff3131;--cfg-text:#0f172a;--cfg-muted:#64748b;--cfg-border:#dbe3ee;--cfg-bg:#eef2f7;--cfg-card:#fff;--cfg-ok:#16a34a}
   .cfg-page{background:var(--cfg-bg)} .cfg-wrap{width:min(1280px,92%);margin:0 auto;padding:18px 0 36px}
   .cfg-grid{display:grid;grid-template-columns:1fr 340px;gap:18px}.cfg-card{background:#fff;border:1px solid var(--cfg-border);border-radius:16px;padding:16px}
@@ -22,6 +46,7 @@ $rulesJson = json_encode($reglas ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_
   .cfg-mobile-bar{display:none;position:fixed;left:10px;right:10px;bottom:10px;background:#fff;border:1px solid var(--cfg-border);box-shadow:0 10px 24px rgba(15,23,42,.16);border-radius:12px;padding:10px;z-index:70}
   .cfg-hero{margin-top:12px;background:#fff;border:1px solid var(--cfg-border);border-radius:18px;padding:16px}.cfg-hero h1{font-size:30px;margin:0 0 8px}
   .cfg-faq{margin-top:20px}
+  @media (max-width:1100px){.catalogo-navbar,.footer-content{grid-template-columns:1fr}.search-box{width:100%}}
   @media (max-width:980px){.cfg-grid{grid-template-columns:1fr}.cfg-list{grid-template-columns:repeat(2,minmax(0,1fr))}.cfg-sidebar{position:static}.cfg-mobile-bar{display:block}}
   @media (max-width:720px){.cfg-list{grid-template-columns:1fr}.cfg-progress{grid-template-columns:repeat(2,1fr)}.cfg-hero h1{font-size:22px}}
 </style>

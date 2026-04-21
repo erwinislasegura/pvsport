@@ -3,6 +3,8 @@
 ## 1) Resumen funcional
 Se incorporó un módulo nativo de **Configurador de Paletas Personalizadas** con flujo guiado/experto, selección de madero + goma FH + goma BH + extras, cálculo dinámico de precio y métricas técnicas, guardado de configuración y CTA comercial a WhatsApp.
 
+El configurador ahora puede operar directamente con el catálogo existente aunque no estén cargados todos los atributos técnicos: infiere rol (`blade`, `rubber`, `accessory`, `assembly_service`) desde categoría + nombre + descripción del producto.
+
 ## 2) Archivos creados/modificados
 - `aplicacion/controladores/Publico/ConfiguradorPaletasControlador.php`
 - `aplicacion/controladores/Empresa/ConfiguradorPaletasControlador.php`
