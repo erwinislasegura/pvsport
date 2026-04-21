@@ -330,6 +330,7 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
 
     const summary = document.getElementById('cfgSummary');
     const empty = document.getElementById('cfgSummaryEmpty');
+    if (state.useSameBh && state.fh) { state.bh = state.fh; }
     const full = Boolean(state.blade && state.fh && state.bh);
 
     summary.style.display = 'block';
