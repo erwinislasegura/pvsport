@@ -6,8 +6,14 @@ use Aplicacion\Nucleo\Modelo;
 
 class ConfiguradorPaletas extends Modelo
 {
+    private array $cacheTablas = [];
+
     public function listarProductosConfigurador(int $empresaId, string $rol = ''): array
     {
+        if (!$this->tieneTabla('product_attributes')) {
+            return [];
+        }
+
         $sql = 'SELECT p.id, p.nombre, p.descripcion, p.precio, p.precio_oferta, p.stock_actual, p.estado, c.nombre AS categoria,
                        pa.speed, pa.control_score, pa.spin, pa.hardness, pa.tacky_type, pa.arc, pa.weight_grams,
                        pa.composition, pa.handle_type, pa.player_level, pa.play_style, pa.rubber_type, pa.category_role,
@@ -43,6 +49,10 @@ class ConfiguradorPaletas extends Modelo
 
     public function listarVariantesProducto(int $productoId): array
     {
+        if (!$this->tieneTabla('product_variants')) {
+            return [];
+        }
+
         $stmt = $this->db->prepare('SELECT * FROM product_variants WHERE product_id = :product_id AND is_active = 1 ORDER BY id ASC');
         $stmt->execute(['product_id' => $productoId]);
         return $stmt->fetchAll() ?: [];
@@ -50,6 +60,10 @@ class ConfiguradorPaletas extends Modelo
 
     public function obtenerProductoConfigurador(int $empresaId, int $productoId): ?array
     {
+        if (!$this->tieneTabla('product_attributes')) {
+            return null;
+        }
+
         $stmt = $this->db->prepare('SELECT p.id, p.nombre, p.descripcion, p.precio, p.precio_oferta, p.stock_actual, p.estado,
                                            pa.speed, pa.control_score, pa.spin, pa.hardness, pa.tacky_type, pa.arc, pa.weight_grams,
                                            pa.composition, pa.handle_type, pa.player_level, pa.play_style, pa.rubber_type, pa.category_role,
@@ -74,6 +88,10 @@ class ConfiguradorPaletas extends Modelo
 
     public function listarReglas(int $empresaId): array
     {
+        if (!$this->tieneTabla('racket_recommendation_rules')) {
+            return [];
+        }
+
         $stmt = $this->db->prepare('SELECT * FROM racket_recommendation_rules WHERE empresa_id = :empresa_id ORDER BY id DESC');
         $stmt->execute(['empresa_id' => $empresaId]);
         return $stmt->fetchAll() ?: [];
@@ -81,6 +99,10 @@ class ConfiguradorPaletas extends Modelo
 
     public function guardarRegla(int $empresaId, array $data): void
     {
+        if (!$this->tieneTabla('racket_recommendation_rules')) {
+            return;
+        }
+
         $stmt = $this->db->prepare('INSERT INTO racket_recommendation_rules
             (empresa_id, rule_name, level, style, priority_metric, budget_min, budget_max, transition_type, blade_weight, fh_weight, bh_weight, created_at, updated_at)
             VALUES
@@ -103,6 +125,10 @@ class ConfiguradorPaletas extends Modelo
 
     public function guardarBuild(array $data): int
     {
+        if (!$this->tieneTabla('racket_builds')) {
+            return 0;
+        }
+
         $stmt = $this->db->prepare('INSERT INTO racket_builds
             (empresa_id, session_id, user_id, blade_product_id, blade_variant_id, fh_rubber_product_id, fh_variant_id,
              bh_rubber_product_id, bh_variant_id, edge_tape_product_id, case_product_id, glue_product_id, cleaner_product_id,
@@ -120,6 +146,10 @@ class ConfiguradorPaletas extends Modelo
 
     public function listarBuilds(int $empresaId, int $limite = 80): array
     {
+        if (!$this->tieneTabla('racket_builds')) {
+            return [];
+        }
+
         $stmt = $this->db->prepare('SELECT * FROM racket_builds WHERE empresa_id = :empresa_id ORDER BY id DESC LIMIT :limite');
         $stmt->bindValue(':empresa_id', $empresaId, \PDO::PARAM_INT);
         $stmt->bindValue(':limite', max(1, $limite), \PDO::PARAM_INT);
@@ -129,6 +159,10 @@ class ConfiguradorPaletas extends Modelo
 
     public function upsertSetting(int $empresaId, string $key, string $value, string $type = 'text', string $description = ''): void
     {
+        if (!$this->tieneTabla('racket_configuration_settings')) {
+            return;
+        }
+
         $stmt = $this->db->prepare('INSERT INTO racket_configuration_settings (empresa_id, `key`, `value`, `type`, `description`, updated_at)
             VALUES (:empresa_id, :key_name, :value, :type, :description, NOW())
             ON DUPLICATE KEY UPDATE `value` = VALUES(`value`), `type` = VALUES(`type`), `description` = VALUES(`description`), updated_at = NOW()');
@@ -143,6 +177,10 @@ class ConfiguradorPaletas extends Modelo
 
     public function obtenerSettings(int $empresaId): array
     {
+        if (!$this->tieneTabla('racket_configuration_settings')) {
+            return [];
+        }
+
         $stmt = $this->db->prepare('SELECT `key`, `value`, `type`, `description` FROM racket_configuration_settings WHERE empresa_id = :empresa_id');
         $stmt->execute(['empresa_id' => $empresaId]);
         $rows = $stmt->fetchAll() ?: [];
@@ -155,6 +193,10 @@ class ConfiguradorPaletas extends Modelo
 
     public function upsertAtributosProducto(int $productoId, array $data): void
     {
+        if (!$this->tieneTabla('product_attributes')) {
+            return;
+        }
+
         $stmt = $this->db->prepare('INSERT INTO product_attributes
             (product_id, speed, control_score, spin, hardness, tacky_type, arc, weight_grams, composition, handle_type,
              player_level, play_style, rubber_type, category_role, is_forehand_recommended, is_backhand_recommended,
@@ -192,5 +234,17 @@ class ConfiguradorPaletas extends Modelo
             'featured_order' => (int) ($data['featured_order'] ?? 999),
             'is_active' => isset($data['is_active']) ? ((int) $data['is_active']) : 1,
         ]);
+    }
+
+    private function tieneTabla(string $tabla): bool
+    {
+        if (array_key_exists($tabla, $this->cacheTablas)) {
+            return $this->cacheTablas[$tabla];
+        }
+
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :tabla');
+        $stmt->execute(['tabla' => $tabla]);
+        $this->cacheTablas[$tabla] = ((int) $stmt->fetchColumn()) > 0;
+        return $this->cacheTablas[$tabla];
     }
 }
