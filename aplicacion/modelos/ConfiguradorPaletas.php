@@ -42,9 +42,6 @@ class ConfiguradorPaletas extends Modelo
             $item['category_role'] = $this->inferirRolConfigurador($item);
             $this->normalizarMetricas($item);
             $item['variants'] = $this->listarVariantesProducto((int) ($item['id'] ?? 0));
-            if ($item['category_role'] === 'unknown') {
-                continue;
-            }
             if ($rol !== '' && $item['category_role'] !== $rol) {
                 continue;
             }
@@ -277,10 +274,10 @@ class ConfiguradorPaletas extends Modelo
         if ($texto === '') {
             return 'unknown';
         }
-        if (preg_match('/mader|blade|mango fl|mango an|mango st|allwood|carbon/', $texto) === 1) {
+        if (preg_match('/mader|blade|paleta|raqueta|racket|mango fl|mango an|mango st|allwood|carbon|wood/', $texto) === 1) {
             return 'blade';
         }
-        if (preg_match('/goma|rubber|tacky|tensor|esponja|spin|forehand|backhand/', $texto) === 1) {
+        if (preg_match('/goma|caucho|revest|rubber|tacky|tensor|esponja|spin|forehand|backhand/', $texto) === 1) {
             return 'rubber';
         }
         if (preg_match('/armado|pegado|ensamblado/', $texto) === 1) {
