@@ -7,6 +7,7 @@ use Aplicacion\Modelos\Producto;
 use Aplicacion\Modelos\ProductoImagen;
 use Aplicacion\Modelos\GestionComercial;
 use Aplicacion\Modelos\Inventario;
+use Aplicacion\Modelos\ConfiguradorPaletas;
 use Aplicacion\Servicios\ExcelExpoFormato;
 use Aplicacion\Servicios\ServicioPlan;
 
@@ -23,7 +24,7 @@ class ProductosControlador extends Controlador
     public function crear(): void
     {
         $categorias = (new GestionComercial())->listarTablaEmpresa('categorias_productos', empresa_actual_id(), '', 200);
-        $this->vista('empresa/productos/formulario', ['producto' => null, 'categorias' => $categorias], 'empresa');
+        $this->vista('empresa/productos/formulario', ['producto' => null, 'categorias' => $categorias, 'productoTecnico' => []], 'empresa');
     }
 
     public function guardar(): void
@@ -76,6 +77,7 @@ class ProductosControlador extends Controlador
             'estado' => $_POST['estado'] ?? 'activo',
         ]);
         $this->procesarImagenesCatalogo($empresaId, $productoId);
+        $this->guardarAtributosTecnicosConfigurador($productoId);
         flash('success', 'Producto creado correctamente.');
         $this->redirigir($this->obtenerRutaRetorno('/app/productos'));
     }
@@ -535,7 +537,8 @@ class ProductosControlador extends Controlador
         }
         $categorias = (new GestionComercial())->listarTablaEmpresa('categorias_productos', $empresaId, '', 200);
         $imagenesCatalogo = (new ProductoImagen())->listarPorProducto($empresaId, $id);
-        $this->vista('empresa/productos/editar', compact('producto', 'categorias', 'imagenesCatalogo'), 'empresa');
+        $productoTecnico = (new ConfiguradorPaletas())->obtenerAtributosProducto($id);
+        $this->vista('empresa/productos/editar', compact('producto', 'categorias', 'imagenesCatalogo', 'productoTecnico'), 'empresa');
     }
 
     public function actualizar(int $id): void
@@ -577,6 +580,7 @@ class ProductosControlador extends Controlador
             'estado' => $_POST['estado'] ?? 'activo',
         ]);
         $this->procesarImagenesCatalogo($empresaId, $id);
+        $this->guardarAtributosTecnicosConfigurador($id);
         flash('success', 'Producto actualizado correctamente.');
         $this->redirigir('/app/productos');
     }
@@ -658,5 +662,44 @@ class ProductosControlador extends Controlador
                 $imagenModel->marcarPrincipal($empresaId, $productoId, (int) $imagenes[0]['id']);
             }
         }
+    }
+
+    private function guardarAtributosTecnicosConfigurador(int $productoId): void
+    {
+        $extraTech = [
+            'capas' => trim((string) ($_POST['tech_capas'] ?? '')),
+            'material' => trim((string) ($_POST['tech_material'] ?? '')),
+            'tipo' => trim((string) ($_POST['tech_tipo'] ?? '')),
+            'flexibilidad' => trim((string) ($_POST['tech_flexibilidad'] ?? '')),
+            'rigidez' => trim((string) ($_POST['tech_rigidez'] ?? '')),
+            'feeling' => trim((string) ($_POST['tech_feeling'] ?? '')),
+            'adherencia' => trim((string) ($_POST['tech_adherencia'] ?? '')),
+        ];
+        $extraTech = array_filter($extraTech, static fn(string $v): bool => $v !== '');
+        $tagsTexto = trim((string) ($_POST['tech_tags_texto'] ?? ''));
+        if ($tagsTexto !== '') {
+            $extraTech['tags_texto'] = $tagsTexto;
+        }
+
+        (new ConfiguradorPaletas())->upsertAtributosProducto($productoId, [
+            'speed' => (float) ($_POST['tech_speed'] ?? 0),
+            'control_score' => (float) ($_POST['tech_control_score'] ?? 0),
+            'spin' => (float) ($_POST['tech_spin'] ?? 0),
+            'hardness' => (float) ($_POST['tech_hardness'] ?? 0),
+            'tacky_type' => trim((string) ($_POST['tech_tacky_type'] ?? '')),
+            'arc' => trim((string) ($_POST['tech_arc'] ?? '')),
+            'weight_grams' => (float) ($_POST['tech_weight_grams'] ?? 0),
+            'composition' => trim((string) ($_POST['tech_composition'] ?? '')),
+            'handle_type' => trim((string) ($_POST['tech_handle_type'] ?? '')),
+            'player_level' => trim((string) ($_POST['tech_player_level'] ?? 'intermedio')),
+            'play_style' => trim((string) ($_POST['tech_play_style'] ?? 'allround')),
+            'rubber_type' => trim((string) ($_POST['tech_rubber_type'] ?? '')),
+            'category_role' => trim((string) ($_POST['tech_category_role'] ?? 'accessory')),
+            'is_forehand_recommended' => isset($_POST['tech_is_forehand_recommended']) ? 1 : 0,
+            'is_backhand_recommended' => isset($_POST['tech_is_backhand_recommended']) ? 1 : 0,
+            'tags' => $extraTech !== [] ? json_encode($extraTech, JSON_UNESCAPED_UNICODE) : '',
+            'featured_order' => (int) ($_POST['tech_featured_order'] ?? 999),
+            'is_active' => isset($_POST['tech_is_active']) ? 1 : 0,
+        ]);
     }
 }
