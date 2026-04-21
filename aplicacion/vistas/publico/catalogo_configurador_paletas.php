@@ -297,6 +297,60 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
     return productos.filter(p => inferRole(p) === role);
   };
   const clp = n => '$' + Math.round(Number(n || 0)).toLocaleString('es-CL');
+  const normName = (name) => String(name || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+  const TECH_BLADES = {
+    'loki rexton 1 fl': {capas:'5', material:'Madera', tipo:'ALL / OFF-', velocidad:'6', control:'9', flexibilidad:'Alta', rigidez:'Flexible', rotacion:'9', feeling:'Suave'},
+    'loki kirin k1 t pro fl': {capas:'5', material:'Madera', tipo:'ALL', velocidad:'6', control:'9', flexibilidad:'Alta', rigidez:'Flexible', rotacion:'9', feeling:'Suave'},
+    'loki rexton 5 pro cs': {capas:'7', material:'Carbono', tipo:'OFF+', velocidad:'10', control:'6', flexibilidad:'Baja', rigidez:'Rígido', rotacion:'7', feeling:'Directo'},
+    'loki rexton 5 pro fl': {capas:'7', material:'Carbono', tipo:'OFF+', velocidad:'10', control:'6', flexibilidad:'Baja', rigidez:'Rígido', rotacion:'7', feeling:'Directo'},
+    'loki kirin k9 fl': {capas:'7', material:'Madera', tipo:'OFF', velocidad:'9', control:'6', flexibilidad:'Baja', rigidez:'Rígido', rotacion:'7', feeling:'Firme'},
+    'loki kirin k3 fl': {capas:'5', material:'Madera', tipo:'ALL', velocidad:'6', control:'9', flexibilidad:'Alta', rigidez:'Flexible', rotacion:'9', feeling:'Suave'},
+    'gewo power allround fl': {capas:'5', material:'Madera', tipo:'ALL', velocidad:'6', control:'9', flexibilidad:'Alta', rigidez:'Flexible', rotacion:'9', feeling:'Balanceado'},
+    'victas swat 5pw st': {capas:'5', material:'Madera', tipo:'OFF-', velocidad:'7', control:'8', flexibilidad:'Media', rigidez:'Semi flexible', rotacion:'8', feeling:'Balanceado'},
+    'victas swat 5pw cs': {capas:'5', material:'Madera', tipo:'OFF-', velocidad:'7', control:'8', flexibilidad:'Media', rigidez:'Semi flexible', rotacion:'8', feeling:'Balanceado'},
+    'victas swat 5pw fl': {capas:'5', material:'Madera', tipo:'OFF-', velocidad:'7', control:'8', flexibilidad:'Media', rigidez:'Semi flexible', rotacion:'8', feeling:'Balanceado'},
+    'sanwei alc interior': {capas:'7', material:'Carbono (interior)', tipo:'OFF', velocidad:'9', control:'7', flexibilidad:'Media', rigidez:'Semi rígido', rotacion:'9', feeling:'Controlado'},
+    'loki telson cnf cs': {capas:'7', material:'Fibra (CNF)', tipo:'OFF+', velocidad:'9', control:'7', flexibilidad:'Media-baja', rigidez:'Rígido', rotacion:'8', feeling:'Directo'},
+    'loki telson cnf fl': {capas:'7', material:'Fibra (CNF)', tipo:'OFF+', velocidad:'9', control:'7', flexibilidad:'Media-baja', rigidez:'Rígido', rotacion:'8', feeling:'Directo'},
+    'loki arthur w81 pro cs': {capas:'7', material:'Madera', tipo:'OFF+', velocidad:'9', control:'6', flexibilidad:'Baja', rigidez:'Rígido', rotacion:'7', feeling:'Directo'},
+    'loki arthur w81 pro fl': {capas:'7', material:'Madera', tipo:'OFF+', velocidad:'9', control:'6', flexibilidad:'Baja', rigidez:'Rígido', rotacion:'7', feeling:'Directo'},
+    'loki monster m6 pro cs': {capas:'7', material:'Madera', tipo:'OFF', velocidad:'8', control:'7', flexibilidad:'Media', rigidez:'Semi rígido', rotacion:'7', feeling:'Firme'},
+    'loki monster m6 pro fl': {capas:'7', material:'Madera', tipo:'OFF', velocidad:'8', control:'7', flexibilidad:'Media', rigidez:'Semi rígido', rotacion:'7', feeling:'Firme'},
+    'madero boer lion': {capas:'5', material:'Madera', tipo:'OFF-', velocidad:'7', control:'8', flexibilidad:'Media', rigidez:'Semi flexible', rotacion:'8', feeling:'Balanceado'},
+    'enginneer timber negro': {capas:'5', material:'Madera', tipo:'ALL', velocidad:'6', control:'9', flexibilidad:'Alta', rigidez:'Flexible', rotacion:'9', feeling:'Suave'},
+    'madero enginner timber': {capas:'5', material:'Madera', tipo:'ALL', velocidad:'6', control:'9', flexibilidad:'Alta', rigidez:'Flexible', rotacion:'9', feeling:'Suave'},
+    'loki kirin k1': {capas:'5', material:'Madera', tipo:'ALL', velocidad:'6', control:'9', flexibilidad:'Alta', rigidez:'Flexible', rotacion:'9', feeling:'Suave'},
+    'loki kirin k1 t': {capas:'5', material:'Madera', tipo:'ALL', velocidad:'6', control:'9', flexibilidad:'Alta', rigidez:'Flexible', rotacion:'9', feeling:'Suave'},
+    'loki kirin k2': {capas:'5', material:'Madera', tipo:'ALL', velocidad:'6', control:'9', flexibilidad:'Alta', rigidez:'Flexible', rotacion:'9', feeling:'Suave'}
+  };
+  const TECH_RUBBERS = {
+    'loki arthur green': {tipo:'Control ofensivo', dureza:'Media', adherencia:'Media', velocidad:'Media', control:'Alta', spin:'Media', feeling:'Suave'},
+    'loki arthur blue': {tipo:'Control ofensivo', dureza:'Media', adherencia:'Media', velocidad:'Media', control:'Alta', spin:'Media', feeling:'Suave'},
+    'loki arthur pink': {tipo:'Control ofensivo', dureza:'Media', adherencia:'Media', velocidad:'Media', control:'Alta', spin:'Media', feeling:'Suave'},
+    'loki kirin k5': {tipo:'Balanceada', dureza:'Media', adherencia:'Media', velocidad:'Media', control:'Alta', spin:'Media-alta', feeling:'Medio'},
+    'loki rexton 7 nacional': {tipo:'Ofensiva', dureza:'Alta', adherencia:'Media-alta', velocidad:'Alta', control:'Media', spin:'Alta', feeling:'Firme'},
+    'loki rexton 9': {tipo:'Ofensiva', dureza:'Alta', adherencia:'Media', velocidad:'Muy alta', control:'Media-baja', spin:'Alta', feeling:'Firme'},
+    'loki telson 100': {tipo:'No tacky moderna', dureza:'Media (~37°)', adherencia:'Baja (fricción)', velocidad:'Alta', control:'Alta', spin:'Media-alta', feeling:'Medio'},
+    'loki t3 carbono': {tipo:'Tensor moderna', dureza:'Media-alta', adherencia:'Baja', velocidad:'Muy alta', control:'Media', spin:'Alta', feeling:'Firme'},
+    'loki rexton 5': {tipo:'Tacky ofensiva', dureza:'Alta', adherencia:'Alta', velocidad:'Muy alta', control:'Media', spin:'Muy alta', feeling:'Duro'},
+    'tuttle asian edition': {tipo:'Semi-tacky', dureza:'Media', adherencia:'Media-alta', velocidad:'Media-alta', control:'Alta', spin:'Alta', feeling:'Medio'},
+    'loki kirin k1': {tipo:'No tacky control', dureza:'Media', adherencia:'Baja', velocidad:'Media', control:'Alta', spin:'Media', feeling:'Suave'},
+    'loki rxton 3': {tipo:'Tacky híbrida', dureza:'Media', adherencia:'Media-alta', velocidad:'Media-alta', control:'Alta', spin:'Alta', feeling:'Medio'},
+    'loki rexton 3': {tipo:'Tacky híbrida', dureza:'Media', adherencia:'Media-alta', velocidad:'Media-alta', control:'Alta', spin:'Alta', feeling:'Medio'},
+    'reactor tornado v5 40': {tipo:'Ofensiva balance', dureza:'Media', adherencia:'Media', velocidad:'Media-alta', control:'Alta', spin:'Media-alta', feeling:'Medio'}
+  };
+  const getTech = (item, role) => {
+    const key = normName(item && item.nombre);
+    return role === 'blade' ? (TECH_BLADES[key] || null) : (TECH_RUBBERS[key] || null);
+  };
+  const techToHtml = (label, item, role) => {
+    const tech = getTech(item, role);
+    if (!tech) return `<div class="small text-muted">${label}: sin ficha técnica cargada para este modelo.</div>`;
+    const fields = role === 'blade'
+      ? `<li><b>Capas:</b> ${tech.capas}</li><li><b>Material:</b> ${tech.material}</li><li><b>Tipo:</b> ${tech.tipo}</li><li><b>Flexibilidad:</b> ${tech.flexibilidad}</li><li><b>Rigidez:</b> ${tech.rigidez}</li><li><b>Feeling:</b> ${tech.feeling}</li>`
+      : `<li><b>Tipo:</b> ${tech.tipo}</li><li><b>Dureza:</b> ${tech.dureza}</li><li><b>Adherencia:</b> ${tech.adherencia}</li><li><b>Feeling:</b> ${tech.feeling}</li>`;
+    return `<div class="border rounded p-2 mb-2"><div class="small fw-semibold">${label} · ${(item && item.nombre) || '-'}</div><ul class="small mb-0">${fields}<li><b>Velocidad:</b> ${tech.velocidad}</li><li><b>Control:</b> ${tech.control}</li><li><b>Spin:</b> ${tech.spin || tech.rotacion || '-'}</li></ul></div>`;
+  };
   const getPrice = (item) => {
     const price = Number((item && item.precio) || 0);
     const offer = Number((item && item.precio_oferta) || 0);
@@ -341,6 +395,10 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
           <tr><td colspan="3"><strong>Total</strong></td><td class="text-end"><strong>${clp(total)}</strong></td></tr>
         </tbody>
       </table></div>
+      <h3 class="h6 mt-3">Análisis técnico real de la combinación</h3>
+      ${techToHtml('Madero', state.blade, 'blade')}
+      ${techToHtml('Goma FH', state.fh, 'rubber')}
+      ${techToHtml('Goma BH', state.bh, 'rubber')}
       <div class="alert alert-light border">Tiempo de preparación: ${settings.assembly_lead_time_message || '24 a 72 horas hábiles con armado profesional.'}</div>`;
     }
 
