@@ -1,6 +1,6 @@
 <?php
 $fmon = static fn(float $m): string => '$' . number_format($m, 0, ',', '.');
-$jsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+$jsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE;
 $productosJson = json_encode($productos, $jsonFlags);
 $settingsMap = [];
 foreach (($settings ?? []) as $k => $v) {
@@ -11,6 +11,32 @@ $rulesJson = json_encode($reglas ?? [], $jsonFlags);
 $productosB64 = base64_encode((string) ($productosJson !== false ? $productosJson : '[]'));
 $settingsB64 = base64_encode((string) ($settingsJson !== false ? $settingsJson : '{}'));
 $rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
+$inferirRolFallback = static function (array $item): string {
+    $rol = strtolower(trim((string) ($item['category_role'] ?? '')));
+    if ($rol !== '' && $rol !== 'unknown') {
+        return $rol;
+    }
+    $texto = mb_strtolower(trim((string) ($item['categoria'] ?? '') . ' ' . (string) ($item['nombre'] ?? '') . ' ' . (string) ($item['descripcion'] ?? '')));
+    if ($texto !== '' && preg_match('/mader|blade|paleta|raqueta|racket|allwood|carbon|wood|mango fl|mango an|mango st/', $texto) === 1) {
+        return 'blade';
+    }
+    if ($texto !== '' && preg_match('/goma|caucho|revest|rubber|tacky|tensor|esponja|forehand|backhand|spin/', $texto) === 1) {
+        return 'rubber';
+    }
+    return 'accessory';
+};
+$productosBladeFallback = [];
+$productosRubberFallback = [];
+foreach (($productos ?? []) as $productoItem) {
+    $rolItem = $inferirRolFallback((array) $productoItem);
+    if ($rolItem === 'blade') {
+        $productosBladeFallback[] = (array) $productoItem;
+        continue;
+    }
+    if ($rolItem === 'rubber') {
+        $productosRubberFallback[] = (array) $productoItem;
+    }
+}
 ?>
 <style>
   :root{--primary:#ff3131;--accent:#7b2cbf;--bg:#eef2f7;--border:#dbe3ee;--muted:#64748b;--text:#0f172a;--shadow:0 10px 25px rgba(15,23,42,.08)}
@@ -78,7 +104,43 @@ $rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
 
     <div class="cfg-grid mt-3">
       <main class="cfg-card">
-        <div id="cfgMain"></div>
+        <div id="cfgMain">
+          <h2 class="h5">Productos disponibles</h2>
+          <?php if ($productosBladeFallback === [] && $productosRubberFallback === []): ?>
+            <div class="alert alert-warning mb-0">No encontramos productos clasificados para el configurador. Revisa categorías/atributos en el panel.</div>
+          <?php else: ?>
+            <?php if ($productosBladeFallback !== []): ?>
+              <h3 class="h6 mt-3">Maderos</h3>
+              <div class="cfg-list">
+                <?php foreach (array_slice($productosBladeFallback, 0, 18) as $item): ?>
+                  <article class="cfg-item">
+                    <img src="<?= e(!empty($item['imagen']) ? '/media/archivo?ruta=' . rawurlencode((string) $item['imagen']) : '/img/placeholder-producto.svg') ?>" alt="<?= e((string) ($item['nombre'] ?? 'Producto')) ?>">
+                    <h4><?= e((string) ($item['nombre'] ?? 'Producto')) ?></h4>
+                    <div class="cfg-meta">
+                      <span><?= e((string) ($item['categoria'] ?? '')) ?></span>
+                      <span><?= $fmon((float) ($item['precio_oferta'] ?: $item['precio'] ?? 0)) ?></span>
+                    </div>
+                  </article>
+                <?php endforeach; ?>
+              </div>
+            <?php endif; ?>
+            <?php if ($productosRubberFallback !== []): ?>
+              <h3 class="h6 mt-3">Gomas</h3>
+              <div class="cfg-list">
+                <?php foreach (array_slice($productosRubberFallback, 0, 24) as $item): ?>
+                  <article class="cfg-item">
+                    <img src="<?= e(!empty($item['imagen']) ? '/media/archivo?ruta=' . rawurlencode((string) $item['imagen']) : '/img/placeholder-producto.svg') ?>" alt="<?= e((string) ($item['nombre'] ?? 'Producto')) ?>">
+                    <h4><?= e((string) ($item['nombre'] ?? 'Producto')) ?></h4>
+                    <div class="cfg-meta">
+                      <span><?= e((string) ($item['categoria'] ?? '')) ?></span>
+                      <span><?= $fmon((float) ($item['precio_oferta'] ?: $item['precio'] ?? 0)) ?></span>
+                    </div>
+                  </article>
+                <?php endforeach; ?>
+              </div>
+            <?php endif; ?>
+          <?php endif; ?>
+        </div>
       </main>
       <aside class="cfg-card cfg-sidebar">
         <h3 class="h5 mb-2">Resumen técnico</h3>
@@ -147,7 +209,21 @@ $rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
   const saveBtn = document.getElementById('cfgSaveBtn');
   const saveBtnMobile = document.getElementById('cfgMobileSave');
 
-  const byRole = (role) => productos.filter(p => p.category_role === role);
+  const inferRole = (item) => {
+    const currentRole = String(item?.category_role || '').toLowerCase().trim();
+    if (currentRole && currentRole !== 'unknown') return currentRole;
+    const text = `${item?.categoria || ''} ${item?.nombre || ''} ${item?.descripcion || ''}`.toLowerCase();
+    if (/(mader|blade|paleta|raqueta|racket|allwood|carbon|wood|mango fl|mango an|mango st)/.test(text)) return 'blade';
+    if (/(goma|caucho|revest|rubber|tacky|tensor|esponja|forehand|backhand|spin)/.test(text)) return 'rubber';
+    if (/(armado|pegado|ensamblado)/.test(text)) return 'assembly_service';
+    return 'accessory';
+  };
+  const byRole = (role) => {
+    const direct = productos.filter(p => String(p.category_role || '').toLowerCase() === role);
+    if (direct.length > 0) return direct;
+    const inferred = productos.filter(p => inferRole(p) === role);
+    return inferred;
+  };
   const clp = n => '$' + Math.round(Number(n || 0)).toLocaleString('es-CL');
 
   function renderProgress(){
