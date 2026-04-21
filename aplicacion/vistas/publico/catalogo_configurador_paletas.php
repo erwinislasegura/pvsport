@@ -1,12 +1,13 @@
 <?php
 $fmon = static fn(float $m): string => '$' . number_format($m, 0, ',', '.');
-$productosJson = json_encode($productos, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+$jsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+$productosJson = json_encode($productos, $jsonFlags);
 $settingsMap = [];
 foreach (($settings ?? []) as $k => $v) {
     $settingsMap[$k] = $v['value'] ?? null;
 }
-$settingsJson = json_encode($settingsMap, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-$rulesJson = json_encode($reglas ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+$settingsJson = json_encode($settingsMap, $jsonFlags);
+$rulesJson = json_encode($reglas ?? [], $jsonFlags);
 ?>
 <style>
   :root{--primary:#ff3131;--accent:#7b2cbf;--bg:#eef2f7;--border:#dbe3ee;--muted:#64748b;--text:#0f172a;--shadow:0 10px 25px rgba(15,23,42,.08)}
@@ -132,6 +133,7 @@ $rulesJson = json_encode($reglas ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_
 
 <script>
 (() => {
+  try {
   const productos = <?= $productosJson ?: '[]' ?>;
   const settings = <?= $settingsJson ?: '{}' ?>;
   const steps = ['Modo','Madero','Goma FH','Goma BH','Extras','Resumen'];
@@ -233,5 +235,12 @@ $rulesJson = json_encode($reglas ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_
   saveBtnMobile.addEventListener('click', submitForm);
 
   renderStep();
+  } catch (error) {
+    const host = document.getElementById('cfgMain');
+    if (host) {
+      host.innerHTML = '<div class="alert alert-warning">No pudimos cargar el configurador en este navegador. Recarga la página o contáctanos por WhatsApp.</div>';
+    }
+    console.error('Configurador error:', error);
+  }
 })();
 </script>
