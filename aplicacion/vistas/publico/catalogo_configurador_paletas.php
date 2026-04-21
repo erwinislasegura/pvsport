@@ -13,10 +13,11 @@ $settingsB64 = base64_encode((string) ($settingsJson !== false ? $settingsJson :
 $rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
 $inferirRolFallback = static function (array $item): string {
     $categoria = mb_strtolower(trim((string) ($item['categoria'] ?? '')));
-    if ($categoria !== '' && preg_match('/mader|blade/', $categoria) === 1) {
+    $categoriaNorm = preg_replace('/[^a-z0-9]+/u', '', $categoria ?? '');
+    if (in_array($categoriaNorm, ['madero', 'maderos'], true)) {
         return 'blade';
     }
-    if ($categoria !== '' && preg_match('/goma|caucho|rubber|revest/', $categoria) === 1) {
+    if (in_array($categoriaNorm, ['goma', 'gomas', 'rubber', 'rubbers'], true)) {
         return 'rubber';
     }
     return 'accessory';
@@ -50,6 +51,8 @@ $fallbackOpciones = [
     }, $productosRubberFallback),
 ];
 $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $jsonFlags));
+$productosBladeB64 = base64_encode((string) json_encode(array_values($productosBladeFallback), $jsonFlags));
+$productosRubberB64 = base64_encode((string) json_encode(array_values($productosRubberFallback), $jsonFlags));
 ?>
 <style>
   :root{--primary:#ff3131;--accent:#7b2cbf;--bg:#eef2f7;--border:#dbe3ee;--muted:#64748b;--text:#0f172a;--shadow:0 10px 25px rgba(15,23,42,.08)}
@@ -267,6 +270,9 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
 (() => {
   try {
   const productos = JSON.parse(atob('<?= e($productosB64) ?>') || '[]');
+  const productosBlade = JSON.parse(atob('<?= e($productosBladeB64) ?>') || '[]');
+  const productosRubber = JSON.parse(atob('<?= e($productosRubberB64) ?>') || '[]');
+  const productosFuente = [...productosBlade, ...productosRubber];
   const settings = JSON.parse(atob('<?= e($settingsB64) ?>') || '{}');
   const steps = ['Madero','Goma FH','Goma BH','Resumen'];
   const state = {step:0, mode:'experto', profile:{}, blade:null, fh:null, bh:null, extras:[]};
@@ -280,11 +286,14 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
     const currentRole = String((item && item.category_role) || '').toLowerCase().trim();
     if (currentRole && currentRole !== 'unknown') return currentRole;
     const categoria = String((item && item.categoria) || '').toLowerCase();
-    if (/(mader|blade)/.test(categoria)) return 'blade';
-    if (/(goma|caucho|rubber|revest)/.test(categoria)) return 'rubber';
+    const categoriaNorm = categoria.replace(/[^a-z0-9]+/g, '');
+    if (['madero','maderos'].includes(categoriaNorm)) return 'blade';
+    if (['goma','gomas','rubber','rubbers'].includes(categoriaNorm)) return 'rubber';
     return 'accessory';
   };
   const byRole = (role) => {
+    if (role === 'blade') return productosBlade;
+    if (role === 'rubber') return productosRubber;
     return productos.filter(p => inferRole(p) === role);
   };
   const clp = n => '$' + Math.round(Number(n || 0)).toLocaleString('es-CL');
@@ -316,7 +325,23 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
     } else if(state.step===1){ elMain.innerHTML = `<h2 class="h5">Paso 2 · Selecciona goma para derecho (FH)</h2><button class="btn btn-primary btn-sm mb-2" id="cfgNextTop">Siguiente</button>${renderCards(byRole('rubber'),'fh')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
     } else if(state.step===2){
       elMain.innerHTML = `<h2 class="h5">Paso 3 · Selecciona goma para revés (BH)</h2><button class="btn btn-primary btn-sm mb-2" id="cfgNextTop">Ir al resumen</button><p class="small text-muted">Si quieres la misma goma del derecho, selecciónala nuevamente.</p>${renderCards(byRole('rubber'),'bh')}<button class="btn btn-primary mt-3" id="cfgNext">Ir al resumen</button>`;
-    } else { elMain.innerHTML = `<h2 class="h5">Paso 4 · Resumen final</h2><p class="text-muted">Revisa métricas, guarda tu configuración o solicita asesoría por WhatsApp.</p><div class="alert alert-light border">Tiempo de preparación: ${settings.assembly_lead_time_message || '24 a 72 horas hábiles con armado profesional.'}</div>`; }
+    } else {
+      const bladePrice = state.blade ? getPrice(state.blade) : 0;
+      const fhPrice = state.fh ? getPrice(state.fh) : 0;
+      const bhPrice = state.bh ? getPrice(state.bh) : 0;
+      const total = bladePrice + fhPrice + bhPrice;
+      elMain.innerHTML = `<h2 class="h5">Paso 4 · Resumen final detallado</h2>
+      <div class="table-responsive"><table class="table table-sm">
+        <thead><tr><th>Componente</th><th>Producto</th><th class="text-end">Precio</th></tr></thead>
+        <tbody>
+          <tr><td>Madero</td><td>${(state.blade && state.blade.nombre) || '-'}</td><td class="text-end">${clp(bladePrice)}</td></tr>
+          <tr><td>Goma FH</td><td>${(state.fh && state.fh.nombre) || '-'}</td><td class="text-end">${clp(fhPrice)}</td></tr>
+          <tr><td>Goma BH</td><td>${(state.bh && state.bh.nombre) || '-'}</td><td class="text-end">${clp(bhPrice)}</td></tr>
+          <tr><td colspan="2"><strong>Total</strong></td><td class="text-end"><strong>${clp(total)}</strong></td></tr>
+        </tbody>
+      </table></div>
+      <div class="alert alert-light border">Tiempo de preparación: ${settings.assembly_lead_time_message || '24 a 72 horas hábiles con armado profesional.'}</div>`;
+    }
 
     bindStepEvents();
     recalc();
@@ -326,7 +351,7 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
     const selected = [state.blade, state.fh, state.bh].filter(Boolean);
     const extrasPrice = state.extras.reduce((acc,x)=>acc + Number(x.price||0),0);
     const subtotal = selected.reduce((acc,p)=>acc + getPrice(p),0) + extrasPrice;
-    const avg = (field)=> selected.length ? (selected.reduce((a,p)=>a+Number(p[field]||0),0)/selected.length).toFixed(1) : '-';
+    const avg = (field)=> selected.length ? (selected.reduce((a,p)=>a+Number(p[field]||0),0)/selected.length).toFixed(1) : '0.0';
 
     const summary = document.getElementById('cfgSummary');
     const empty = document.getElementById('cfgSummaryEmpty');
@@ -352,7 +377,7 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
 
   function bindStepEvents(){
     elMain.querySelectorAll('[data-mode]').forEach(btn=>btn.onclick = ()=>{ state.mode=btn.dataset.mode; });
-    elMain.querySelectorAll('[data-pick]').forEach(card=>card.onclick=()=>{const key = card.dataset.pick; const id=Number(card.dataset.id); state[key]=productos.find(p=>Number(p.id)===id)||null; renderStep();});
+    elMain.querySelectorAll('[data-pick]').forEach(card=>card.onclick=()=>{const key = card.dataset.pick; const id=Number(card.dataset.id); state[key]=productosFuente.find(p=>Number(p.id)===id)||null; renderStep();});
     const goNext = () => { state.step=Math.min(3,state.step+1); renderStep(); };
     const n = document.getElementById('cfgNext'); if(n) n.onclick = goNext;
     const nt = document.getElementById('cfgNextTop'); if(nt) nt.onclick = goNext;
