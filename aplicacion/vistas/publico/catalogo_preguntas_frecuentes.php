@@ -90,7 +90,7 @@ foreach ($faqs as $faq) {
   .search-box input{width:100%;padding:10px 14px;border:none;outline:none;background:transparent;font-size:14px}
   .search-box button{background:var(--accent);color:#fff;padding:10px 18px;font-weight:700;border:none}
   .nav-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .menu-link{padding:9px 6px;font-weight:600;color:var(--primary);text-decoration:none;border:none;background:transparent;white-space:nowrap}
+  .menu-link{padding:9px 6px;font-weight:500;font-family:inherit;color:var(--primary);text-decoration:none;border:none;background:transparent;white-space:nowrap}
   .menu-link:hover{color:var(--accent)}
   .btn-outline,.btn-primary-custom,.btn-soft,.btn-danger-soft{padding:9px 13px;border-radius:10px;font-weight:700;border:1px solid var(--border);background:#fff;color:var(--text)}
   .btn-primary-custom{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -164,7 +164,7 @@ foreach ($faqs as $faq) {
     .search-box input,.search-box button{font-size:13px}
     .search-box button{padding:10px 14px}
     .nav-actions{justify-content:space-between;gap:6px}
-    .menu-link{flex:1;text-align:center;padding:8px 8px;border:1px solid color-mix(in srgb,var(--primary) 25%,#fff);border-radius:10px;background:#fff;color:var(--primary);font-size:13px;font-weight:500}
+    .menu-link{flex:1;text-align:center;padding:8px 8px;border:1px solid color-mix(in srgb,var(--primary) 25%,#fff);border-radius:10px;background:#fff;color:var(--primary);font-size:13px;font-weight:400;font-family:inherit}
     .catalogo-navbar .btn-primary-custom{width:100%;justify-content:center;font-size:14px;font-weight:600}
     .catalogo-header.is-mobile-open .catalogo-navbar > .btn-primary-custom{width:100%}
     .hero-faq{min-height:150px;padding:18px}
