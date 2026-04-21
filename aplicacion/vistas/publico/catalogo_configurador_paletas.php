@@ -12,6 +12,7 @@ $colorAcento = trim((string) ($catalogoTopbar['color_acento'] ?? ''));
 if (preg_match('/^#([A-Fa-f0-9]{6})$/', $colorAcento) !== 1) {
     $colorAcento = '#7B2CBF';
 }
+$colorAcento = $colorPrimario;
 $topbarTexto = trim((string) ($catalogoTopbar['texto'] ?? ''));
 if ($topbarTexto === '') {
     $topbarTexto = 'Envíos a todo el país • Garantía en todos los productos';
@@ -193,8 +194,8 @@ $productosRubberB64 = base64_encode((string) json_encode(array_values($productos
     $catalogoHeaderSearchMethod = 'GET';
     $catalogoHeaderSearchName = 'q';
     $catalogoHeaderSearchValue = '';
-    $catalogoHeaderCartAsButton = true;
-    $catalogoHeaderCartButtonId = 'openCartHeader';
+    $catalogoHeaderCartAsButton = false;
+    $catalogoHeaderCartHref = $catalogoBaseUrl;
     require __DIR__ . '/partials/catalogo_header.php';
   ?>
   <section class="cfg-wrap">

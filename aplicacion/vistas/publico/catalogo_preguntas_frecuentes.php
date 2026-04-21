@@ -12,6 +12,7 @@ $colorAcento = trim((string) ($catalogoTopbar['color_acento'] ?? ''));
 if (preg_match('/^#([A-Fa-f0-9]{6})$/', $colorAcento) !== 1) {
     $colorAcento = '#7B2CBF';
 }
+$colorAcento = $colorPrimario;
 $topbarTexto = trim((string) ($catalogoTopbar['texto'] ?? ''));
 if ($topbarTexto === '') {
     $topbarTexto = 'Envíos a todo el país • Garantía en todos los productos';
