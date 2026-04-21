@@ -76,6 +76,7 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
   .footer-bottom{background:#fff;border-top:1px solid #e5e7eb;padding:10px 0}
   .footer-bottom__content{display:flex;justify-content:space-between;align-items:center;color:#4b5563;font-size:13px;font-weight:500;gap:12px}
   body.public-page > footer.border-top.bg-white.mt-5{display:none}
+  footer.border-top.bg-white.mt-5{display:none !important}
   :root{--cfg-primary:#ff3131;--cfg-text:#0f172a;--cfg-muted:#64748b;--cfg-border:#dbe3ee;--cfg-bg:#eef2f7;--cfg-card:#fff;--cfg-ok:#16a34a}
   .cfg-page{background:var(--cfg-bg)} .cfg-wrap{width:min(1280px,92%);margin:0 auto;padding:18px 0 36px}
   .cfg-grid{display:grid;grid-template-columns:1fr 340px;gap:18px}.cfg-card{background:#fff;border:1px solid var(--cfg-border);border-radius:16px;padding:16px}
@@ -267,8 +268,8 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
   try {
   const productos = JSON.parse(atob('<?= e($productosB64) ?>') || '[]');
   const settings = JSON.parse(atob('<?= e($settingsB64) ?>') || '{}');
-  const steps = ['Madero','Gomas','Resumen'];
-  const state = {step:0, mode:'experto', profile:{}, blade:null, fh:null, bh:null, extras:[]};
+  const steps = ['Madero','Goma FH','Goma BH (opcional)','Resumen'];
+  const state = {step:0, mode:'experto', profile:{}, blade:null, fh:null, bh:null, useSameBh:true, extras:[]};
 
   const elMain = document.getElementById('cfgMain');
   const elProgress = document.getElementById('cfgProgress');
@@ -316,7 +317,14 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
   function renderStep(){
     renderProgress();
     if(state.step===0){ elMain.innerHTML = `<h2 class="h5">Paso 1 · Selecciona tu madero</h2>${renderCards(byRole('blade'),'blade')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
-    } else if(state.step===1){ elMain.innerHTML = `<h2 class="h5">Paso 2 · Selecciona tus gomas</h2><p class="small text-muted">Primero elige la goma para el derecho (FH) y después para el revés (BH). Puedes repetir la misma goma.</p><h3 class="h6 mt-2">Goma derecho (FH)</h3>${renderCards(byRole('rubber'),'fh')}<h3 class="h6 mt-3">Goma revés (BH)</h3>${renderCards(byRole('rubber'),'bh')}<button class="btn btn-primary mt-3" id="cfgNext">Ir al resumen</button>`;
+    } else if(state.step===1){ elMain.innerHTML = `<h2 class="h5">Paso 2 · Selecciona goma para derecho (FH)</h2>${renderCards(byRole('rubber'),'fh')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
+    } else if(state.step===2){
+      if (!state.bh) { state.bh = state.fh; }
+      elMain.innerHTML = `<h2 class="h5">Paso 3 · Goma revés (BH)</h2>
+      <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="cfgSameBh" ${state.useSameBh ? 'checked' : ''}>
+      <label class="form-check-label" for="cfgSameBh">Usar la misma goma del derecho (FH) en el revés.</label></div>
+      ${state.useSameBh ? '<div class="alert alert-light border small mb-2">BH usará automáticamente la goma FH seleccionada.</div>' : renderCards(byRole('rubber'),'bh')}
+      <button class="btn btn-primary mt-3" id="cfgNext">Ir al resumen</button>`;
     } else { elMain.innerHTML = `<h2 class="h5">Resumen final</h2><p class="text-muted">Revisa métricas, guarda tu configuración o solicita asesoría por WhatsApp.</p><div class="alert alert-light border">Tiempo de preparación: ${settings.assembly_lead_time_message || '24 a 72 horas hábiles con armado profesional.'}</div>`; }
 
     bindStepEvents();
@@ -331,6 +339,7 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
 
     const summary = document.getElementById('cfgSummary');
     const empty = document.getElementById('cfgSummaryEmpty');
+    if (state.useSameBh && state.fh) { state.bh = state.fh; }
     const full = Boolean(state.blade && state.fh && state.bh);
 
     if(full){ summary.style.display='block'; empty.style.display='none'; } else { summary.style.display='none'; empty.style.display='block'; }
@@ -352,7 +361,15 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
   function bindStepEvents(){
     elMain.querySelectorAll('[data-mode]').forEach(btn=>btn.onclick = ()=>{ state.mode=btn.dataset.mode; });
     elMain.querySelectorAll('[data-pick]').forEach(card=>card.onclick=()=>{const key = card.dataset.pick; const id=Number(card.dataset.id); state[key]=productos.find(p=>Number(p.id)===id)||null; renderStep();});
-    const n = document.getElementById('cfgNext'); if(n) n.onclick = ()=>{ state.step=Math.min(2,state.step+1); renderStep(); };
+    const sameBh = document.getElementById('cfgSameBh');
+    if (sameBh) {
+      sameBh.onchange = () => {
+        state.useSameBh = Boolean(sameBh.checked);
+        if (state.useSameBh) { state.bh = state.fh; }
+        renderStep();
+      };
+    }
+    const n = document.getElementById('cfgNext'); if(n) n.onclick = ()=>{ state.step=Math.min(3,state.step+1); renderStep(); };
     elMain.querySelectorAll('.form-check-input').forEach(i=>i.onchange = captureExtras);
   }
 
