@@ -13,10 +13,10 @@ $settingsB64 = base64_encode((string) ($settingsJson !== false ? $settingsJson :
 $rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
 $inferirRolFallback = static function (array $item): string {
     $categoria = mb_strtolower(trim((string) ($item['categoria'] ?? '')));
-    if ($categoria !== '' && preg_match('/\bmader/', $categoria) === 1) {
+    if ($categoria !== '' && preg_match('/mader|blade/', $categoria) === 1) {
         return 'blade';
     }
-    if ($categoria !== '' && preg_match('/\bgoma/', $categoria) === 1) {
+    if ($categoria !== '' && preg_match('/goma|caucho|rubber|revest/', $categoria) === 1) {
         return 'rubber';
     }
     return 'accessory';
@@ -211,7 +211,7 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
       <aside class="cfg-card cfg-sidebar">
         <h3 class="h5 mb-2">Resumen técnico</h3>
         <div id="cfgSummaryEmpty" class="text-muted small">Selecciona madero y gomas para completar tu paleta.</div>
-        <div id="cfgSummary" style="display:none">
+        <div id="cfgSummary">
           <div class="small" id="cfgCombo"></div>
           <div class="cfg-kpi" id="cfgKpis"></div>
           <div class="cfg-total" id="cfgTotal"><?= $fmon(0) ?></div>
@@ -280,8 +280,8 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
     if (currentRole && currentRole !== 'unknown') return currentRole;
     const categoria = String((item && item.categoria) || '').toLowerCase();
     const text = `${(item && item.categoria) || ''} ${(item && item.nombre) || ''} ${(item && item.descripcion) || ''}`.toLowerCase();
-    if (/(mader)/.test(categoria)) return 'blade';
-    if (/(goma)/.test(categoria)) return 'rubber';
+    if (/(mader|blade)/.test(categoria)) return 'blade';
+    if (/(goma|caucho|rubber|revest)/.test(categoria)) return 'rubber';
     if (/(mader|blade|wood|mango fl|mango an|mango st)/.test(text)) return 'blade';
     if (/(goma|caucho|revest|rubber|tacky|tensor|esponja)/.test(text)) return 'rubber';
     if (/(armado|pegado|ensamblado)/.test(text)) return 'assembly_service';
@@ -415,6 +415,18 @@ $fallbackOpcionesB64 = base64_encode((string) json_encode($fallbackOpciones, $js
         + (fh ? ('FH: <strong>' + fh.nombre + '</strong><br>') : '')
         + (bh ? ('BH: <strong>' + bh.nombre + '</strong>') : '');
       total.textContent = clp(sum);
+      var combo = document.getElementById('cfgCombo');
+      var totalSide = document.getElementById('cfgTotal');
+      var empty = document.getElementById('cfgSummaryEmpty');
+      if (combo) {
+        combo.innerHTML = (b ? b.nombre : '-') + '<br>' + (fh ? fh.nombre : '-') + ' (FH)<br>' + (bh ? bh.nombre : '-') + ' (BH)';
+      }
+      if (totalSide) {
+        totalSide.textContent = clp(sum);
+      }
+      if (empty) {
+        empty.style.display = (b && fh && bh) ? 'none' : 'block';
+      }
     };
 
     bladeSel.addEventListener('change', refresh);
