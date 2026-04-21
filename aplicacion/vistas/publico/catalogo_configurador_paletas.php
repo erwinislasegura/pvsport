@@ -1,6 +1,6 @@
 <?php
 $fmon = static fn(float $m): string => '$' . number_format($m, 0, ',', '.');
-$jsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+$jsonFlags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE;
 $productosJson = json_encode($productos, $jsonFlags);
 $settingsMap = [];
 foreach (($settings ?? []) as $k => $v) {
@@ -11,6 +11,40 @@ $rulesJson = json_encode($reglas ?? [], $jsonFlags);
 $productosB64 = base64_encode((string) ($productosJson !== false ? $productosJson : '[]'));
 $settingsB64 = base64_encode((string) ($settingsJson !== false ? $settingsJson : '{}'));
 $rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
+$inferirRolFallback = static function (array $item): string {
+    $rol = strtolower(trim((string) ($item['category_role'] ?? '')));
+    if ($rol !== '' && $rol !== 'unknown') {
+        return $rol;
+    }
+    $texto = mb_strtolower(trim((string) ($item['categoria'] ?? '') . ' ' . (string) ($item['nombre'] ?? '') . ' ' . (string) ($item['descripcion'] ?? '')));
+    if ($texto !== '' && preg_match('/mader|blade|paleta|raqueta|racket|allwood|carbon|wood|mango fl|mango an|mango st/', $texto) === 1) {
+        return 'blade';
+    }
+    if ($texto !== '' && preg_match('/goma|caucho|revest|rubber|tacky|tensor|esponja|forehand|backhand|spin/', $texto) === 1) {
+        return 'rubber';
+    }
+    return 'accessory';
+};
+$productosBladeFallback = [];
+$productosRubberFallback = [];
+$resolverPrecioProducto = static function (array $item): float {
+    $precio = (float) ($item['precio'] ?? 0);
+    $precioOferta = (float) ($item['precio_oferta'] ?? 0);
+    if ($precioOferta > 0 && ($precio <= 0 || $precioOferta < $precio)) {
+        return $precioOferta;
+    }
+    return $precio;
+};
+foreach (($productos ?? []) as $productoItem) {
+    $rolItem = $inferirRolFallback((array) $productoItem);
+    if ($rolItem === 'blade') {
+        $productosBladeFallback[] = (array) $productoItem;
+        continue;
+    }
+    if ($rolItem === 'rubber') {
+        $productosRubberFallback[] = (array) $productoItem;
+    }
+}
 ?>
 <style>
   :root{--primary:#ff3131;--accent:#7b2cbf;--bg:#eef2f7;--border:#dbe3ee;--muted:#64748b;--text:#0f172a;--shadow:0 10px 25px rgba(15,23,42,.08)}
@@ -78,7 +112,48 @@ $rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
 
     <div class="cfg-grid mt-3">
       <main class="cfg-card">
-        <div id="cfgMain"></div>
+        <div id="cfgMain">
+          <h2 class="h5">Configuración rápida en 2 pasos</h2>
+          <?php if ($productosBladeFallback === [] && $productosRubberFallback === []): ?>
+            <div class="alert alert-warning mb-0">No encontramos productos clasificados para el configurador. Revisa categorías/atributos en el panel.</div>
+          <?php else: ?>
+            <?php if ($productosBladeFallback !== []): ?>
+              <div class="cfg-card mt-3">
+              <h3 class="h6 mb-2">Paso 1 · Selecciona tu madero</h3>
+              <div class="cfg-list">
+                <?php foreach (array_slice($productosBladeFallback, 0, 18) as $item): ?>
+                  <article class="cfg-item">
+                    <img src="<?= e(!empty($item['imagen']) ? '/media/archivo?ruta=' . rawurlencode((string) $item['imagen']) : '/img/placeholder-producto.svg') ?>" alt="<?= e((string) ($item['nombre'] ?? 'Producto')) ?>">
+                    <h4><?= e((string) ($item['nombre'] ?? 'Producto')) ?></h4>
+                    <div class="cfg-meta">
+                      <span><?= e((string) ($item['categoria'] ?? '')) ?></span>
+                      <span><?= $fmon($resolverPrecioProducto((array) $item)) ?></span>
+                    </div>
+                  </article>
+                <?php endforeach; ?>
+              </div>
+              </div>
+            <?php endif; ?>
+            <?php if ($productosRubberFallback !== []): ?>
+              <div class="cfg-card mt-3">
+              <h3 class="h6 mb-2">Paso 2 · Selecciona tus gomas (derecho y revés)</h3>
+              <p class="small text-muted mb-2">Puedes elegir la misma goma para ambos lados si quieres.</p>
+              <div class="cfg-list">
+                <?php foreach (array_slice($productosRubberFallback, 0, 24) as $item): ?>
+                  <article class="cfg-item">
+                    <img src="<?= e(!empty($item['imagen']) ? '/media/archivo?ruta=' . rawurlencode((string) $item['imagen']) : '/img/placeholder-producto.svg') ?>" alt="<?= e((string) ($item['nombre'] ?? 'Producto')) ?>">
+                    <h4><?= e((string) ($item['nombre'] ?? 'Producto')) ?></h4>
+                    <div class="cfg-meta">
+                      <span><?= e((string) ($item['categoria'] ?? '')) ?></span>
+                      <span><?= $fmon($resolverPrecioProducto((array) $item)) ?></span>
+                    </div>
+                  </article>
+                <?php endforeach; ?>
+              </div>
+              </div>
+            <?php endif; ?>
+          <?php endif; ?>
+        </div>
       </main>
       <aside class="cfg-card cfg-sidebar">
         <h3 class="h5 mb-2">Resumen técnico</h3>
@@ -139,15 +214,29 @@ $rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
   try {
   const productos = JSON.parse(atob('<?= e($productosB64) ?>') || '[]');
   const settings = JSON.parse(atob('<?= e($settingsB64) ?>') || '{}');
-  const steps = ['Modo','Madero','Goma FH','Goma BH','Extras','Resumen'];
-  const state = {step:0, mode:'guiado', profile:{}, blade:null, fh:null, bh:null, extras:[]};
+  const steps = ['Madero','Gomas','Resumen'];
+  const state = {step:0, mode:'experto', profile:{}, blade:null, fh:null, bh:null, extras:[]};
 
   const elMain = document.getElementById('cfgMain');
   const elProgress = document.getElementById('cfgProgress');
   const saveBtn = document.getElementById('cfgSaveBtn');
   const saveBtnMobile = document.getElementById('cfgMobileSave');
 
-  const byRole = (role) => productos.filter(p => p.category_role === role);
+  const inferRole = (item) => {
+    const currentRole = String(item?.category_role || '').toLowerCase().trim();
+    if (currentRole && currentRole !== 'unknown') return currentRole;
+    const text = `${item?.categoria || ''} ${item?.nombre || ''} ${item?.descripcion || ''}`.toLowerCase();
+    if (/(mader|blade|paleta|raqueta|racket|allwood|carbon|wood|mango fl|mango an|mango st)/.test(text)) return 'blade';
+    if (/(goma|caucho|revest|rubber|tacky|tensor|esponja|forehand|backhand|spin)/.test(text)) return 'rubber';
+    if (/(armado|pegado|ensamblado)/.test(text)) return 'assembly_service';
+    return 'accessory';
+  };
+  const byRole = (role) => {
+    const direct = productos.filter(p => String(p.category_role || '').toLowerCase() === role);
+    if (direct.length > 0) return direct;
+    const inferred = productos.filter(p => inferRole(p) === role);
+    return inferred;
+  };
   const clp = n => '$' + Math.round(Number(n || 0)).toLocaleString('es-CL');
 
   function renderProgress(){
@@ -167,15 +256,9 @@ $rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
 
   function renderStep(){
     renderProgress();
-    if(state.step===0){
-      elMain.innerHTML = `<h2 class="h5">Elige modo de compra</h2><div class="d-flex gap-2 flex-wrap mb-3"><button class="btn btn-dark" data-mode="guiado">Modo guiado</button><button class="btn btn-outline-dark" data-mode="experto">Modo experto</button></div>
-      <div class="row g-2"><div class="col-md-4"><select class="form-select" id="pf_level"><option value="principiante">Principiante</option><option value="intermedio" selected>Intermedio</option><option value="avanzado">Avanzado</option></select></div><div class="col-md-4"><select class="form-select" id="pf_style"><option value="control">Control</option><option value="allround" selected>Allround</option><option value="ofensivo">Ofensivo</option><option value="muy-ofensivo">Muy ofensivo</option></select></div><div class="col-md-4"><select class="form-select" id="pf_priority"><option value="control">Control</option><option value="spin">Efecto</option><option value="speed">Velocidad</option><option value="equilibrio" selected>Equilibrio</option></select></div></div>
-      <div class="mt-2"><button class="btn btn-primary" id="cfgNext0">Continuar</button></div>`;
-    } else if(state.step===1){ elMain.innerHTML = `<h2 class="h5">Paso 2 · Elige madero</h2>${renderCards(byRole('blade'),'blade')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
-    } else if(state.step===2){ elMain.innerHTML = `<h2 class="h5">Paso 3 · Elige goma derecho (FH)</h2>${renderCards(byRole('rubber'),'fh')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
-    } else if(state.step===3){ elMain.innerHTML = `<h2 class="h5">Paso 4 · Elige goma revés (BH)</h2>${renderCards(byRole('rubber'),'bh')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
-    } else if(state.step===4){ elMain.innerHTML = `<h2 class="h5">Paso 5 · Extras</h2><div class="form-check"><input class="form-check-input" type="checkbox" value="armado" id="extraArmado" data-price="6900"><label class="form-check-label" for="extraArmado">Armado profesional (+${clp(6900)})</label></div><div class="form-check"><input class="form-check-input" type="checkbox" value="cinta" id="extraCinta" data-price="2500"><label class="form-check-label" for="extraCinta">Cinta lateral (+${clp(2500)})</label></div><div class="form-check"><input class="form-check-input" type="checkbox" value="funda" id="extraFunda" data-price="7900"><label class="form-check-label" for="extraFunda">Funda/protector (+${clp(7900)})</label></div><button class="btn btn-primary mt-3" id="cfgNext">Ir al resumen</button>`;
-    } else { elMain.innerHTML = `<h2 class="h5">Paso 6 · Resumen final</h2><p class="text-muted">Revisa métricas, guarda tu configuración o solicita asesoría por WhatsApp.</p><div class="alert alert-light border">Tiempo de preparación: ${settings.assembly_lead_time_message || '24 a 72 horas hábiles con armado profesional.'}</div>`; }
+    if(state.step===0){ elMain.innerHTML = `<h2 class="h5">Paso 1 · Selecciona tu madero</h2>${renderCards(byRole('blade'),'blade')}<button class="btn btn-primary mt-3" id="cfgNext">Siguiente</button>`;
+    } else if(state.step===1){ elMain.innerHTML = `<h2 class="h5">Paso 2 · Selecciona tus gomas</h2><p class="small text-muted">Primero elige la goma para el derecho (FH) y después para el revés (BH). Puedes repetir la misma goma.</p><h3 class="h6 mt-2">Goma derecho (FH)</h3>${renderCards(byRole('rubber'),'fh')}<h3 class="h6 mt-3">Goma revés (BH)</h3>${renderCards(byRole('rubber'),'bh')}<button class="btn btn-primary mt-3" id="cfgNext">Ir al resumen</button>`;
+    } else { elMain.innerHTML = `<h2 class="h5">Resumen final</h2><p class="text-muted">Revisa métricas, guarda tu configuración o solicita asesoría por WhatsApp.</p><div class="alert alert-light border">Tiempo de preparación: ${settings.assembly_lead_time_message || '24 a 72 horas hábiles con armado profesional.'}</div>`; }
 
     bindStepEvents();
     recalc();
@@ -209,10 +292,8 @@ $rulesB64 = base64_encode((string) ($rulesJson !== false ? $rulesJson : '[]'));
 
   function bindStepEvents(){
     elMain.querySelectorAll('[data-mode]').forEach(btn=>btn.onclick = ()=>{ state.mode=btn.dataset.mode; });
-    const n0 = document.getElementById('cfgNext0');
-    if(n0) n0.onclick = ()=>{state.profile={level:document.getElementById('pf_level').value,style:document.getElementById('pf_style').value,priority:document.getElementById('pf_priority').value}; state.step=1; renderStep();};
     elMain.querySelectorAll('[data-pick]').forEach(card=>card.onclick=()=>{const key = card.dataset.pick; const id=Number(card.dataset.id); state[key]=productos.find(p=>Number(p.id)===id)||null; renderStep();});
-    const n = document.getElementById('cfgNext'); if(n) n.onclick = ()=>{ state.step=Math.min(5,state.step+1); if(state.step===5){ captureExtras(); } renderStep(); };
+    const n = document.getElementById('cfgNext'); if(n) n.onclick = ()=>{ state.step=Math.min(2,state.step+1); renderStep(); };
     elMain.querySelectorAll('.form-check-input').forEach(i=>i.onchange = captureExtras);
   }
 
