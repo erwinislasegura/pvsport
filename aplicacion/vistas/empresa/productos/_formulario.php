@@ -46,7 +46,7 @@ if (!empty($productoTecnico['tags'])) {
         <button type="button" class="btn btn-link btn-sm p-0" data-bs-toggle="modal" data-bs-target="#<?= e($modalId) ?>">+ Nueva</button>
       <?php endif; ?>
     </div>
-    <select name="categoria_id" class="form-select">
+    <select name="categoria_id" id="categoria_id" class="form-select">
       <option value="">Sin categoría</option>
       <?php foreach($categorias as $cat): ?>
         <option value="<?= (int)$cat['id'] ?>" <?= (int)($producto['categoria_id'] ?? 0) === (int)$cat['id'] ? 'selected' : '' ?>><?= e($cat['nombre']) ?></option>
@@ -172,19 +172,61 @@ if (!empty($productoTecnico['tags'])) {
   <div class="col-md-1"><label class="form-label">Control</label><input type="number" step="0.1" min="0" max="10" name="tech_control_score" class="form-control" value="<?= e((string) ($productoTecnico['control_score'] ?? '0')) ?>"></div>
   <div class="col-md-1"><label class="form-label">Spin</label><input type="number" step="0.1" min="0" max="10" name="tech_spin" class="form-control" value="<?= e((string) ($productoTecnico['spin'] ?? '0')) ?>"></div>
   <div class="col-md-1"><label class="form-label">Dureza</label><input type="number" step="0.1" min="0" max="60" name="tech_hardness" class="form-control" value="<?= e((string) ($productoTecnico['hardness'] ?? '0')) ?>"></div>
-  <div class="col-md-2"><label class="form-label">Adherencia</label><input name="tech_tacky_type" class="form-control" value="<?= e((string) ($productoTecnico['tacky_type'] ?? $tagsTecnicos['adherencia'] ?? '')) ?>"></div>
-  <div class="col-md-2"><label class="form-label">Material/Composición</label><input name="tech_composition" class="form-control" value="<?= e((string) ($productoTecnico['composition'] ?? $tagsTecnicos['material'] ?? '')) ?>"></div>
-  <div class="col-md-2"><label class="form-label">Tipo técnico</label><input name="tech_tipo" class="form-control" value="<?= e((string) ($tagsTecnicos['tipo'] ?? '')) ?>"></div>
-  <div class="col-md-2"><label class="form-label">Capas</label><input name="tech_capas" class="form-control" value="<?= e((string) ($tagsTecnicos['capas'] ?? '')) ?>"></div>
-  <div class="col-md-2"><label class="form-label">Flexibilidad</label><input name="tech_flexibilidad" class="form-control" value="<?= e((string) ($tagsTecnicos['flexibilidad'] ?? '')) ?>"></div>
-  <div class="col-md-2"><label class="form-label">Rigidez</label><input name="tech_rigidez" class="form-control" value="<?= e((string) ($tagsTecnicos['rigidez'] ?? '')) ?>"></div>
-  <div class="col-md-2"><label class="form-label">Feeling</label><input name="tech_feeling" class="form-control" value="<?= e((string) ($tagsTecnicos['feeling'] ?? '')) ?>"></div>
+  <div class="col-md-2 tech-rubber"><label class="form-label">Adherencia</label>
+    <select name="tech_tacky_type" class="form-select">
+      <?php $adhActual = (string) ($productoTecnico['tacky_type'] ?? $tagsTecnicos['adherencia'] ?? ''); ?>
+      <?php foreach (['','Baja','Media','Media-alta','Alta'] as $opt): ?>
+        <option value="<?= e($opt) ?>" <?= $adhActual === $opt ? 'selected' : '' ?>><?= e($opt === '' ? 'Seleccionar' : $opt) ?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+  <div class="col-md-2 tech-blade"><label class="form-label">Material/Composición</label><input name="tech_composition" class="form-control" value="<?= e((string) ($productoTecnico['composition'] ?? $tagsTecnicos['material'] ?? '')) ?>"></div>
+  <div class="col-md-2"><label class="form-label">Tipo técnico</label>
+    <?php $tipoActual = (string) ($tagsTecnicos['tipo'] ?? ''); ?>
+    <select name="tech_tipo" class="form-select">
+      <?php foreach (['','ALL','OFF-','OFF','OFF+','Control ofensivo','Balanceada','Ofensiva','No tacky moderna','Tensor moderna','Tacky ofensiva','Semi-tacky','Tacky híbrida','Ofensiva balance'] as $opt): ?>
+        <option value="<?= e($opt) ?>" <?= $tipoActual === $opt ? 'selected' : '' ?>><?= e($opt === '' ? 'Seleccionar' : $opt) ?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+  <div class="col-md-2 tech-blade"><label class="form-label">Capas</label><input name="tech_capas" class="form-control" value="<?= e((string) ($tagsTecnicos['capas'] ?? '')) ?>"></div>
+  <div class="col-md-2 tech-blade"><label class="form-label">Flexibilidad</label>
+    <?php $flexActual = (string) ($tagsTecnicos['flexibilidad'] ?? ''); ?>
+    <select name="tech_flexibilidad" class="form-select">
+      <?php foreach (['','Alta','Media','Media-baja','Baja'] as $opt): ?>
+        <option value="<?= e($opt) ?>" <?= $flexActual === $opt ? 'selected' : '' ?>><?= e($opt === '' ? 'Seleccionar' : $opt) ?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+  <div class="col-md-2 tech-blade"><label class="form-label">Rigidez</label>
+    <?php $rigidezActual = (string) ($tagsTecnicos['rigidez'] ?? ''); ?>
+    <select name="tech_rigidez" class="form-select">
+      <?php foreach (['','Flexible','Semi flexible','Semi rígido','Rígido'] as $opt): ?>
+        <option value="<?= e($opt) ?>" <?= $rigidezActual === $opt ? 'selected' : '' ?>><?= e($opt === '' ? 'Seleccionar' : $opt) ?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+  <div class="col-md-2"><label class="form-label">Feeling</label>
+    <?php $feelingActual = (string) ($tagsTecnicos['feeling'] ?? ''); ?>
+    <select name="tech_feeling" class="form-select">
+      <?php foreach (['','Suave','Medio','Balanceado','Controlado','Directo','Firme','Duro'] as $opt): ?>
+        <option value="<?= e($opt) ?>" <?= $feelingActual === $opt ? 'selected' : '' ?>><?= e($opt === '' ? 'Seleccionar' : $opt) ?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
   <div class="col-md-2"><label class="form-label">Arco</label><input name="tech_arc" class="form-control" value="<?= e((string) ($productoTecnico['arc'] ?? '')) ?>"></div>
   <div class="col-md-2"><label class="form-label">Peso (g)</label><input type="number" step="0.1" min="0" name="tech_weight_grams" class="form-control" value="<?= e((string) ($productoTecnico['weight_grams'] ?? '0')) ?>"></div>
-  <div class="col-md-2"><label class="form-label">Mango</label><input name="tech_handle_type" class="form-control" value="<?= e((string) ($productoTecnico['handle_type'] ?? '')) ?>"></div>
+  <div class="col-md-2 tech-blade"><label class="form-label">Mango</label>
+    <?php $mangoActual = (string) ($productoTecnico['handle_type'] ?? ''); ?>
+    <select name="tech_handle_type" class="form-select">
+      <?php foreach (['','FL','CS','ST','AN'] as $opt): ?>
+        <option value="<?= e($opt) ?>" <?= $mangoActual === $opt ? 'selected' : '' ?>><?= e($opt === '' ? 'Seleccionar' : $opt) ?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
   <div class="col-md-2"><label class="form-label">Nivel jugador</label><input name="tech_player_level" class="form-control" value="<?= e((string) ($productoTecnico['player_level'] ?? 'intermedio')) ?>"></div>
   <div class="col-md-2"><label class="form-label">Estilo</label><input name="tech_play_style" class="form-control" value="<?= e((string) ($productoTecnico['play_style'] ?? 'allround')) ?>"></div>
-  <div class="col-md-2"><label class="form-label">Tipo goma</label><input name="tech_rubber_type" class="form-control" value="<?= e((string) ($productoTecnico['rubber_type'] ?? '')) ?>"></div>
+  <div class="col-md-2 tech-rubber"><label class="form-label">Tipo goma</label><input name="tech_rubber_type" class="form-control" value="<?= e((string) ($productoTecnico['rubber_type'] ?? '')) ?>"></div>
   <div class="col-md-2"><label class="form-label">Orden destacado</label><input type="number" min="0" name="tech_featured_order" class="form-control" value="<?= e((string) ($productoTecnico['featured_order'] ?? '999')) ?>"></div>
   <div class="col-md-4"><label class="form-label">Tags texto técnico (opcional)</label><input name="tech_tags_texto" class="form-control" value="<?= e((string) ($tagsTecnicos['tags_texto'] ?? '')) ?>"></div>
   <div class="col-md-3 d-flex align-items-end"><div>
@@ -249,3 +291,24 @@ if (!empty($productoTecnico['tags'])) {
   </div>
 </div>
 <?php endif; ?>
+<script>
+(() => {
+  const categoria = document.getElementById('categoria_id');
+  const rolTech = document.querySelector('select[name="tech_category_role"]');
+  if (!categoria || !rolTech) return;
+  const bladeFields = document.querySelectorAll('.tech-blade');
+  const rubberFields = document.querySelectorAll('.tech-rubber');
+  const toggle = () => {
+    const currentOption = categoria.options[categoria.selectedIndex] || null;
+    const text = ((currentOption && currentOption.text) || '').toLowerCase();
+    const isBlade = text.includes('mader');
+    const isRubber = text.includes('goma');
+    if (isBlade) rolTech.value = 'blade';
+    if (isRubber) rolTech.value = 'rubber';
+    bladeFields.forEach(el => el.style.display = (isBlade || (!isBlade && !isRubber)) ? '' : 'none');
+    rubberFields.forEach(el => el.style.display = (isRubber || (!isBlade && !isRubber)) ? '' : 'none');
+  };
+  categoria.addEventListener('change', toggle);
+  toggle();
+})();
+</script>
