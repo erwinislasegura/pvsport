@@ -171,7 +171,7 @@ if (!empty($productoTecnico['tags'])) {
   <div class="col-md-1"><label class="form-label">Velocidad</label><input type="number" step="0.1" min="0" max="10" name="tech_speed" class="form-control" value="<?= e((string) ($productoTecnico['speed'] ?? '0')) ?>"></div>
   <div class="col-md-1"><label class="form-label">Control</label><input type="number" step="0.1" min="0" max="10" name="tech_control_score" class="form-control" value="<?= e((string) ($productoTecnico['control_score'] ?? '0')) ?>"></div>
   <div class="col-md-1"><label class="form-label">Spin</label><input type="number" step="0.1" min="0" max="10" name="tech_spin" class="form-control" value="<?= e((string) ($productoTecnico['spin'] ?? '0')) ?>"></div>
-  <div class="col-md-1"><label class="form-label">Dureza</label><input type="number" step="0.1" min="0" max="60" name="tech_hardness" class="form-control" value="<?= e((string) ($productoTecnico['hardness'] ?? '0')) ?>"></div>
+  <div class="col-md-1 tech-rubber"><label class="form-label">Dureza</label><input type="number" step="0.1" min="0" max="60" name="tech_hardness" class="form-control" value="<?= e((string) ($productoTecnico['hardness'] ?? '0')) ?>"></div>
   <div class="col-md-2 tech-rubber"><label class="form-label">Adherencia</label>
     <select name="tech_tacky_type" class="form-select">
       <?php $adhActual = (string) ($productoTecnico['tacky_type'] ?? $tagsTecnicos['adherencia'] ?? ''); ?>
@@ -214,7 +214,7 @@ if (!empty($productoTecnico['tags'])) {
       <?php endforeach; ?>
     </select>
   </div>
-  <div class="col-md-2"><label class="form-label">Arco</label><input name="tech_arc" class="form-control" value="<?= e((string) ($productoTecnico['arc'] ?? '')) ?>"></div>
+  <div class="col-md-2 tech-rubber"><label class="form-label">Arco</label><input name="tech_arc" class="form-control" value="<?= e((string) ($productoTecnico['arc'] ?? '')) ?>"></div>
   <div class="col-md-2"><label class="form-label">Peso (g)</label><input type="number" step="0.1" min="0" name="tech_weight_grams" class="form-control" value="<?= e((string) ($productoTecnico['weight_grams'] ?? '0')) ?>"></div>
   <div class="col-md-2 tech-blade"><label class="form-label">Mango</label>
     <?php $mangoActual = (string) ($productoTecnico['handle_type'] ?? ''); ?>
@@ -301,12 +301,12 @@ if (!empty($productoTecnico['tags'])) {
   const toggle = () => {
     const currentOption = categoria.options[categoria.selectedIndex] || null;
     const text = ((currentOption && currentOption.text) || '').toLowerCase();
-    const isBlade = text.includes('mader');
-    const isRubber = text.includes('goma');
+    const isBlade = /mader|blade/.test(text);
+    const isRubber = /goma|caucho|revest|rubber/.test(text);
     if (isBlade) rolTech.value = 'blade';
     if (isRubber) rolTech.value = 'rubber';
-    bladeFields.forEach(el => el.style.display = (isBlade || (!isBlade && !isRubber)) ? '' : 'none');
-    rubberFields.forEach(el => el.style.display = (isRubber || (!isBlade && !isRubber)) ? '' : 'none');
+    bladeFields.forEach(el => el.style.display = isBlade ? '' : 'none');
+    rubberFields.forEach(el => el.style.display = isRubber ? '' : 'none');
   };
   categoria.addEventListener('change', toggle);
   toggle();
