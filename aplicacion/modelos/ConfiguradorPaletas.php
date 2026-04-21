@@ -302,23 +302,9 @@ class ConfiguradorPaletas extends Modelo
 
     private function normalizarMetricas(array &$item): void
     {
-        $item['speed'] = (float) ($item['speed'] ?? 0);
-        $item['control_score'] = (float) ($item['control_score'] ?? 0);
-        $item['spin'] = (float) ($item['spin'] ?? 0);
-        $item['hardness'] = (float) ($item['hardness'] ?? 0);
-
-        $texto = mb_strtolower((string) ($item['descripcion'] ?? ''));
-        if ($item['speed'] <= 0) {
-            $item['speed'] = str_contains($texto, 'rápid') || str_contains($texto, 'rapid') ? 8.2 : 7.0;
-        }
-        if ($item['control_score'] <= 0) {
-            $item['control_score'] = str_contains($texto, 'control') ? 8.2 : 7.0;
-        }
-        if ($item['spin'] <= 0) {
-            $item['spin'] = str_contains($texto, 'spin') || str_contains($texto, 'efecto') ? 8.0 : 7.0;
-        }
-        if ($item['hardness'] <= 0) {
-            $item['hardness'] = str_contains($texto, 'duro') ? 8.0 : 6.8;
-        }
+        $item['speed'] = isset($item['speed']) ? (float) $item['speed'] : 0.0;
+        $item['control_score'] = isset($item['control_score']) ? (float) $item['control_score'] : 0.0;
+        $item['spin'] = isset($item['spin']) ? (float) $item['spin'] : 0.0;
+        $item['hardness'] = isset($item['hardness']) ? (float) $item['hardness'] : 0.0;
     }
 }
