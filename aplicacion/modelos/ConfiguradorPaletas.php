@@ -17,7 +17,7 @@ class ConfiguradorPaletas extends Modelo
                                  NULL AS player_level, NULL AS play_style, NULL AS rubber_type, NULL AS category_role,
                                  NULL AS is_forehand_recommended, NULL AS is_backhand_recommended, NULL AS tags, NULL AS featured_order) pa ON 1=0';
 
-        $sql = 'SELECT p.id, p.nombre, p.descripcion, p.precio, p.precio_oferta, p.stock_actual, p.estado, c.nombre AS categoria,
+        $sql = 'SELECT p.id, p.nombre, p.descripcion, p.precio, p.precio_oferta, p.stock_actual, p.proximo_catalogo, p.proximo_dias_catalogo, p.estado, c.nombre AS categoria,
                        pa.speed, pa.control_score, pa.spin, pa.hardness, pa.tacky_type, pa.arc, pa.weight_grams,
                        pa.composition, pa.handle_type, pa.player_level, pa.play_style, pa.rubber_type, pa.category_role,
                        pa.is_forehand_recommended, pa.is_backhand_recommended, pa.tags,
@@ -42,9 +42,6 @@ class ConfiguradorPaletas extends Modelo
             $item['category_role'] = $this->inferirRolConfigurador($item);
             $this->normalizarMetricas($item);
             $item['variants'] = $this->listarVariantesProducto((int) ($item['id'] ?? 0));
-            if ($item['category_role'] === 'unknown') {
-                continue;
-            }
             if ($rol !== '' && $item['category_role'] !== $rol) {
                 continue;
             }
@@ -75,7 +72,7 @@ class ConfiguradorPaletas extends Modelo
                                  NULL AS player_level, NULL AS play_style, NULL AS rubber_type, NULL AS category_role,
                                  NULL AS is_forehand_recommended, NULL AS is_backhand_recommended, NULL AS tags) pa ON 1=0';
 
-        $stmt = $this->db->prepare('SELECT p.id, p.nombre, p.descripcion, p.precio, p.precio_oferta, p.stock_actual, p.estado,
+        $stmt = $this->db->prepare('SELECT p.id, p.nombre, p.descripcion, p.precio, p.precio_oferta, p.stock_actual, p.proximo_catalogo, p.proximo_dias_catalogo, p.estado,
                                            c.nombre AS categoria,
                                            pa.speed, pa.control_score, pa.spin, pa.hardness, pa.tacky_type, pa.arc, pa.weight_grams,
                                            pa.composition, pa.handle_type, pa.player_level, pa.play_style, pa.rubber_type, pa.category_role,
@@ -251,6 +248,16 @@ class ConfiguradorPaletas extends Modelo
         ]);
     }
 
+    public function obtenerAtributosProducto(int $productoId): array
+    {
+        if (!$this->tieneTabla('product_attributes')) {
+            return [];
+        }
+        $stmt = $this->db->prepare('SELECT * FROM product_attributes WHERE product_id = :product_id LIMIT 1');
+        $stmt->execute(['product_id' => $productoId]);
+        return $stmt->fetch() ?: [];
+    }
+
     private function tieneTabla(string $tabla): bool
     {
         if (array_key_exists($tabla, $this->cacheTablas)) {
@@ -277,10 +284,10 @@ class ConfiguradorPaletas extends Modelo
         if ($texto === '') {
             return 'unknown';
         }
-        if (preg_match('/mader|blade|mango fl|mango an|mango st|allwood|carbon/', $texto) === 1) {
+        if (preg_match('/mader|blade|paleta|raqueta|racket|mango fl|mango an|mango st|allwood|carbon|wood/', $texto) === 1) {
             return 'blade';
         }
-        if (preg_match('/goma|rubber|tacky|tensor|esponja|spin|forehand|backhand/', $texto) === 1) {
+        if (preg_match('/goma|caucho|revest|rubber|tacky|tensor|esponja|spin|forehand|backhand/', $texto) === 1) {
             return 'rubber';
         }
         if (preg_match('/armado|pegado|ensamblado/', $texto) === 1) {
@@ -295,23 +302,9 @@ class ConfiguradorPaletas extends Modelo
 
     private function normalizarMetricas(array &$item): void
     {
-        $item['speed'] = (float) ($item['speed'] ?? 0);
-        $item['control_score'] = (float) ($item['control_score'] ?? 0);
-        $item['spin'] = (float) ($item['spin'] ?? 0);
-        $item['hardness'] = (float) ($item['hardness'] ?? 0);
-
-        $texto = mb_strtolower((string) ($item['descripcion'] ?? ''));
-        if ($item['speed'] <= 0) {
-            $item['speed'] = str_contains($texto, 'rápid') || str_contains($texto, 'rapid') ? 8.2 : 7.0;
-        }
-        if ($item['control_score'] <= 0) {
-            $item['control_score'] = str_contains($texto, 'control') ? 8.2 : 7.0;
-        }
-        if ($item['spin'] <= 0) {
-            $item['spin'] = str_contains($texto, 'spin') || str_contains($texto, 'efecto') ? 8.0 : 7.0;
-        }
-        if ($item['hardness'] <= 0) {
-            $item['hardness'] = str_contains($texto, 'duro') ? 8.0 : 6.8;
-        }
+        $item['speed'] = isset($item['speed']) ? (float) $item['speed'] : 0.0;
+        $item['control_score'] = isset($item['control_score']) ? (float) $item['control_score'] : 0.0;
+        $item['spin'] = isset($item['spin']) ? (float) $item['spin'] : 0.0;
+        $item['hardness'] = isset($item['hardness']) ? (float) $item['hardness'] : 0.0;
     }
 }
