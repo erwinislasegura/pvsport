@@ -214,26 +214,23 @@ if (!empty($productoTecnico['tags'])) {
       <?php endforeach; ?>
     </select>
   </div>
-  <div class="col-md-2 tech-rubber"><label class="form-label">Arco</label><input name="tech_arc" class="form-control" value="<?= e((string) ($productoTecnico['arc'] ?? '')) ?>"></div>
-  <div class="col-md-2"><label class="form-label">Peso (g)</label><input type="number" step="0.1" min="0" name="tech_weight_grams" class="form-control" value="<?= e((string) ($productoTecnico['weight_grams'] ?? '0')) ?>"></div>
-  <div class="col-md-2 tech-blade"><label class="form-label">Mango</label>
-    <?php $mangoActual = (string) ($productoTecnico['handle_type'] ?? ''); ?>
-    <select name="tech_handle_type" class="form-select">
-      <?php foreach (['','FL','CS','ST','AN'] as $opt): ?>
-        <option value="<?= e($opt) ?>" <?= $mangoActual === $opt ? 'selected' : '' ?>><?= e($opt === '' ? 'Seleccionar' : $opt) ?></option>
-      <?php endforeach; ?>
-    </select>
-  </div>
-  <div class="col-md-2"><label class="form-label">Nivel jugador</label><input name="tech_player_level" class="form-control" value="<?= e((string) ($productoTecnico['player_level'] ?? 'intermedio')) ?>"></div>
-  <div class="col-md-2"><label class="form-label">Estilo</label><input name="tech_play_style" class="form-control" value="<?= e((string) ($productoTecnico['play_style'] ?? 'allround')) ?>"></div>
-  <div class="col-md-2 tech-rubber"><label class="form-label">Tipo goma</label><input name="tech_rubber_type" class="form-control" value="<?= e((string) ($productoTecnico['rubber_type'] ?? '')) ?>"></div>
-  <div class="col-md-2"><label class="form-label">Orden destacado</label><input type="number" min="0" name="tech_featured_order" class="form-control" value="<?= e((string) ($productoTecnico['featured_order'] ?? '999')) ?>"></div>
-  <div class="col-md-4"><label class="form-label">Tags texto técnico (opcional)</label><input name="tech_tags_texto" class="form-control" value="<?= e((string) ($tagsTecnicos['tags_texto'] ?? '')) ?>"></div>
-  <div class="col-md-3 d-flex align-items-end"><div>
-    <div class="form-check"><input class="form-check-input" type="checkbox" name="tech_is_forehand_recommended" id="tech_fh" <?= (int) ($productoTecnico['is_forehand_recommended'] ?? 0) === 1 ? 'checked' : '' ?>><label class="form-check-label" for="tech_fh">Recomendada FH</label></div>
-    <div class="form-check"><input class="form-check-input" type="checkbox" name="tech_is_backhand_recommended" id="tech_bh" <?= (int) ($productoTecnico['is_backhand_recommended'] ?? 0) === 1 ? 'checked' : '' ?>><label class="form-check-label" for="tech_bh">Recomendada BH</label></div>
-    <div class="form-check"><input class="form-check-input" type="checkbox" name="tech_is_active" id="tech_active" <?= !isset($productoTecnico['is_active']) || (int) ($productoTecnico['is_active'] ?? 1) === 1 ? 'checked' : '' ?>><label class="form-check-label" for="tech_active">Ficha técnica activa</label></div>
-  </div></div>
+  <input type="hidden" name="tech_arc" value="<?= e((string) ($productoTecnico['arc'] ?? '')) ?>">
+  <input type="hidden" name="tech_weight_grams" value="<?= e((string) ($productoTecnico['weight_grams'] ?? '0')) ?>">
+  <input type="hidden" name="tech_handle_type" value="<?= e((string) ($productoTecnico['handle_type'] ?? '')) ?>">
+  <input type="hidden" name="tech_player_level" value="<?= e((string) ($productoTecnico['player_level'] ?? 'intermedio')) ?>">
+  <input type="hidden" name="tech_play_style" value="<?= e((string) ($productoTecnico['play_style'] ?? 'allround')) ?>">
+  <input type="hidden" name="tech_rubber_type" value="<?= e((string) ($productoTecnico['rubber_type'] ?? '')) ?>">
+  <input type="hidden" name="tech_featured_order" value="<?= e((string) ($productoTecnico['featured_order'] ?? '999')) ?>">
+  <input type="hidden" name="tech_tags_texto" value="<?= e((string) ($tagsTecnicos['tags_texto'] ?? '')) ?>">
+  <?php if ((int) ($productoTecnico['is_forehand_recommended'] ?? 0) === 1): ?>
+    <input type="hidden" name="tech_is_forehand_recommended" value="1">
+  <?php endif; ?>
+  <?php if ((int) ($productoTecnico['is_backhand_recommended'] ?? 0) === 1): ?>
+    <input type="hidden" name="tech_is_backhand_recommended" value="1">
+  <?php endif; ?>
+  <?php if (!isset($productoTecnico['is_active']) || (int) ($productoTecnico['is_active'] ?? 1) === 1): ?>
+    <input type="hidden" name="tech_is_active" value="1">
+  <?php endif; ?>
   <?php if (!empty($imagenesCatalogo)): ?>
     <div class="col-12">
       <div class="border rounded p-2">
